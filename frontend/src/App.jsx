@@ -17,7 +17,7 @@ import {
 const API_BASE = "/api";
 const IMAGE_BASE = "";
 const UPI_ID = "logeshs01072005@okhdfcbank";
-const UPI_NAME = "Logesh S";
+const UPI_NAME = "Uma Fashion Boutique";
 
 const CATEGORIES = ["Sarees", "Lehengas", "Kurtis", "Western Wear", "Accessories", "Footwear"];
 
@@ -1223,28 +1223,18 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState(order?.paymentStatus === "verification_requested" ? "Verification requested. Await admin approval." : "");
 
+  const [qrDataUrl, setQrDataUrl] = useState("");
+
   useEffect(() => {
     if (!order) return;
     setProofUrl(order.paymentProofUrl || "");
     setPaymentReference(order.paymentReference || "");
     setMessage(order.paymentStatus === "verification_requested" ? "Verification requested. Await admin approval." : "");
-    const qrEl = document.getElementById("upi-qr");
-    if (!qrEl) return;
-    qrEl.innerHTML = "";
     const amount = Number(order.total || 0).toFixed(2);
     const upiLink = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
-
-    if (window.QRCode) {
-      new window.QRCode(qrEl, {
-        text: upiLink,
-        width: 200,
-        height: 200,
-        colorDark: "#101828",
-        colorLight: "#ffffff",
-      });
-    } else {
-      qrEl.innerText = "Scan QR with GPay / PhonePe / Paytm";
-    }
+    // Use Google Charts API to generate QR code image — no library needed
+    const googleQrUrl = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(upiLink)}&choe=UTF-8`;
+    setQrDataUrl(googleQrUrl);
   }, [order]);
 
   if (!order) return null;
@@ -1289,7 +1279,13 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
       <div className="max-w-xl mx-auto bg-white border border-stone-200 rounded-md p-8 text-center shadow-lg">
         <h1 className="font-serif text-2xl text-stone-900 mb-2">Scan &amp; Pay via UPI</h1>
         <p className="text-stone-500 text-sm mb-4">Order #{order.orderNumber} • Total Amount: <b>{inr(order.total)}</b></p>
-        <div id="upi-qr" className="flex justify-center my-6"></div>
+        <div className="flex justify-center my-6">
+          {qrDataUrl ? (
+            <img src={qrDataUrl} alt="UPI QR Code" width={200} height={200} style={{borderRadius:8, border:"2px solid #e7e5e4"}} />
+          ) : (
+            <div style={{width:200,height:200,display:"flex",alignItems:"center",justifyContent:"center",background:"#f5f5f4",borderRadius:8}}>Loading QR...</div>
+          )}
+        </div>
         <div className="bg-stone-100 p-3 rounded-md text-xs text-stone-600 mb-6">
           UPI ID: <b className="text-stone-900">{UPI_ID}</b>
         </div>
