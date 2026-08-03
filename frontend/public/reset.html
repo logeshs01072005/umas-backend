@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Reset Password — Uma's Boutique</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:#f8fafc;color:#0f172a;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+    .card{background:white;padding:20px;border-radius:10px;box-shadow:0 6px 18px rgba(2,6,23,0.08);width:360px}
+    input{width:100%;padding:10px;margin:6px 0;border:1px solid #e6edf3;border-radius:6px}
+    button{background:#f59e0b;color:#071433;border:none;padding:10px 14px;border-radius:6px;cursor:pointer}
+    .muted{color:#475569;font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2 style="margin:0 0 8px">Reset your password</h2>
+    <div class="muted" id="info">Please provide a new password. Token will be read from the link.</div>
+    <div style="margin-top:12px">
+      <input id="token" placeholder="Reset token (if not present in URL)" />
+      <input id="password" type="password" placeholder="New password (min 6 chars)" />
+      <input id="confirm" type="password" placeholder="Confirm new password" />
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+        <button id="submit">Reset Password</button>
+      </div>
+      <div id="msg" style="margin-top:12px;color:#dc2626"></div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const tokenParam = params.get('token');
+    if (tokenParam) document.getElementById('token').value = tokenParam;
+
+    document.getElementById('submit').addEventListener('click', async () => {
+      const token = document.getElementById('token').value.trim();
+      const pw = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+      const msgEl = document.getElementById('msg');
+      msgEl.textContent = '';
+
+      if (!token) return msgEl.textContent = 'Reset token is required.';
+      if (!pw || pw.length < 6) return msgEl.textContent = 'Password must be at least 6 characters.';
+      if (pw !== confirm) return msgEl.textContent = 'Passwords do not match.';
+
+      try {
+        const res = await fetch('/api/auth/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, newPassword: pw })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message || 'Password reset successful. Please login.');
+          window.location.href = '/';
+        } else {
+          msgEl.textContent = data.error || 'Failed to reset password.';
+        }
+      } catch (e) {
+        msgEl.textContent = 'Network error.';
+      }
+    });
+  </script>
+</body>
+</html>
