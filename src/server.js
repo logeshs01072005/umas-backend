@@ -29,6 +29,39 @@ const app = express();
 
 app.use(helmet({
   crossOriginResourcePolicy: false, // allows images to be loaded by React dev server on different port
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "https://*.razorpay.com", "https://*.googleapis.com"],
+      scriptSrc: [
+        "'self'",
+        "https://checkout.razorpay.com",
+        "https://cdn.razorpay.com",
+        "https://cdnjs.cloudflare.com",
+        "blob:",
+        "'unsafe-inline'",
+      ],
+      scriptSrcElem: [
+        "'self'",
+        "https://checkout.razorpay.com",
+        "https://cdn.razorpay.com",
+        "https://cdnjs.cloudflare.com",
+        "blob:",
+        "'unsafe-inline'",
+      ],
+      connectSrc: [
+        "'self'",
+        "https://checkout.razorpay.com",
+        "https://api.razorpay.com",
+        "https://cdn.razorpay.com",
+        "https://lumberjack.razorpay.com",
+        "https://www.google-analytics.com"
+      ],
+      frameSrc: ["'self'", "https://api.razorpay.com", "https://checkout.razorpay.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+    },
+  },
 }));
 app.use(cors({
   origin: process.env.CLIENT_URL || "*",

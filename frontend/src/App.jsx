@@ -86,15 +86,14 @@ function ProductArt({ category, tag, status, imageUrl, size = "h-64" }) {
       <div className={`relative ${size} w-full rounded-md overflow-hidden bg-stone-100 flex items-center justify-center border border-stone-200/50`}>
         <img src={fullUrl} alt={category} className="w-full h-full object-cover" />
         {displayTag ? (
-          <span className={`absolute top-3 left-3 text-[10px] tracking-widest uppercase px-2 py-1 rounded-sm font-medium shadow-sm ${
-            displayTag === "Out of Stock" || displayTag === "Unavailable"
-              ? "bg-rose-900 text-rose-100"
-              : displayTag === "Coming Soon"
+          <span className={`absolute top-3 left-3 text-[10px] tracking-widest uppercase px-2 py-1 rounded-sm font-medium shadow-sm ${displayTag === "Out of Stock" || displayTag === "Unavailable"
+            ? "bg-rose-900 text-rose-100"
+            : displayTag === "Coming Soon"
               ? "bg-blue-900 text-blue-100"
               : displayTag === "Sale"
-              ? "bg-rose-900 text-rose-50"
-              : "bg-stone-950 text-amber-300"
-          }`}>
+                ? "bg-rose-900 text-rose-50"
+                : "bg-stone-950 text-amber-300"
+            }`}>
             {displayTag}
           </span>
         ) : null}
@@ -110,15 +109,14 @@ function ProductArt({ category, tag, status, imageUrl, size = "h-64" }) {
       <div className="absolute inset-3 border border-white/50 rounded-sm pointer-events-none" />
       <div className="absolute bottom-3 text-xs text-amber-50/90 tracking-wider uppercase font-medium">{category}</div>
       {displayTag ? (
-        <span className={`absolute top-3 left-3 text-[10px] tracking-widest uppercase px-2 py-1 rounded-sm font-medium shadow-sm ${
-          displayTag === "Out of Stock" || displayTag === "Unavailable"
-            ? "bg-rose-900 text-rose-100"
-            : displayTag === "Coming Soon"
+        <span className={`absolute top-3 left-3 text-[10px] tracking-widest uppercase px-2 py-1 rounded-sm font-medium shadow-sm ${displayTag === "Out of Stock" || displayTag === "Unavailable"
+          ? "bg-rose-900 text-rose-100"
+          : displayTag === "Coming Soon"
             ? "bg-blue-900 text-blue-100"
             : displayTag === "Sale"
-            ? "bg-rose-900 text-rose-50"
-            : "bg-stone-950 text-amber-300"
-        }`}>
+              ? "bg-rose-900 text-rose-50"
+              : "bg-stone-950 text-amber-300"
+          }`}>
           {displayTag}
         </span>
       ) : null}
@@ -979,9 +977,8 @@ function ProductFormModal({ product, onClose, onSave }) {
                       type="button"
                       key={sz}
                       onClick={() => handleSizeToggle(sz)}
-                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors ${
-                        checked ? "bg-amber-500 text-stone-950 border-amber-500 font-bold" : "bg-stone-800 text-stone-300 border-stone-700"
-                      }`}
+                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors ${checked ? "bg-amber-500 text-stone-950 border-amber-500 font-bold" : "bg-stone-800 text-stone-300 border-stone-700"
+                        }`}
                     >
                       {sz}
                     </button>
@@ -1183,10 +1180,8 @@ function CheckoutView({ cart, subtotal, currentUser, onOpenAuth, placeOrder, set
             <div className="bg-white border border-stone-200 rounded-md p-6">
               <div className="text-xs tracking-widest uppercase text-stone-500 mb-4">Select Payment Method</div>
               <div className="flex flex-col gap-3">
+                {renderPaymentOption("card", "Razorpay Online Payment (UPI, Credit/Debit Cards, Net Banking)", "online")}
                 {renderPaymentOption("cod", "Cash on Delivery (COD)", "cod")}
-                {renderPaymentOption("upi", "UPI / QR Payment", "upi")}
-                {renderPaymentOption("net_banking", "Net Banking", "net_banking")}
-                {renderPaymentOption("card", "Debit / Credit Card (Razorpay)", "online")}
               </div>
             </div>
           </div>
@@ -1281,9 +1276,9 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
         <p className="text-stone-500 text-sm mb-4">Order #{order.orderNumber} • Total Amount: <b>{inr(order.total)}</b></p>
         <div className="flex justify-center my-6">
           {qrDataUrl ? (
-            <img src={qrDataUrl} alt="UPI QR Code" width={200} height={200} style={{borderRadius:8, border:"2px solid #e7e5e4"}} />
+            <img src={qrDataUrl} alt="UPI QR Code" width={200} height={200} style={{ borderRadius: 8, border: "2px solid #e7e5e4" }} />
           ) : (
-            <div style={{width:200,height:200,display:"flex",alignItems:"center",justifyContent:"center",background:"#f5f5f4",borderRadius:8}}>Loading QR...</div>
+            <div style={{ width: 200, height: 200, display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f5f4", borderRadius: 8 }}>Loading QR...</div>
           )}
         </div>
         <div className="bg-stone-100 p-3 rounded-md text-xs text-stone-600 mb-6">
@@ -1359,7 +1354,7 @@ function ConfirmationView({ order, setView }) {
         )}
         <div className="flex flex-col gap-3">
           <button onClick={() => setView("account")} className="bg-stone-900 text-amber-300 py-3 rounded-full text-sm font-medium">View My Orders &amp; Track</button>
-          <button onClick={goToShop} className="text-stone-600 hover:underline text-sm">Continue Shopping</button>
+          <button onClick={() => setView("shop")} className="text-stone-600 hover:underline text-sm">Continue Shopping</button>
         </div>
       </div>
     </div>
@@ -1488,9 +1483,8 @@ function CustomerProfileView({ currentUser, orders, setView, onProfileUpdated })
             <button
               key={tabKey}
               onClick={() => setActiveTab(tabKey)}
-              className={`flex items-center gap-2 px-5 py-3 text-xs tracking-wider uppercase border-b-2 font-medium shrink-0 transition-colors ${
-                activeTab === tabKey ? "border-amber-500 text-amber-800 bg-amber-50/50" : "border-transparent text-stone-600 hover:text-stone-900"
-              }`}
+              className={`flex items-center gap-2 px-5 py-3 text-xs tracking-wider uppercase border-b-2 font-medium shrink-0 transition-colors ${activeTab === tabKey ? "border-amber-500 text-amber-800 bg-amber-50/50" : "border-transparent text-stone-600 hover:text-stone-900"
+                }`}
             >
               <Icon size={16} /> {label}
             </button>
@@ -1514,10 +1508,9 @@ function CustomerProfileView({ currentUser, orders, setView, onProfileUpdated })
                       <div className="text-xs text-stone-400">{formatDateTime(ord.createdAt)}</div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className={`text-xs uppercase px-3 py-1 rounded-full font-bold tracking-wider ${
-                        ord.status === "Delivered" ? "bg-emerald-100 text-emerald-800" :
+                      <span className={`text-xs uppercase px-3 py-1 rounded-full font-bold tracking-wider ${ord.status === "Delivered" ? "bg-emerald-100 text-emerald-800" :
                         ord.status === "Cancelled" ? "bg-rose-100 text-rose-800" : "bg-amber-100 text-amber-800"
-                      }`}>
+                        }`}>
                         {ord.status}
                       </span>
                       <button
@@ -1587,11 +1580,10 @@ function CustomerProfileView({ currentUser, orders, setView, onProfileUpdated })
                       <div className="font-medium text-stone-900">Order #{ret.order_number}</div>
                       <div className="text-xs text-stone-500">Product: <b>{ret.product_name}</b></div>
                     </div>
-                    <span className={`text-xs uppercase font-bold px-3 py-1 rounded-full ${
-                      ret.status === "Approved" ? "bg-emerald-100 text-emerald-800" :
+                    <span className={`text-xs uppercase font-bold px-3 py-1 rounded-full ${ret.status === "Approved" ? "bg-emerald-100 text-emerald-800" :
                       ret.status === "Refund Completed" ? "bg-blue-100 text-blue-800" :
-                      ret.status === "Rejected" ? "bg-rose-100 text-rose-800" : "bg-amber-100 text-amber-800"
-                    }`}>
+                        ret.status === "Rejected" ? "bg-rose-100 text-rose-800" : "bg-amber-100 text-amber-800"
+                      }`}>
                       {ret.status}
                     </span>
                   </div>
@@ -1754,10 +1746,9 @@ function OrderTrackingModal({ order, onClose }) {
                   const isCurrent = idx === currentStepIdx;
                   return (
                     <div key={step} className="flex items-center gap-3">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                        isCurrent ? "bg-amber-500 text-stone-950 ring-4 ring-amber-100" :
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${isCurrent ? "bg-amber-500 text-stone-950 ring-4 ring-amber-100" :
                         isDone ? "bg-emerald-600 text-white" : "bg-stone-200 text-stone-500"
-                      }`}>
+                        }`}>
                         {isDone ? <Check size={14} /> : idx + 1}
                       </div>
                       <span className={`text-sm ${isCurrent ? "font-bold text-stone-900" : isDone ? "font-medium text-stone-700" : "text-stone-400"}`}>
@@ -2172,7 +2163,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
 
   const downloadAnalyticsReport = () => {
     const rows = [];
-    rows.push(["Analytics Report","Filter", analyticsFilter || "All Time"]);
+    rows.push(["Analytics Report", "Filter", analyticsFilter || "All Time"]);
     rows.push(["Total Revenue", stats?.revenue || 0]);
     rows.push(["Total Orders", stats?.totalOrders || 0]);
     rows.push(["Pending Orders", stats?.pendingOrders || 0]);
@@ -2182,10 +2173,10 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
     rows.push(["Total Customers", stats?.totalCustomers || 0]);
     rows.push(["New Customers", stats?.newCustomers || 0]);
     rows.push([]);
-    rows.push(["Category","Revenue"]);
+    rows.push(["Category", "Revenue"]);
     (stats?.revenueByCategory || []).forEach((item) => rows.push([item.name, item.value]));
     rows.push([]);
-    rows.push(["Order Status","Count"]);
+    rows.push(["Order Status", "Count"]);
     (stats?.ordersByStatus || []).forEach((item) => rows.push([item.name, item.value]));
 
     const csvContent = rows.map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
@@ -2437,9 +2428,8 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             <button
               key={tabKey}
               onClick={() => setAdminTab(tabKey)}
-              className={`flex items-center gap-2 px-4 py-3 text-xs uppercase tracking-wider font-bold border-b-2 shrink-0 ${
-                adminTab === tabKey ? "border-amber-400 text-amber-300 bg-stone-800/60" : "border-transparent text-stone-400 hover:text-stone-200"
-              } ${tabKey === "payverify" && pendingPayments.length > 0 ? "text-amber-400" : ""}`}
+              className={`flex items-center gap-2 px-4 py-3 text-xs uppercase tracking-wider font-bold border-b-2 shrink-0 ${adminTab === tabKey ? "border-amber-400 text-amber-300 bg-stone-800/60" : "border-transparent text-stone-400 hover:text-stone-200"
+                } ${tabKey === "payverify" && pendingPayments.length > 0 ? "text-amber-400" : ""}`}
             >
               <Icon size={16} /> {label}
             </button>
@@ -2635,11 +2625,10 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                         )}
                       </td>
                       <td className="p-3">
-                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${
-                          p.status === "Available" ? "bg-emerald-900 text-emerald-300" :
+                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${p.status === "Available" ? "bg-emerald-900 text-emerald-300" :
                           p.status === "Coming Soon" ? "bg-blue-900 text-blue-300" :
-                          "bg-rose-900 text-rose-300"
-                        }`}>
+                            "bg-rose-900 text-rose-300"
+                          }`}>
                           {p.status || "Available"}
                         </span>
                       </td>
@@ -2734,16 +2723,16 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                 onChange={(e) => setPaymentVerificationMethod(e.target.value)}
                 className="bg-stone-800 border border-stone-700 rounded-md px-3 py-2 text-xs text-stone-200"
               >
-                  <option value="all">All Methods</option>
-                  <option value="upi">UPI</option>
-                  <option value="card">Card</option>
-                  <option value="net_banking">Net Banking</option>
-                  <option value="cod">Cash on Delivery</option>
-                </select>
-                <button onClick={fetchAdminData} className="bg-stone-800 text-amber-300 text-xs px-3 py-1.5 rounded flex items-center gap-1 hover:bg-stone-700">
-                  <RefreshCw size={13} /> Refresh
-                </button>
-              </div>
+                <option value="all">All Methods</option>
+                <option value="upi">UPI</option>
+                <option value="card">Card</option>
+                <option value="net_banking">Net Banking</option>
+                <option value="cod">Cash on Delivery</option>
+              </select>
+              <button onClick={fetchAdminData} className="bg-stone-800 text-amber-300 text-xs px-3 py-1.5 rounded flex items-center gap-1 hover:bg-stone-700">
+                <RefreshCw size={13} /> Refresh
+              </button>
+            </div>
 
             {pendingPayments.length === 0 ? (
               <div className="bg-stone-800 border border-stone-700 rounded-md p-10 text-center text-stone-400">
@@ -3031,8 +3020,8 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                           </div>
                         )}
                         <div className="space-y-2">
-                          <button onClick={() => handleUpdateReturnStatus(r._id, "Approved", "Verified and approved") } className="bg-emerald-800 text-emerald-100 px-2 py-1 rounded">Approve</button>
-                          <button onClick={() => handleUpdateReturnStatus(r._id, "Rejected", "Rejected after review") } className="bg-rose-900 text-rose-100 px-2 py-1 rounded">Reject</button>
+                          <button onClick={() => handleUpdateReturnStatus(r._id, "Approved", "Verified and approved")} className="bg-emerald-800 text-emerald-100 px-2 py-1 rounded">Approve</button>
+                          <button onClick={() => handleUpdateReturnStatus(r._id, "Rejected", "Rejected after review")} className="bg-rose-900 text-rose-100 px-2 py-1 rounded">Reject</button>
                         </div>
                       </td>
                     </tr>
@@ -3147,16 +3136,14 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                               <span className="font-bold text-amber-300 text-xs">#{order.orderNumber}</span>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${
-                                order.status === "Delivered" ? "bg-emerald-900 text-emerald-300" :
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${order.status === "Delivered" ? "bg-emerald-900 text-emerald-300" :
                                 order.status === "Cancelled" ? "bg-rose-900 text-rose-300" :
-                                "bg-amber-900/60 text-amber-300"
-                              }`}>{order.status}</span>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${
-                                order.paymentStatus === "paid" ? "bg-emerald-900 text-emerald-300" :
+                                  "bg-amber-900/60 text-amber-300"
+                                }`}>{order.status}</span>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${order.paymentStatus === "paid" ? "bg-emerald-900 text-emerald-300" :
                                 order.paymentStatus === "verification_requested" ? "bg-orange-900 text-orange-300" :
-                                "bg-stone-700 text-stone-300"
-                              }`}>{order.paymentStatus}</span>
+                                  "bg-stone-700 text-stone-300"
+                                }`}>{order.paymentStatus}</span>
                             </div>
                             <span className="text-amber-300 font-bold text-sm">{inr(order.total)}</span>
                           </div>
@@ -3210,11 +3197,10 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                               <td className="p-2">{tx.type}</td>
                               <td className="p-2 text-right font-bold text-amber-300">{inr(tx.amount)}</td>
                               <td className="p-2 text-center">
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${
-                                  tx.status === "Success" ? "bg-emerald-900 text-emerald-300" :
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${tx.status === "Success" ? "bg-emerald-900 text-emerald-300" :
                                   tx.status === "Failed" ? "bg-rose-900 text-rose-300" :
-                                  "bg-stone-700 text-stone-300"
-                                }`}>{tx.status}</span>
+                                    "bg-stone-700 text-stone-300"
+                                  }`}>{tx.status}</span>
                               </td>
                             </tr>
                           ))}
@@ -3659,13 +3645,76 @@ export default function App() {
         return;
       }
 
-      if (paymentMethod === "upi") {
-        setUpiOrder(order);
-        persistUpiOrder(order);
-        setCart([]);
-        setView("upi");
-        showToast("Order created. Please complete UPI payment and request verification.");
-        return;
+      if (paymentMethod === "online") {
+        try {
+          const rpRes = await fetch(`${API_BASE}/payments/razorpay/create-order`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ orderId: order._id }),
+          });
+          const rpData = await rpRes.json();
+          if (rpRes.ok && rpData.razorpayOrderId && window.Razorpay) {
+            const options = {
+              key: rpData.keyId,
+              amount: rpData.amount,
+              currency: rpData.currency,
+              name: "Uma's Fashion & Boutique",
+              description: `Order #${order.orderNumber}`,
+              order_id: rpData.razorpayOrderId,
+              handler: async function (response) {
+                try {
+                  const vRes = await fetch(`${API_BASE}/payments/razorpay/verify`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                      orderId: order._id,
+                      razorpay_order_id: response.razorpay_order_id,
+                      razorpay_payment_id: response.razorpay_payment_id,
+                      razorpay_signature: response.razorpay_signature,
+                    }),
+                  });
+                  const vData = await vRes.json();
+                  if (vRes.ok) {
+                    const confirmedOrder = { ...order, paymentStatus: "paid", invoiceUrl: vData.invoiceUrl };
+                    setLastOrder(confirmedOrder);
+                    clearStoredOrderState();
+                    setCart([]);
+                    setView("confirmation");
+                    await fetchMyOrders(token);
+                    showToast("Payment successful! Order confirmed.");
+                  } else {
+                    alert(vData.error || "Payment verification failed.");
+                  }
+                } catch (err) {
+                  alert("Error verifying payment.");
+                }
+              },
+              prefill: {
+                name: address.name,
+                phone: address.phone,
+              },
+              theme: {
+                color: "#f59e0b",
+              },
+              modal: {
+                ondismiss: function () {
+                  showToast("Payment cancelled.");
+                },
+              },
+            };
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+            return;
+          }
+        } catch (e) {
+          console.error("Razorpay trigger error:", e);
+        }
       }
 
       setLastOrder(order);
