@@ -2106,9 +2106,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
   const [statusUpdate, setStatusUpdate] = useState({});
   const [paymentSettings, setPaymentSettings] = useState({
     cod: { enabled: true, customMessage: "" },
-    upi: { enabled: true, customMessage: "" },
-    net_banking: { enabled: true, customMessage: "" },
-    card: { enabled: true, customMessage: "" },
+    online: { enabled: true, customMessage: "" },
   });
 
   const [productModalOpen, setProductModalOpen] = useState(false);
@@ -2682,10 +2680,14 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
         {adminTab === "payments" && (
           <form onSubmit={handleSavePaymentSettings} className="bg-stone-800 p-6 rounded-md border border-stone-700 max-w-xl space-y-4">
             <h2 className="font-serif text-xl text-amber-300">Payment Methods Settings</h2>
-            {["cod", "upi", "net_banking", "card"].map((key) => (
+            <p className="text-stone-400 text-xs">Enable or disable the payment methods available to customers at checkout.</p>
+            {[
+              { key: "cod", label: "Cash on Delivery (COD)" },
+              { key: "online", label: "Razorpay (Online Payment)" },
+            ].map(({ key, label }) => (
               <div key={key} className="bg-stone-900 p-4 rounded border border-stone-700 space-y-2">
                 <label className="flex items-center justify-between text-sm font-bold uppercase text-stone-200">
-                  <span>{key.replace("_", " ")}</span>
+                  <span>{label}</span>
                   <input
                     type="checkbox"
                     checked={paymentSettings[key]?.enabled !== false}
@@ -2696,7 +2698,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                   />
                 </label>
                 <input
-                  placeholder="Custom disabled message (e.g. Coming Soon)"
+                  placeholder="Custom disabled message (e.g. Temporarily Unavailable)"
                   value={paymentSettings[key]?.customMessage || ""}
                   onChange={(e) => setPaymentSettings({
                     ...paymentSettings,
@@ -2724,9 +2726,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                 className="bg-stone-800 border border-stone-700 rounded-md px-3 py-2 text-xs text-stone-200"
               >
                 <option value="all">All Methods</option>
-                <option value="upi">UPI</option>
-                <option value="card">Card</option>
-                <option value="net_banking">Net Banking</option>
+                <option value="online">Razorpay (Online)</option>
                 <option value="cod">Cash on Delivery</option>
               </select>
               <button onClick={fetchAdminData} className="bg-stone-800 text-amber-300 text-xs px-3 py-1.5 rounded flex items-center gap-1 hover:bg-stone-700">
