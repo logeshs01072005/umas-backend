@@ -3265,8 +3265,24 @@ function Footer() {
 
 /* -------------------------------- Main App --------------------------------- */
 
+// Views that should NOT be restored on page refresh (transient/payment states)
+const TRANSIENT_VIEWS = new Set(["upi", "checkout", "confirmation"]);
+
 export default function App() {
-  const [view, setView] = useState("home");
+  const [view, setViewRaw] = useState(() => {
+    // Restore the last non-transient view from sessionStorage on refresh
+    const saved = sessionStorage.getItem("umas:view");
+    if (saved && !TRANSIENT_VIEWS.has(saved)) return saved;
+    return "home";
+  });
+
+  // Wrap setView to also persist view in sessionStorage
+  const setView = (nextView) => {
+    setViewRaw(nextView);
+    if (!TRANSIENT_VIEWS.has(nextView)) {
+      sessionStorage.setItem("umas:view", nextView);
+    }
+  };
   const [products, setProducts] = useState([]);
   const [banners, setBanners] = useState([]);
   const [cart, setCart] = useState([]);
@@ -3310,6 +3326,12 @@ export default function App() {
     const token = localStorage.getItem("umas:token");
     if (token) {
       await fetchMe(token);
+    } else {
+      // If no token but we've restored an auth-only view, reset to home
+      const restoredView = sessionStorage.getItem("umas:view");
+      if (restoredView === "account" || restoredView === "admin") {
+        setView("home");
+      }
     }
     setLoaded(true);
   };
