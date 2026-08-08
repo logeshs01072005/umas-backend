@@ -38,7 +38,50 @@ async function updatePaymentSettings(req, res, next) {
   }
 }
 
+const DEFAULT_PROMO_SETTINGS = {
+  tickerText: "🔥 GRAND FESTIVE & SEASONAL LAUNCH | FLAT 20% OFF ON ALL SAREES & TOPS",
+  couponCode: "UMA20",
+  heroTag: "NEW SEASON LAUNCH 2026",
+  heroTitle: "Elegance Woven in Every Thread",
+  heroSubtitle: "Discover our latest Ajio-style curated collection of Kanjeevaram Silks, Organza Sarees, Designer Tops, and Royal Lehengas.",
+  heroImageUrl: "",
+  seasonName: "Festive Season",
+};
+
+async function getPromoSettings(req, res, next) {
+  try {
+    let settingDoc = await Setting.findOne({ key: "promo_settings" });
+    if (!settingDoc) {
+      settingDoc = await Setting.create({ key: "promo_settings", value: DEFAULT_PROMO_SETTINGS });
+    }
+    res.json({ promoSettings: { ...DEFAULT_PROMO_SETTINGS, ...settingDoc.value } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function updatePromoSettings(req, res, next) {
+  try {
+    const { promoSettings } = req.body;
+    if (!promoSettings) {
+      return res.status(400).json({ error: "promoSettings object is required." });
+    }
+
+    const settingDoc = await Setting.findOneAndUpdate(
+      { key: "promo_settings" },
+      { value: promoSettings, updated_at: Date.now() },
+      { new: true, upsert: true }
+    );
+
+    res.json({ promoSettings: settingDoc.value, message: "Promotional season settings updated successfully." });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getPaymentSettings,
   updatePaymentSettings,
+  getPromoSettings,
+  updatePromoSettings,
 };

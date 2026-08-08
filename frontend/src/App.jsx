@@ -6,7 +6,7 @@ import {
   ArrowRight, Mail, Lock, Edit2, Upload, AlertCircle, Star,
   Clock, RotateCcw, Truck, ShieldCheck, Sliders, Calendar,
   Users, RefreshCw, FileText, Phone, MapPin, CreditCard, Tag,
-  TrendingUp, Bell, Image as ImageIcon, CheckCircle, XCircle
+  TrendingUp, Bell, Image as ImageIcon, Sparkles, CheckCircle, XCircle
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -362,7 +362,7 @@ function BannerSlider({ banners }) {
 
 /* ----------------------------------- Home view ---------------------------------- */
 
-function HomeView({ products, banners, setView, setCategoryFilter, openProduct }) {
+function HomeView({ products, banners, promoSettings, setView, setCategoryFilter, openProduct }) {
   const featured = useMemo(() => {
     return products.filter((p) => p.tag === "Bestseller" || p.tag === "Sale" || p.tag === "New Arrival").slice(0, 8);
   }, [products]);
@@ -2203,13 +2203,209 @@ function AuthModal({ onClose, onLogin, onSignup, error }) {
   );
 }
 
+
+function PromoShowcaseManager({ promoSettings, onPromoUpdated }) {
+  const [form, setForm] = useState({
+    tickerText: promoSettings?.tickerText || "🔥 GRAND FESTIVE LAUNCH | FLAT 20% OFF ON ALL SAREES & TOPS",
+    couponCode: promoSettings?.couponCode || "UMA20",
+    heroTag: promoSettings?.heroTag || "NEW SEASON LAUNCH 2026",
+    heroTitle: promoSettings?.heroTitle || "Elegance Woven in Every Thread",
+    heroSubtitle: promoSettings?.heroSubtitle || "Discover our latest Ajio-style curated collection of Kanjeevaram Silks, Organza Sarees, Designer Tops, and Royal Lehengas.",
+    heroImageUrl: promoSettings?.heroImageUrl || "",
+    seasonName: promoSettings?.seasonName || "Festive Season 2026",
+  });
+
+  const [saving, setSaving] = useState(false);
+  const [cropFile, setCropFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    if (promoSettings) {
+      setForm((prev) => ({ ...prev, ...promoSettings }));
+    }
+  }, [promoSettings]);
+
+  const handleCropComplete = async (dataUrl, blob) => {
+    setCropFile(null);
+    setUploading(true);
+    const token = localStorage.getItem("umas:token");
+    const formData = new FormData();
+    formData.append("image", blob || dataUrl, "hero-banner.jpg");
+
+    try {
+      const res = await fetch(`${API_BASE}/upload`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.imageUrl) {
+        setForm((prev) => ({ ...prev, heroImageUrl: data.imageUrl }));
+      } else {
+        alert(data.error || "Failed to upload hero image.");
+      }
+    } catch (err) {
+      alert("Error uploading image file.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    const token = localStorage.getItem("umas:token");
+    try {
+      const res = await fetch(`${API_BASE}/settings/admin/promo`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ promoSettings: form }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Seasonal Promotional Showcase updated successfully!");
+        if (onPromoUpdated) onPromoUpdated();
+      } else {
+        alert(data.error || "Failed to update promo settings.");
+      }
+    } catch (err) {
+      alert("Error updating promo settings.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="bg-stone-800/80 border border-amber-500/30 p-6 rounded-2xl max-w-4xl space-y-6">
+      {cropFile && (
+        <ImageCropModal
+          imageSrc={cropFile}
+          onCropComplete={handleCropComplete}
+          onClose={() => setCropFile(null)}
+          title="Crop & Resize Seasonal Hero Image"
+        />
+      )}
+      <div className="flex items-center justify-between border-b border-stone-700 pb-4">
+        <div>
+          <h2 className="font-serif text-2xl text-amber-300 flex items-center gap-2">
+            <Sparkles className="w-6 h-6 text-amber-400" /> Ajio-Style Seasonal Showcase Manager
+          </h2>
+          <p className="text-stone-400 text-xs mt-1">
+            Customize homepage seasonal theme, hero headline, promotional images, ticker bar, and coupon codes.
+          </p>
+        </div>
+        <span className="bg-amber-500/20 text-amber-300 text-xs px-3 py-1 rounded-full border border-amber-500/30 font-mono">
+          Live Store Control
+        </span>
+      </div>
+
+      <form onSubmit={handleSave} className="space-y-4 text-xs">
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Season Name / Event</label>
+            <input
+              value={form.seasonName}
+              onChange={(e) => setForm({ ...form, seasonName: e.target.value })}
+              placeholder="e.g. Summer Saree Festival 2026"
+              className="w-full bg-stone-900 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:border-amber-400"
+            />
+          </div>
+
+          <div>
+            <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Promo Coupon Code</label>
+            <input
+              value={form.couponCode}
+              onChange={(e) => setForm({ ...form, couponCode: e.target.value })}
+              placeholder="e.g. UMA20"
+              className="w-full bg-stone-900 border border-stone-700 rounded-lg p-2.5 text-sm text-amber-300 font-mono font-bold focus:border-amber-400"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Top Offer Ticker Banner Text</label>
+          <input
+            value={form.tickerText}
+            onChange={(e) => setForm({ ...form, tickerText: e.target.value })}
+            placeholder="e.g. 🔥 GRAND FESTIVE LAUNCH | FLAT 20% OFF ON ALL SAREES & TOPS"
+            className="w-full bg-stone-900 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:border-amber-400"
+          />
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Hero Badge Tagline</label>
+            <input
+              value={form.heroTag}
+              onChange={(e) => setForm({ ...form, heroTag: e.target.value })}
+              placeholder="e.g. NEW SEASON LAUNCH 2026"
+              className="w-full bg-stone-900 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:border-amber-400"
+            />
+          </div>
+
+          <div>
+            <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Hero Main Headline Title</label>
+            <input
+              value={form.heroTitle}
+              onChange={(e) => setForm({ ...form, heroTitle: e.target.value })}
+              placeholder="e.g. Elegance Woven in Every Thread"
+              className="w-full bg-stone-900 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:border-amber-400"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Hero Subtitle Description</label>
+          <textarea
+            rows={3}
+            value={form.heroSubtitle}
+            onChange={(e) => setForm({ ...form, heroSubtitle: e.target.value })}
+            placeholder="Detailed seasonal promotion tagline..."
+            className="w-full bg-stone-900 border border-stone-700 rounded-lg p-2.5 text-xs text-stone-100 focus:border-amber-400"
+          />
+        </div>
+
+        <div>
+          <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Seasonal Hero Background Image (Crop & Upload)</label>
+          <div className="flex gap-3 items-center">
+            {form.heroImageUrl ? (
+              <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-amber-500/40 bg-stone-950 flex-shrink-0">
+                <img src={getImageUrl(form.heroImageUrl)} alt="Hero Preview" className="w-full h-full object-cover" />
+              </div>
+            ) : null}
+            <label className="cursor-pointer bg-stone-900 hover:bg-stone-700 text-amber-300 font-medium px-4 py-2.5 rounded-lg border border-stone-700 transition-colors inline-flex items-center gap-2">
+              <Upload size={16} />
+              <span>{uploading ? "Uploading..." : form.heroImageUrl ? "Crop & Change Image" : "Choose & Crop Hero Image"}</span>
+              <input type="file" accept="image/*" onChange={(e) => { if (e.target.files?.[0]) setCropFile(e.target.files[0]); }} className="hidden" disabled={uploading} />
+            </label>
+          </div>
+        </div>
+
+        <div className="pt-4 border-t border-stone-700 flex justify-end">
+          <button
+            type="submit"
+            disabled={saving || uploading}
+            className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-8 py-3 rounded-xl transition-all shadow-lg shadow-amber-500/20"
+          >
+            {saving ? "Saving Showcase..." : "Publish Promotional Showcase Theme"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 /* --------------------------------- Admin Dashboard --------------------------------- */
 
-function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, updateOrderStatus, setView, analyticsFilter, setAnalyticsFilter }) {
+function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, updateOrderStatus, setView, analyticsFilter, setAnalyticsFilter, promoSettings, onPromoUpdated }) {
   const [adminTab, setAdminTab] = useState("analytics");
   const [paymentVerificationMethod, setPaymentVerificationMethod] = useState("all");
   const [customers, setCustomers] = useState([]);
   const [banners, setBanners] = useState([]);
+  
   const [returnReqs, setReturnReqs] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [pendingPayments, setPendingPayments] = useState([]);
@@ -2529,7 +2725,8 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             ["analytics", "Analytics Dashboard", BarChart3],
             ["customers", "Customer Management", Users],
             ["inventory", "Inventory & Stock", Package],
-            ["banners", "Promotional Banners", ImageIcon],
+            ["banners", "Promotional Banners & Banners", ImageIcon],
+            ["promoshowcase", "Ajio Seasonal Showcase Editor", Sparkles],
             ["payments", "Payment Methods", CreditCard],
             ["payverify", `Payment Verification${pendingPayments.length > 0 ? ` (${pendingPayments.length})` : ""}`, ShieldCheck],
             ["tracking", "Order Tracking Management", MapPin],
@@ -2546,6 +2743,12 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             </button>
           ))}
         </div>
+
+        
+        {/* Seasonal Showcase & Hero Banner Control Tab */}
+        {adminTab === "promoshowcase" && (
+          <PromoShowcaseManager promoSettings={promoSettings} onPromoUpdated={onPromoUpdated} showToast={showToast} />
+        )}
 
         {/* 1. Analytics Tab */}
         {adminTab === "analytics" && (
@@ -3427,7 +3630,17 @@ export default function App() {
     }
   }, [adminStatsFilter]);
 
-  const showToast = (msg) => {
+    const fetchPromoSettings = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/settings/promo`);
+      const data = await res.json();
+      if (res.ok && data.promoSettings) setPromoSettings(data.promoSettings);
+    } catch (e) {
+      console.error("Error fetching promo settings:", e);
+    }
+  };
+
+const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 4000);
   };
@@ -3435,6 +3648,7 @@ export default function App() {
   const initApp = async () => {
     await fetchProducts();
     await fetchBanners();
+    await fetchPromoSettings();
 
     const token = localStorage.getItem("umas:token");
     if (token) {
@@ -4011,7 +4225,7 @@ export default function App() {
 
       {view === "admin" && (
           currentUser?.isAdmin ? (
-            <AdminDashboard products={products} orders={adminOrders} stats={adminStats} saveProduct={saveProduct} deleteProduct={deleteProduct} setView={setView} analyticsFilter={adminStatsFilter} setAnalyticsFilter={setAdminStatsFilter} />
+            <AdminDashboard promoSettings={promoSettings} onPromoUpdated={fetchPromoSettings} products={products} orders={adminOrders} stats={adminStats} saveProduct={saveProduct} deleteProduct={deleteProduct} setView={setView} analyticsFilter={adminStatsFilter} setAnalyticsFilter={setAdminStatsFilter} />
           ) : (
             <div className="min-h-[70vh] flex items-center justify-center flex-col gap-4 bg-stone-50">
               <p className="text-stone-600">Admin access only.</p>
