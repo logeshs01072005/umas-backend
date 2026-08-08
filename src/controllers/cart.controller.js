@@ -9,19 +9,29 @@ async function getCart(req, res, next) {
 
     const items = [];
     for (const item of dbItems) {
-      // If product doesn't exist or is inactive, skip (or we could clean it up)
       if (!item.product_id || !item.product_id.is_active) {
         continue;
       }
+      const prod = item.product_id;
+      let unitPrice = Number(prod.price);
+      if (prod.size_prices && item.size) {
+        const sizePrice = typeof prod.size_prices.get === "function" 
+          ? prod.size_prices.get(item.size) 
+          : prod.size_prices[item.size];
+        if (sizePrice != null && !isNaN(sizePrice) && Number(sizePrice) > 0) {
+          unitPrice = Number(sizePrice);
+        }
+      }
+
       items.push({
         cartItemId: item._id,
-        productId: item.product_id._id,
-        name: item.product_id.name,
-        category: item.product_id.category,
-        price: Number(item.product_id.price),
-        mrp: Number(item.product_id.mrp),
-        tag: item.product_id.tag,
-        imageUrl: item.product_id.image_url,
+        productId: prod._id,
+        name: prod.name,
+        category: prod.category,
+        price: unitPrice,
+        mrp: Number(prod.mrp),
+        tag: prod.tag,
+        imageUrl: prod.image_url,
         size: item.size,
         quantity: item.quantity,
       });

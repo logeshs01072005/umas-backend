@@ -9,6 +9,17 @@ function mapProduct(doc) {
     statusVal = "Out of Stock";
   }
 
+  let sizePricesObj = {};
+  if (doc.size_prices) {
+    if (typeof doc.size_prices.toObject === "function") {
+      sizePricesObj = doc.size_prices.toObject();
+    } else if (doc.size_prices instanceof Map) {
+      sizePricesObj = Object.fromEntries(doc.size_prices);
+    } else {
+      sizePricesObj = doc.size_prices;
+    }
+  }
+
   return {
     id: doc._id,
     name: doc.name,
@@ -17,6 +28,7 @@ function mapProduct(doc) {
     price: Number(doc.price),
     mrp: Number(doc.mrp),
     sizes: doc.sizes,
+    sizePrices: sizePricesObj,
     tag: doc.tag,
     imageUrl: doc.image_url,
     stock: stockNum,
@@ -69,7 +81,7 @@ async function getProduct(req, res, next) {
 
 async function createProduct(req, res, next) {
   try {
-    const { name, category, description, price, mrp, sizes, tag, imageUrl, stock, status, lowStockThreshold } = req.body;
+    const { name, category, description, price, mrp, sizes, sizePrices, size_prices, tag, imageUrl, stock, status, lowStockThreshold } = req.body;
     if (!name || !category || price == null || mrp == null) {
       return res.status(400).json({ error: "name, category, price and mrp are required." });
     }
@@ -85,6 +97,7 @@ async function createProduct(req, res, next) {
       price,
       mrp,
       sizes: sizes || [],
+      size_prices: sizePrices || size_prices || {},
       tag: tag || "",
       image_url: imageUrl || "",
       stock: stockVal,
@@ -99,7 +112,7 @@ async function createProduct(req, res, next) {
 
 async function updateProduct(req, res, next) {
   try {
-    const { name, category, description, price, mrp, sizes, tag, imageUrl, stock, status, lowStockThreshold, isActive } = req.body;
+    const { name, category, description, price, mrp, sizes, sizePrices, size_prices, tag, imageUrl, stock, status, lowStockThreshold, isActive } = req.body;
     
     const updateData = {};
     if (name !== undefined) updateData.name = name;
@@ -108,6 +121,9 @@ async function updateProduct(req, res, next) {
     if (price !== undefined) updateData.price = price;
     if (mrp !== undefined) updateData.mrp = mrp;
     if (sizes !== undefined) updateData.sizes = sizes;
+    if (sizePrices !== undefined || size_prices !== undefined) {
+      updateData.size_prices = sizePrices || size_prices || {};
+    }
     if (tag !== undefined) updateData.tag = tag;
     if (imageUrl !== undefined) updateData.image_url = imageUrl;
     if (stock !== undefined) {

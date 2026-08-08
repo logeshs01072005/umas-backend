@@ -1,3 +1,4 @@
+import ImageCropModal from "./components/ImageCropModal";
 import { useState, useEffect, useMemo } from "react";
 import {
   ShoppingBag, Search, User, X, Plus, Minus, Trash2, ChevronRight,
@@ -363,46 +364,113 @@ function BannerSlider({ banners }) {
 
 function HomeView({ products, banners, setView, setCategoryFilter, openProduct }) {
   const featured = useMemo(() => {
-    return products.filter((p) => p.tag === "Bestseller" || p.tag === "Sale").slice(0, 4);
+    return products.filter((p) => p.tag === "Bestseller" || p.tag === "Sale" || p.tag === "New Arrival").slice(0, 8);
+  }, [products]);
+
+  const newLaunches = useMemo(() => {
+    return products.slice(0, 4);
   }, [products]);
 
   return (
-    <div>
+    <div className="bg-stone-950 text-stone-100">
+      {/* Ajio-Style Promotional Top Announcement Bar */}
+      <div className="bg-gradient-to-r from-rose-900 via-amber-700 to-rose-900 text-amber-200 text-xs font-semibold py-2.5 px-4 text-center tracking-wider uppercase flex items-center justify-center gap-2 border-b border-amber-500/30">
+        <span>🔥 GRAND FESTIVE LAUNCH</span>
+        <span className="hidden sm:inline">• FLAT 20% OFF ON ALL SAREES & TOPS</span>
+        <span className="bg-amber-400 text-stone-950 px-2 py-0.5 rounded text-[10px] font-bold">USE: UMA20</span>
+      </div>
+
       {banners && banners.length > 0 && <BannerSlider banners={banners} />}
 
-      <section className="bg-stone-950 text-center py-16 md:py-24 px-6 border-b border-amber-500/20">
-        <div className="text-amber-400 text-xs tracking-[0.4em] uppercase mb-4">Since the heart of the loom</div>
-        <h1 className="font-serif text-4xl md:text-6xl text-stone-50 leading-tight max-w-3xl mx-auto">
-          Uma's Fashion &amp; Boutique
-        </h1>
-        <p className="text-stone-400 max-w-xl mx-auto mt-5 text-sm md:text-base">
-          Handpicked sarees, bridal lehengas, kurtis and occasion wear — woven traditions,
-          finished for the modern wardrobe.
-        </p>
-        <button
-          onClick={() => setView("shop")}
-          className="mt-8 inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-medium tracking-wide px-7 py-3 rounded-full transition-colors"
-        >
-          Shop the Collection <ArrowRight size={16} />
-        </button>
+      {/* Ajio-Inspired High-Impact Hero Banner */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 py-16 md:py-24 px-6 border-b border-amber-500/20">
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="max-w-6xl mx-auto text-center relative z-10">
+          <span className="inline-block bg-amber-500/20 text-amber-300 text-xs tracking-[0.4em] uppercase px-4 py-1.5 rounded-full border border-amber-500/30 mb-6">
+            NEW SEASON LAUNCH 2026
+          </span>
+          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl text-stone-50 font-bold leading-tight max-w-4xl mx-auto">
+            Elegance Woven in Every Thread
+          </h1>
+          <p className="text-stone-300 max-w-2xl mx-auto mt-6 text-sm sm:text-base md:text-lg font-light leading-relaxed">
+            Discover our latest Ajio-style curated collection of Kanjeevaram Silks, Organza Sarees, Designer Tops, and Royal Lehengas.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <button
+              onClick={() => { setCategoryFilter("Sarees"); setView("shop"); }}
+              className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold tracking-wide px-8 py-3.5 rounded-full shadow-xl shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 flex items-center gap-2"
+            >
+              Shop Sarees <ArrowRight size={18} />
+            </button>
+            <button
+              onClick={() => { setCategoryFilter("Tops & Blouses"); setView("shop"); }}
+              className="bg-stone-800 hover:bg-stone-700 text-amber-300 border border-amber-500/30 font-semibold tracking-wide px-8 py-3.5 rounded-full transition-all"
+            >
+              Shop Tops
+            </button>
+          </div>
+        </div>
       </section>
 
-      <section className="bg-stone-950 pb-16 pt-4">
+      {/* Category Swatch Bar */}
+      <section className="bg-stone-950 py-6 border-b border-stone-800">
         <SwatchStrip onPick={(cat) => { setCategoryFilter(cat); setView("shop"); }} />
       </section>
 
-      <section className="bg-stone-50 py-16 px-6">
+      {/* Ajio Category Spotlight Cards */}
+      <section className="py-16 px-6 max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <h2 className="font-serif text-2xl md:text-4xl text-amber-300 font-bold">Category Spotlight</h2>
+            <p className="text-stone-400 text-xs md:text-sm mt-1">Explore top trending fashion categories handpicked for you</p>
+          </div>
+          <button onClick={() => { setCategoryFilter(null); setView("shop"); }} className="text-xs tracking-widest uppercase text-amber-400 hover:text-amber-300 flex items-center gap-1 font-semibold">
+            View All Categories <ChevronRight size={16} />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          {[
+            { name: "Sarees", tag: "Silk & Georgette", bg: "from-rose-900 to-amber-950" },
+            { name: "Tops & Blouses", tag: "Designer Fits", bg: "from-amber-950 to-stone-900" },
+            { name: "Kurtis & Sets", tag: "Casual & Workwear", bg: "from-purple-950 to-stone-900" },
+            { name: "Bridal & Lehengas", tag: "Royal Ethnic", bg: "from-rose-950 to-purple-900" },
+          ].map((cat) => (
+            <div
+              key={cat.name}
+              onClick={() => { setCategoryFilter(cat.name); setView("shop"); }}
+              className={`relative rounded-2xl p-6 bg-gradient-to-br ${cat.bg} border border-amber-500/30 hover:border-amber-400 cursor-pointer overflow-hidden group transition-all duration-300 hover:shadow-2xl hover:shadow-amber-500/10 text-left min-h-[160px] flex flex-col justify-end`}
+            >
+              <div className="absolute top-4 right-4 text-amber-400/40 group-hover:text-amber-300 transition-colors">
+                <ShoppingBag size={28} />
+              </div>
+              <span className="text-[10px] uppercase tracking-widest text-amber-300/80 font-semibold">{cat.tag}</span>
+              <h3 className="font-serif text-xl md:text-2xl text-stone-100 font-bold mt-1 group-hover:text-amber-300 transition-colors">{cat.name}</h3>
+              <div className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-amber-400 group-hover:translate-x-1 transition-transform">
+                <span>Explore Now</span>
+                <ChevronRight size={14} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Featured Collection Grid */}
+      <section className="bg-stone-900 py-16 px-6 border-t border-b border-amber-500/20">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="font-serif text-2xl md:text-3xl text-stone-900">Featured Collection</h2>
-            <button onClick={() => setView("shop")} className="text-xs tracking-widest uppercase text-amber-700 hover:text-amber-800 flex items-center gap-1">
-              View all <ChevronRight size={14} />
+          <div className="flex items-center justify-between mb-10">
+            <div>
+              <h2 className="font-serif text-2xl md:text-4xl text-amber-300 font-bold">Trending & Bestsellers</h2>
+              <p className="text-stone-400 text-xs md:text-sm mt-1">Our most loved saree and apparel collections</p>
+            </div>
+            <button onClick={() => setView("shop")} className="text-xs tracking-widest uppercase text-amber-400 hover:text-amber-300 flex items-center gap-1 font-semibold">
+              View Collection <ChevronRight size={16} />
             </button>
           </div>
           {featured.length === 0 ? (
-            <div className="text-stone-400 text-sm py-8 text-center border border-dashed border-stone-200 rounded-md">No items available currently.</div>
+            <div className="text-stone-400 text-sm py-12 text-center border border-dashed border-stone-800 rounded-2xl">No items available currently.</div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {featured.map((p) => (
                 <ProductCard key={p.id} product={p} onOpen={openProduct} />
               ))}
@@ -411,16 +479,17 @@ function HomeView({ products, banners, setView, setCategoryFilter, openProduct }
         </div>
       </section>
 
-      <section className="bg-stone-950 py-10 border-t border-amber-500/20">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 text-center px-6">
+      {/* Trust Badges */}
+      <section className="py-12 bg-stone-950 border-t border-stone-800">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 text-center px-6">
           {[
-            ["Free shipping", "On orders above ₹2,999"],
-            ["Easy 7-day returns", "Hassle-free return policy"],
-            ["100% Authentic Handloom", "Handpicked quality guaranteed"],
+            ["🚀 Fast & Safe Delivery", "Across all locations with real-time tracking"],
+            ["✨ 100% Quality Assured", "Handcrafted with premium boutique fabric"],
+            ["💳 Instant Secure Checkout", "Razorpay UPI, Credit Card & Netbanking"],
           ].map(([t, s]) => (
-            <div key={t}>
-              <div className="text-amber-300 tracking-widest text-xs uppercase mb-1">{t}</div>
-              <div className="text-stone-500 text-sm">{s}</div>
+            <div key={t} className="p-4 bg-stone-900/60 rounded-xl border border-stone-800">
+              <div className="text-amber-300 font-semibold text-sm mb-1">{t}</div>
+              <div className="text-stone-400 text-xs">{s}</div>
             </div>
           ))}
         </div>
@@ -804,33 +873,54 @@ function ProductFormModal({ product, onClose, onSave }) {
     status: product?.status || "Available",
     tag: product?.tag || "",
     sizes: product?.sizes && product.sizes.length > 0 ? product.sizes : ["Free Size"],
+    sizePrices: product?.sizePrices || product?.size_prices || {},
     imageUrl: product?.imageUrl || "",
   });
 
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [cropFile, setCropFile] = useState(null);
 
   const ALL_SIZES = ["Free Size", "XS", "S", "M", "L", "XL", "XXL"];
 
   const handleSizeToggle = (sz) => {
     setForm((prev) => {
       const exists = prev.sizes.includes(sz);
+      const newSizes = exists ? prev.sizes.filter((s) => s !== sz) : [...prev.sizes, sz];
+      const newPrices = { ...prev.sizePrices };
       if (exists) {
-        return { ...prev, sizes: prev.sizes.filter((s) => s !== sz) };
+        delete newPrices[sz];
       } else {
-        return { ...prev, sizes: [...prev.sizes, sz] };
+        newPrices[sz] = prev.price;
       }
+      return { ...prev, sizes: newSizes, sizePrices: newPrices };
     });
   };
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleSizePriceChange = (sz, val) => {
+    const num = parseFloat(val) || 0;
+    setForm((prev) => ({
+      ...prev,
+      sizePrices: {
+        ...prev.sizePrices,
+        [sz]: num,
+      },
+    }));
+  };
 
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCropFile(file);
+    }
+  };
+
+  const handleCropComplete = async (dataUrl, blob) => {
+    setCropFile(null);
     setUploading(true);
     const token = localStorage.getItem("umas:token");
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("image", blob || dataUrl, "product-image.jpg");
 
     try {
       const res = await fetch(`${API_BASE}/upload`, {
@@ -854,7 +944,7 @@ function ProductFormModal({ product, onClose, onSave }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.price || !form.mrp) {
-      return alert("Product Name, Price, and MRP are required.");
+      return alert("Product Name, Base Price, and MRP are required.");
     }
     setSaving(true);
     await onSave(form);
@@ -863,8 +953,16 @@ function ProductFormModal({ product, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[95] bg-stone-950/80 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-stone-900 border border-amber-500/30 text-stone-100 rounded-md max-w-2xl w-full p-6 relative shadow-2xl my-8">
+    <div className="fixed inset-0 z-[95] bg-stone-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+      {cropFile && (
+        <ImageCropModal
+          imageSrc={cropFile}
+          onCropComplete={handleCropComplete}
+          onClose={() => setCropFile(null)}
+          title="Crop & Resize Product Image"
+        />
+      )}
+      <div className="bg-stone-900 border border-amber-500/30 text-stone-100 rounded-2xl max-w-2xl w-full p-6 relative shadow-2xl my-8">
         <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-200"><X size={20} /></button>
         <h2 className="font-serif text-2xl text-amber-300 mb-1">{form.id ? "Edit Product" : "Add New Product"}</h2>
         <p className="text-stone-400 text-xs mb-6">Fill in the product details to publish to the boutique store catalog.</p>
@@ -877,7 +975,7 @@ function ProductFormModal({ product, onClose, onSave }) {
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. Kanjeevaram Soft Silk Saree"
-                className="w-full bg-stone-800 border border-stone-700 rounded p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
                 required
               />
             </div>
@@ -887,7 +985,7 @@ function ProductFormModal({ product, onClose, onSave }) {
               <select
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full bg-stone-800 border border-stone-700 rounded p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
               >
                 {CATEGORIES.map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -900,123 +998,138 @@ function ProductFormModal({ product, onClose, onSave }) {
               <select
                 value={form.tag}
                 onChange={(e) => setForm({ ...form, tag: e.target.value })}
-                className="w-full bg-stone-800 border border-stone-700 rounded p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
               >
                 <option value="">None</option>
                 <option value="Bestseller">Bestseller</option>
                 <option value="Sale">Sale</option>
                 <option value="New Arrival">New Arrival</option>
+                <option value="Handloom Special">Handloom Special</option>
+                <option value="Bridal Collection">Bridal Collection</option>
               </select>
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Description</label>
-              <textarea
-                rows={3}
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                placeholder="Describe fabric, weave, design details..."
-                className="w-full bg-stone-800 border border-stone-700 rounded p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
-              />
-            </div>
-
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Selling Price (₹) *</label>
+              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Base Selling Price (₹) *</label>
               <input
                 type="number"
                 value={form.price}
-                onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
-                className="w-full bg-stone-800 border border-stone-700 rounded p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                onChange={(e) => setForm({ ...form, price: parseFloat(e.target.value) || 0 })}
+                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
                 required
               />
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">MRP Original Price (₹) *</label>
+              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">MRP Original (₹) *</label>
               <input
                 type="number"
                 value={form.mrp}
-                onChange={(e) => setForm({ ...form, mrp: Number(e.target.value) })}
-                className="w-full bg-stone-800 border border-stone-700 rounded p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                onChange={(e) => setForm({ ...form, mrp: parseFloat(e.target.value) || 0 })}
+                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
                 required
               />
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Stock Quantity *</label>
+              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Stock Quantity</label>
               <input
                 type="number"
                 value={form.stock}
-                onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })}
-                className="w-full bg-stone-800 border border-stone-700 rounded p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
-                required
+                onChange={(e) => setForm({ ...form, stock: parseInt(e.target.value) || 0 })}
+                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
               />
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Product Status Tag</label>
+              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Status</label>
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full bg-stone-800 border border-stone-700 rounded p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
               >
                 <option value="Available">Available</option>
-                <option value="Unavailable">Unavailable</option>
                 <option value="Coming Soon">Coming Soon</option>
                 <option value="Out of Stock">Out of Stock</option>
+                <option value="Unavailable">Unavailable</option>
               </select>
             </div>
+          </div>
 
-            <div className="sm:col-span-2">
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Available Sizes</label>
-              <div className="flex gap-2 flex-wrap">
-                {ALL_SIZES.map((sz) => {
-                  const checked = form.sizes.includes(sz);
-                  return (
-                    <button
-                      type="button"
-                      key={sz}
-                      onClick={() => handleSizeToggle(sz)}
-                      className={`px-3 py-1.5 rounded border text-xs font-medium transition-colors ${checked ? "bg-amber-500 text-stone-950 border-amber-500 font-bold" : "bg-stone-800 text-stone-300 border-stone-700"
-                        }`}
-                    >
-                      {sz}
-                    </button>
-                  );
-                })}
+          <div>
+            <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Available Sizes</label>
+            <div className="flex gap-2 flex-wrap bg-stone-800/60 p-3 rounded-lg border border-stone-700/60">
+              {ALL_SIZES.map((sz) => (
+                <button
+                  key={sz}
+                  type="button"
+                  onClick={() => handleSizeToggle(sz)}
+                  className={`px-3 py-1.5 rounded-md font-medium text-xs border transition-all ${form.sizes.includes(sz) ? "bg-amber-500 text-stone-950 border-amber-400 font-bold" : "bg-stone-800 text-stone-300 border-stone-700 hover:border-stone-500"}`}
+                >
+                  {sz}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Size-Based Custom Pricing Matrix */}
+          {form.sizes && form.sizes.length > 0 && (
+            <div className="bg-stone-950/70 p-4 rounded-xl border border-amber-500/30">
+              <label className="block uppercase tracking-wider text-amber-300 mb-2 font-bold flex items-center justify-between">
+                <span>Custom Price Rate per Size (M, L, XL, etc.)</span>
+                <span className="text-[10px] text-stone-400 font-normal">Optional: Set specific rates per size</span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {form.sizes.map((sz) => (
+                  <div key={sz} className="bg-stone-900 p-2.5 rounded-lg border border-stone-800">
+                    <span className="text-amber-400 font-bold block mb-1">Size {sz}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-stone-400 text-xs">₹</span>
+                      <input
+                        type="number"
+                        value={form.sizePrices?.[sz] !== undefined ? form.sizePrices[sz] : form.price}
+                        onChange={(e) => handleSizePriceChange(sz, e.target.value)}
+                        placeholder={form.price}
+                        className="w-full bg-stone-800 border border-stone-700 rounded px-2 py-1 text-xs text-stone-100 focus:outline-none focus:border-amber-400"
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
+          )}
 
-            <div className="sm:col-span-2 space-y-2">
-              <label className="block uppercase tracking-wider text-stone-400 font-bold">Product Image</label>
-              <div className="flex flex-col sm:flex-row gap-3 items-center">
-                <input
-                  type="text"
-                  placeholder="Image URL (e.g. https://... or /uploads/...)"
-                  value={form.imageUrl}
-                  onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-                  className="flex-1 w-full bg-stone-800 border border-stone-700 rounded p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
-                />
-                <label className="bg-stone-800 hover:bg-stone-700 border border-stone-600 text-amber-300 px-4 py-2.5 rounded cursor-pointer shrink-0 font-medium flex items-center gap-1.5 text-xs">
-                  <Upload size={14} /> {uploading ? "Uploading…" : "Upload File"}
-                  <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" disabled={uploading} />
-                </label>
-              </div>
-              {form.imageUrl && (
-                <div className="mt-2 flex items-center gap-3 bg-stone-800 p-2 rounded border border-stone-700">
-                  <img src={getImageUrl(form.imageUrl)} alt="Preview" className="w-12 h-12 object-cover rounded" />
-                  <span className="text-xs text-stone-400 truncate">{form.imageUrl}</span>
+          <div>
+            <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Description</label>
+            <textarea
+              rows={3}
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              placeholder="Detailed product fabric, weave, care instructions..."
+              className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-xs text-stone-100 focus:outline-none focus:border-amber-400"
+            />
+          </div>
+
+          <div>
+            <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Product Image (Crop & Upload)</label>
+            <div className="flex gap-3 items-center">
+              {form.imageUrl ? (
+                <div className="relative w-16 h-20 rounded-lg overflow-hidden border border-amber-500/40 bg-stone-950 flex-shrink-0">
+                  <img src={getImageUrl(form.imageUrl)} alt="Preview" className="w-full h-full object-cover" />
                 </div>
-              )}
+              ) : null}
+              <label className="cursor-pointer bg-stone-800 hover:bg-stone-700 text-amber-300 font-medium px-4 py-2.5 rounded-lg border border-stone-700 transition-colors inline-flex items-center gap-2">
+                <Upload size={16} />
+                <span>{uploading ? "Uploading..." : form.imageUrl ? "Crop & Change Image" : "Choose & Crop Image"}</span>
+                <input type="file" accept="image/*" onChange={handleFileSelect} className="hidden" disabled={uploading} />
+              </label>
             </div>
           </div>
 
           <div className="pt-4 flex justify-end gap-3 border-t border-stone-800">
-            <button type="button" onClick={onClose} className="px-5 py-2.5 rounded border border-stone-700 text-stone-400 hover:bg-stone-800">
-              Cancel
-            </button>
-            <button type="submit" disabled={saving} className="px-6 py-2.5 rounded bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-sm">
-              {saving ? "Saving…" : form.id ? "Save Changes" : "Add Product"}
+            <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg text-stone-400 hover:bg-stone-800 transition-colors">Cancel</button>
+            <button type="submit" disabled={saving || uploading} className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-6 py-2.5 rounded-lg transition-colors shadow-lg shadow-amber-500/20">
+              {saving ? "Saving Product..." : form.id ? "Update Product" : "Publish Product"}
             </button>
           </div>
         </form>
@@ -3874,7 +3987,29 @@ export default function App() {
         {view === "upi" && <UpiView order={upiOrder} onConfirmPayment={confirmUpiPayment} onBack={() => setView("checkout")} onCancel={cancelPendingUpiOrder} />}
         {view === "confirmation" && <ConfirmationView order={lastOrder} setView={handleSetView} />}
         {view === "account" && <CustomerProfileView currentUser={currentUser} orders={orders} setView={handleSetView} onProfileUpdated={(u) => setCurrentUser(u)} />}
-        {view === "admin" && (
+        {/* Global Image Full Zoom Lightbox Modal */}
+      {fullZoomImage && (
+        <div
+          className="fixed inset-0 z-[100] bg-stone-950/90 backdrop-blur-md flex items-center justify-center p-4 cursor-zoom-out animate-in fade-in duration-200"
+          onClick={() => setFullZoomImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl border border-amber-500/30 shadow-2xl bg-black">
+            <button
+              onClick={() => setFullZoomImage(null)}
+              className="absolute top-4 right-4 bg-stone-900/80 text-white p-2 rounded-full hover:bg-stone-800 transition-colors z-10"
+            >
+              ✕
+            </button>
+            <img
+              src={getImageUrl(fullZoomImage)}
+              alt="Full View"
+              className="w-full h-full object-contain max-h-[85vh] select-none"
+            />
+          </div>
+        </div>
+      )}
+
+      {view === "admin" && (
           currentUser?.isAdmin ? (
             <AdminDashboard products={products} orders={adminOrders} stats={adminStats} saveProduct={saveProduct} deleteProduct={deleteProduct} setView={setView} analyticsFilter={adminStatsFilter} setAnalyticsFilter={setAdminStatsFilter} />
           ) : (

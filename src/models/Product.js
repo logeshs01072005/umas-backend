@@ -29,6 +29,11 @@ const productSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  size_prices: {
+    type: Map,
+    of: Number,
+    default: {},
+  },
   tag: {
     type: String,
     default: "",
