@@ -28,11 +28,19 @@ connectDB();
 const app = express();
 
 app.use(helmet({
-  crossOriginResourcePolicy: false, // allows images to be loaded by React dev server on different port
+  crossOriginResourcePolicy: false,
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https://res.cloudinary.com", "https://*.razorpay.com", "https://*.googleapis.com"],
+      imgSrc: [
+        "'self'",
+        "data:",
+        "blob:",
+        "https://res.cloudinary.com",
+        "https://*.razorpay.com",
+        "https://*.googleapis.com",
+        "https://*.google.com",
+      ],
       scriptSrc: [
         "'self'",
         "https://checkout.razorpay.com",
@@ -51,15 +59,29 @@ app.use(helmet({
       ],
       connectSrc: [
         "'self'",
+        "ws:",
+        "wss:",
+        "blob:",
         "https://checkout.razorpay.com",
         "https://api.razorpay.com",
         "https://cdn.razorpay.com",
         "https://lumberjack.razorpay.com",
-        "https://www.google-analytics.com"
+        "https://lumberjack-dx.razorpay.com",
+        "https://overbridgenet.com",
+        "https://*.overbridgenet.com",
+        "https://www.google-analytics.com",
+        "https://analytics.google.com",
+        "https://fonts.googleapis.com",
       ],
-      frameSrc: ["'self'", "https://api.razorpay.com", "https://checkout.razorpay.com"],
+      frameSrc: [
+        "'self'",
+        "https://api.razorpay.com",
+        "https://checkout.razorpay.com",
+      ],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
+      workerSrc: ["'self'", "blob:"],
+      objectSrc: ["'none'"],
     },
   },
 }));

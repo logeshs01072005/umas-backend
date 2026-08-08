@@ -1,5 +1,5 @@
 import ImageCropModal from "./components/ImageCropModal";
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   ShoppingBag, Search, User, X, Plus, Minus, Trash2, ChevronRight,
   LogOut, LayoutDashboard, Package, BarChart3, Menu, Check,
@@ -3579,6 +3579,47 @@ function Footer() {
   );
 }
 
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("React Error Boundary Caught Error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-center p-6 text-center">
+          <div className="bg-stone-900 border border-amber-500/30 p-8 rounded-2xl max-w-lg shadow-2xl space-y-4">
+            <h1 className="font-serif text-3xl text-amber-300 font-bold">Uma's Fashion & Boutique</h1>
+            <p className="text-stone-300 text-sm">
+              We encountered a minor display issue. Click below to refresh and restore your store session.
+            </p>
+            <div className="bg-stone-950 p-3 rounded-lg border border-stone-800 font-mono text-xs text-rose-400 text-left overflow-x-auto max-h-32">
+              {String(this.state.error?.message || this.state.error)}
+            </div>
+            <button
+              onClick={() => { window.location.hash = "home"; window.location.reload(); }}
+              className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-6 py-2.5 rounded-full transition-all shadow-lg shadow-amber-500/20"
+            >
+              Reload Website
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 /* -------------------------------- Main App --------------------------------- */
 
 // Views that should NOT be restored on page refresh (transient/payment states)
@@ -4183,7 +4224,7 @@ const showToast = (msg) => {
         {view !== "admin" && (
           <Nav
             view={view}
-            setView={handleSetView}
+            setView={setView}
             cartCount={cartCount}
             currentUser={currentUser}
             onOpenAuth={() => setAuthOpen(true)}
@@ -4193,11 +4234,11 @@ const showToast = (msg) => {
           />
         )}
 
-        {view === "home" && <HomeView products={products} banners={banners} setView={handleSetView} setCategoryFilter={setCategoryFilter} openProduct={openProduct} />}
+        {view === "home" && <HomeView products={products} banners={banners} promoSettings={promoSettings} setView={setView} setCategoryFilter={setCategoryFilter} openProduct={openProduct} />}
         {view === "shop" && <ShopView products={products} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} search={search} openProduct={openProduct} />}
-        {view === "product" && activeProduct && <ProductDetailView product={activeProduct} addToCart={addToCart} setView={handleSetView} currentUser={currentUser} />}
-        {view === "cart" && <CartView cart={cart} updateQty={updateQty} removeItem={removeItem} setView={handleSetView} subtotal={subtotal} />}
-        {view === "checkout" && <CheckoutView cart={cart} subtotal={subtotal} currentUser={currentUser} onOpenAuth={() => setAuthOpen(true)} placeOrder={placeOrder} setView={handleSetView} />}
+        {view === "product" && activeProduct && <ProductDetailView product={activeProduct} addToCart={addToCart} setView={setView} currentUser={currentUser} />}
+        {view === "cart" && <CartView cart={cart} updateQty={updateQty} removeItem={removeItem} setView={setView} subtotal={subtotal} />}
+        {view === "checkout" && <CheckoutView cart={cart} subtotal={subtotal} currentUser={currentUser} onOpenAuth={() => setAuthOpen(true)} placeOrder={placeOrder} setView={setView} />}
         {view === "upi" && <UpiView order={upiOrder} onConfirmPayment={confirmUpiPayment} onBack={() => setView("checkout")} onCancel={cancelPendingUpiOrder} />}
         {view === "confirmation" && <ConfirmationView order={lastOrder} setView={handleSetView} />}
         {view === "account" && <CustomerProfileView currentUser={currentUser} orders={orders} setView={handleSetView} onProfileUpdated={(u) => setCurrentUser(u)} />}
