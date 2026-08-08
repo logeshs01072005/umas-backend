@@ -3626,20 +3626,16 @@ class ErrorBoundary extends React.Component {
 const TRANSIENT_VIEWS = new Set(["upi", "checkout", "confirmation"]);
 
 export default function App() {
+  // ── State declarations ────────────────────────────────────────────────────
   const [view, setViewRaw] = useState(() => {
-    // Restore the last non-transient view from sessionStorage on refresh
-    const saved = sessionStorage.getItem("umas:view");
+    const hash = window.location.hash.replace("#", "");
+    if (["home", "shop", "cart", "checkout", "account", "admin", "product"].includes(hash)) return hash;
+    const saved = localStorage.getItem("umas:view");
     if (saved && !TRANSIENT_VIEWS.has(saved)) return saved;
     return "home";
   });
-
-  // Wrap setView to also persist view in sessionStorage
-  const setView = (nextView) => {
-    setViewRaw(nextView);
-    if (!TRANSIENT_VIEWS.has(nextView)) {
-      sessionStorage.setItem("umas:view", nextView);
-    }
-  };
+  const [fullZoomImage, setFullZoomImage] = useState(null);
+  const [promoSettings, setPromoSettings] = useState(null);
   const [products, setProducts] = useState([]);
   const [banners, setBanners] = useState([]);
   const [cart, setCart] = useState([]);
@@ -3647,7 +3643,6 @@ export default function App() {
   const [adminOrders, setAdminOrders] = useState([]);
   const [adminStats, setAdminStats] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
-
   const [categoryFilter, setCategoryFilter] = useState(null);
   const [search, setSearch] = useState("");
   const [activeProduct, setActiveProduct] = useState(null);
@@ -3655,23 +3650,40 @@ export default function App() {
   const [upiOrder, setUpiOrder] = useState(null);
   const [hasRestoredOrder, setHasRestoredOrder] = useState(false);
   const [adminStatsFilter, setAdminStatsFilter] = useState("This Month");
-
   const [authOpen, setAuthOpen] = useState(false);
   const [authError, setAuthError] = useState("");
   const [toast, setToast] = useState("");
   const [loaded, setLoaded] = useState(false);
 
+  // ── setView: persists to localStorage + URL hash ──────────────────────────
+  const setView = (nextView) => {
+    setViewRaw(nextView);
+    if (!TRANSIENT_VIEWS.has(nextView)) {
+      localStorage.setItem("umas:view", nextView);
+      window.location.hash = nextView;
+    }
+  };
+
+  // Scroll to top whenever view changes
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [view, activeProduct]);
+
+  // Sync hash changes from back/forward buttons
   useEffect(() => {
-    initApp();
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (["home", "shop", "cart", "checkout", "account", "admin"].includes(hash)) setViewRaw(hash);
+    };
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
+  useEffect(() => { initApp(); }, []);
+
   useEffect(() => {
-    if (currentUser?.isAdmin) {
-      fetchAdminData();
-    }
+    if (currentUser?.isAdmin) fetchAdminData();
   }, [adminStatsFilter]);
 
-    const fetchPromoSettings = async () => {
+  const fetchPromoSettings = async () => {
     try {
       const res = await fetch(`${API_BASE}/settings/promo`);
       const data = await res.json();
@@ -3681,7 +3693,7 @@ export default function App() {
     }
   };
 
-const showToast = (msg) => {
+  const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 4000);
   };
