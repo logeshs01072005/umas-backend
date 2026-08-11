@@ -176,6 +176,7 @@ async function verifyPayment(req, res, next) {
           payment_status: "paid",
           razorpay_payment_id,
           status: "Processing",
+          payment_verified_at: new Date(),
           updated_at: Date.now(),
         },
       },
@@ -211,12 +212,12 @@ async function verifyPayment(req, res, next) {
     <thead><tr><th style="text-align:left;border-bottom:1px solid #ddd;padding:8px">Item</th><th style="text-align:right;border-bottom:1px solid #ddd;padding:8px">Qty</th><th style="text-align:right;border-bottom:1px solid #ddd;padding:8px">Price</th></tr></thead>
     <tbody>
       ${order.items
-        .map(
-          (it) => `<tr><td style="padding:8px;border-bottom:1px solid #f1f1f1">${it.product_name} (${it.size})</td><td style="padding:8px;border-bottom:1px solid #f1f1f1;text-align:right">${it.quantity}</td><td style="padding:8px;border-bottom:1px solid #f1f1f1;text-align:right">₹${Number(
-            it.price
-          ).toFixed(2)}</td></tr>`
-        )
-        .join("")}
+          .map(
+            (it) => `<tr><td style="padding:8px;border-bottom:1px solid #f1f1f1">${it.product_name} (${it.size})</td><td style="padding:8px;border-bottom:1px solid #f1f1f1;text-align:right">${it.quantity}</td><td style="padding:8px;border-bottom:1px solid #f1f1f1;text-align:right">₹${Number(
+              it.price
+            ).toFixed(2)}</td></tr>`
+          )
+          .join("")}
     </tbody>
   </table>
   <h3 style="text-align:right">Subtotal: ₹${Number(order.subtotal).toFixed(2)}</h3>
@@ -294,16 +295,18 @@ async function confirmUpiPayment(req, res, next) {
     }
 
     if (order.payment_status === "paid") {
-      return res.json({ success: true, paymentStatus: order.payment_status, invoiceUrl: order.invoice_url, order: {
-        id: order._id,
-        orderNumber: order.order_number,
-        paymentMethod: order.payment_method,
-        paymentStatus: order.payment_status,
-        total: order.total,
-        paymentReference: order.payment_reference,
-        paymentProofUrl: order.payment_proof_url,
-        paymentChannel: order.payment_channel,
-      }});
+      return res.json({
+        success: true, paymentStatus: order.payment_status, invoiceUrl: order.invoice_url, order: {
+          id: order._id,
+          orderNumber: order.order_number,
+          paymentMethod: order.payment_method,
+          paymentStatus: order.payment_status,
+          total: order.total,
+          paymentReference: order.payment_reference,
+          paymentProofUrl: order.payment_proof_url,
+          paymentChannel: order.payment_channel,
+        }
+      });
     }
 
     if (order.payment_status === "verification_requested") {
@@ -398,12 +401,12 @@ async function manualConfirm(req, res, next) {
     <thead><tr><th style="text-align:left;border-bottom:1px solid #ddd;padding:8px">Item</th><th style="text-align:right;border-bottom:1px solid #ddd;padding:8px">Qty</th><th style="text-align:right;border-bottom:1px solid #ddd;padding:8px">Price</th></tr></thead>
     <tbody>
       ${order.items
-        .map(
-          (it) => `<tr><td style="padding:8px;border-bottom:1px solid #f1f1f1">${it.product_name} (${it.size})</td><td style="padding:8px;border-bottom:1px solid #f1f1f1;text-align:right">${it.quantity}</td><td style="padding:8px;border-bottom:1px solid #f1f1f1;text-align:right">₹${Number(
-            it.price
-          ).toFixed(2)}</td></tr>`
-        )
-        .join("")}
+          .map(
+            (it) => `<tr><td style="padding:8px;border-bottom:1px solid #f1f1f1">${it.product_name} (${it.size})</td><td style="padding:8px;border-bottom:1px solid #f1f1f1;text-align:right">${it.quantity}</td><td style="padding:8px;border-bottom:1px solid #f1f1f1;text-align:right">₹${Number(
+              it.price
+            ).toFixed(2)}</td></tr>`
+          )
+          .join("")}
     </tbody>
   </table>
   <h3 style="text-align:right">Subtotal: ₹${Number(order.subtotal).toFixed(2)}</h3>
