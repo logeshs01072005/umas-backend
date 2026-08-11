@@ -62,8 +62,9 @@ async function placeOrder(req, res, next) {
     // Check payment settings in DB
     const settingDoc = await Setting.findOne({ key: "payment_methods" });
     if (settingDoc && settingDoc.value) {
-      const pmKey = paymentMethod === "online" ? "card" : paymentMethod;
-      const config = settingDoc.value[pmKey];
+      // "online" maps to the "online" key first; fall back to "card" for backwards compatibility
+      const pmKey = paymentMethod === "online" ? "online" : paymentMethod;
+      const config = settingDoc.value[pmKey] || (paymentMethod === "online" ? settingDoc.value["card"] : null);
       if (config && config.enabled === false) {
         return res.status(400).json({
           error: `${config.customMessage || "This payment method is currently unavailable (Coming Soon)."}`
@@ -132,10 +133,10 @@ async function placeOrder(req, res, next) {
       paymentMethod === "cod"
         ? "Cash on Delivery"
         : paymentMethod === "online" || paymentMethod === "card"
-        ? "Card Payment"
-        : paymentMethod === "upi"
-        ? "UPI / QR"
-        : "Net Banking";
+          ? "Card Payment"
+          : paymentMethod === "upi"
+            ? "UPI / QR"
+            : "Net Banking";
 
     const doc = await Order.create({
       order_number: orderNumber,

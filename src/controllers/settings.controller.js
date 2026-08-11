@@ -2,6 +2,7 @@ const Setting = require("../models/Setting");
 
 const DEFAULT_PAYMENT_SETTINGS = {
   cod: { enabled: true, customMessage: "Cash on Delivery available" },
+  online: { enabled: true, customMessage: "Pay securely via Razorpay (UPI, Cards, Net Banking)" },
   upi: { enabled: true, customMessage: "Pay using Google Pay / PhonePe / Paytm" },
   net_banking: { enabled: true, customMessage: "Pay via Net Banking" },
   card: { enabled: true, customMessage: "Credit / Debit Cards accepted" },
