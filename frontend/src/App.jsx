@@ -4329,7 +4329,7 @@ export default function App() {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({ orderId: order._id }),
+            body: JSON.stringify({ orderId: order.id }),
           });
           const rpData = await rpRes.json();
           if (rpRes.ok && rpData.razorpayOrderId && window.Razorpay) {
@@ -4349,7 +4349,7 @@ export default function App() {
                       Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
-                      orderId: order._id,
+                      orderId: order.id,
                       razorpay_order_id: response.razorpay_order_id,
                       razorpay_payment_id: response.razorpay_payment_id,
                       razorpay_signature: response.razorpay_signature,
