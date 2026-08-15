@@ -894,7 +894,7 @@ function Footer() {
   return (
     <footer className="bg-stone-950 border-t border-amber-500/20 py-10 px-6 text-center">
       <div className="font-serif text-xl text-amber-300 mb-2">Uma's Fashion &amp; Boutique</div>
-      <div className="text-stone-500 text-sm mb-4">Theni, Tamil Nadu, India · umasfashion@gmail.com · +91 8489943146</div>
+      <div className="text-stone-500 text-sm mb-4">Puducherry, India · hello@umasboutique.example · +91 98765 43210</div>
       <div className="text-stone-600 text-xs">© {new Date().getFullYear()} Uma's Fashion & Boutique. All rights reserved.</div>
     </footer>
   );
@@ -929,10 +929,16 @@ export default function UmasFashionBoutique() {
       const o = await loadShared("umas:orders", []);
       setProducts(p); setUsers(u); setOrders(o);
 
+      // Always reset view to starting home page on fresh website load
+      setView("home");
+
       try {
-        const session = await window.storage.get("umas:session", false);
-        if (session && session.value) {
-          const email = JSON.parse(session.value);
+        let email = null;
+        if (typeof window !== "undefined" && window.sessionStorage) {
+          const sess = sessionStorage.getItem("umas:session");
+          if (sess) email = JSON.parse(sess);
+        }
+        if (email) {
           const found = u.find((usr) => usr.email === email);
           if (found) {
             setCurrentUser(found);
@@ -972,7 +978,11 @@ export default function UmasFashionBoutique() {
     const found = users.find((u) => u.email === email && u.password === password);
     if (!found) { setAuthError("Invalid email or password."); return; }
     setCurrentUser(found); setAuthOpen(false); setAuthError("");
-    try { await window.storage.set("umas:session", JSON.stringify(email), false); } catch (e) {}
+    try {
+      if (typeof window !== "undefined" && window.sessionStorage) {
+        sessionStorage.setItem("umas:session", JSON.stringify(email));
+      }
+    } catch (e) {}
     const cRes = await window.storage.get(`umas:cart:${email}`, true).catch(() => null);
     setCart(cRes && cRes.value ? JSON.parse(cRes.value) : []);
     showToast(`Welcome back, ${found.name.split(" ")[0]}!`);
@@ -986,13 +996,22 @@ export default function UmasFashionBoutique() {
     const updated = [...users, newUser];
     setUsers(updated); await saveShared("umas:users", updated);
     setCurrentUser(newUser); setAuthOpen(false); setAuthError("");
-    try { await window.storage.set("umas:session", JSON.stringify(email), false); } catch (e) {}
+    try {
+      if (typeof window !== "undefined" && window.sessionStorage) {
+        sessionStorage.setItem("umas:session", JSON.stringify(email));
+      }
+    } catch (e) {}
     showToast(`Welcome, ${name.split(" ")[0]}!`);
   };
 
   const handleLogout = async () => {
     setCurrentUser(null); setCart([]); setView("home");
-    try { await window.storage.delete("umas:session", false); } catch (e) {}
+    try {
+      if (typeof window !== "undefined" && window.sessionStorage) {
+        sessionStorage.removeItem("umas:session");
+      }
+      await window.storage.delete("umas:session", false);
+    } catch (e) {}
   };
 
   const placeOrder = async (address, payment, total) => {
