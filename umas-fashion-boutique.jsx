@@ -23,6 +23,59 @@ const CATEGORY_META = {
   Footwear: { icon: Footprints, from: "from-orange-100", to: "to-amber-100" },
 };
 
+const SEASONAL_THEMES = {
+  regular: {
+    id: "regular",
+    name: "Regular / Classic",
+    badge: "Classic Elegance",
+    heroBg: "bg-stone-950",
+    heroText: "text-amber-400",
+    buttonBg: "bg-amber-500 hover:bg-amber-400 text-stone-950",
+    border: "border-amber-500/20",
+    tagline: "Woven traditions, finished for the modern wardrobe."
+  },
+  summer: {
+    id: "summer",
+    name: "Summer Collection",
+    badge: "☀️ Summer Solstice Special",
+    heroBg: "bg-gradient-to-br from-amber-950 via-amber-900 to-yellow-950",
+    heroText: "text-amber-300",
+    buttonBg: "bg-amber-400 hover:bg-amber-300 text-stone-950",
+    border: "border-amber-400/30",
+    tagline: "Lightweight organza, breathable cotton & breezy summer couture."
+  },
+  winter: {
+    id: "winter",
+    name: "Winter Festive",
+    badge: "❄️ Royal Winter Velvet & Silk",
+    heroBg: "bg-gradient-to-br from-slate-950 via-sky-950 to-indigo-950",
+    heroText: "text-cyan-300",
+    buttonBg: "bg-cyan-400 hover:bg-cyan-300 text-stone-950",
+    border: "border-cyan-400/30",
+    tagline: "Rich Banarasi weaves, heavy zardozi & luxurious winter bridal wear."
+  },
+  rain: {
+    id: "rain",
+    name: "Monsoon Rain",
+    badge: "🌧️ Monsoon Blossom Edition",
+    heroBg: "bg-gradient-to-br from-teal-950 via-emerald-950 to-slate-950",
+    heroText: "text-emerald-300",
+    buttonBg: "bg-emerald-400 hover:bg-emerald-300 text-stone-950",
+    border: "border-emerald-400/30",
+    tagline: "Color-fast georgette, chiffon & vibrant rainy season staples."
+  },
+  spring: {
+    id: "spring",
+    name: "Spring Bloom",
+    badge: "🌸 Spring Floral Bloom",
+    heroBg: "bg-gradient-to-br from-rose-950 via-pink-950 to-stone-950",
+    heroText: "text-rose-300",
+    buttonBg: "bg-rose-400 hover:bg-rose-300 text-stone-950",
+    border: "border-rose-400/30",
+    tagline: "Hand-painted floral motifs, pastel tones & spring celebration wear."
+  }
+};
+
 const SEED_PRODUCTS = [
   { id: "p1", name: "Banarasi Silk Saree", category: "Sarees", price: 8999, mrp: 12999, sizes: ["Free Size"], tag: "Bestseller", desc: "Handwoven Banarasi silk with intricate zari border, finished with a matching unstitched blouse piece." },
   { id: "p2", name: "Kanjivaram Silk Saree", category: "Sarees", price: 10999, mrp: 15999, sizes: ["Free Size"], tag: "New", desc: "Traditional South Indian Kanjivaram weave in a rich temple border pattern." },
@@ -244,22 +297,25 @@ function ProductCard({ product, onOpen }) {
 
 /* ----------------------------------- Home view ---------------------------------- */
 
-function HomeView({ products, setView, setCategoryFilter, openProduct }) {
+function HomeView({ products, setView, setCategoryFilter, openProduct, activeTheme = "regular" }) {
+  const theme = SEASONAL_THEMES[activeTheme] || SEASONAL_THEMES.regular;
   const featured = products.filter((p) => p.tag === "Bestseller").slice(0, 4);
+
   return (
     <div>
-      <section className="bg-stone-950 text-center py-20 md:py-28 px-6 border-b border-amber-500/20">
-        <div className="text-amber-400 text-xs tracking-[0.4em] uppercase mb-4">Since the heart of the loom</div>
+      <section className={`${theme.heroBg} text-center py-20 md:py-28 px-6 border-b ${theme.border} transition-all duration-500`}>
+        <div className={`${theme.heroText} text-xs tracking-[0.4em] uppercase mb-4 font-medium`}>
+          {theme.badge}
+        </div>
         <h1 className="font-serif text-4xl md:text-6xl text-stone-50 leading-tight max-w-3xl mx-auto">
           Uma's Fashion &amp; Boutique
         </h1>
-        <p className="text-stone-400 max-w-xl mx-auto mt-5 text-sm md:text-base">
-          Handpicked sarees, bridal lehengas, kurtis and occasion wear — woven traditions,
-          finished for the modern wardrobe.
+        <p className="text-stone-300 max-w-xl mx-auto mt-5 text-sm md:text-base leading-relaxed">
+          {theme.tagline}
         </p>
         <button
           onClick={() => setView("shop")}
-          className="mt-8 inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-medium tracking-wide px-7 py-3 rounded-full transition-colors"
+          className={`mt-8 inline-flex items-center gap-2 ${theme.buttonBg} font-medium tracking-wide px-7 py-3 rounded-full transition-all shadow-md`}
         >
           Shop the Collection <ArrowRight size={16} />
         </button>
@@ -751,37 +807,91 @@ function AdminOverview({ orders, products, users }) {
 }
 
 function ProductForm({ initial, onSave, onCancel }) {
-  const [form, setForm] = useState(initial || { name: "", category: CATEGORIES[0], price: "", mrp: "", sizes: "Free Size", tag: "", desc: "" });
-  const valid = form.name && form.price && form.mrp;
+  const [form, setForm] = useState(
+    initial || { name: "", category: CATEGORIES[0], price: "", mrp: "", sizes: "Free Size", tag: "New", desc: "" }
+  );
+  const valid = form.name && form.price;
+
   return (
-    <div className="bg-white border border-stone-200 rounded-md p-5 mb-6">
-      <div className="text-xs tracking-widest uppercase text-stone-500 mb-4">{initial ? "Edit Product" : "Add Product"}</div>
+    <div className="bg-white border border-stone-200 rounded-md p-5 mb-6 shadow-sm">
+      <div className="text-xs tracking-widest uppercase text-stone-600 mb-4 font-semibold">
+        {initial ? "Edit Product Details" : "🚀 Launch New Product"}
+      </div>
       <div className="grid sm:grid-cols-2 gap-3">
-        <input placeholder="Product name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="border border-stone-300 rounded-md px-3 py-2 text-sm sm:col-span-2" />
-        <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="border border-stone-300 rounded-md px-3 py-2 text-sm">
+        <input
+          placeholder="Product Name *"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          className="border border-stone-300 rounded-md px-3 py-2 text-sm sm:col-span-2 focus:outline-none focus:border-amber-500"
+        />
+        <select
+          value={form.category}
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
+          className="border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
+        >
           {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select value={form.tag} onChange={(e) => setForm({ ...form, tag: e.target.value })} className="border border-stone-300 rounded-md px-3 py-2 text-sm">
-          <option value="">No tag</option><option value="New">New</option><option value="Bestseller">Bestseller</option><option value="Sale">Sale</option>
+        <select
+          value={form.tag}
+          onChange={(e) => setForm({ ...form, tag: e.target.value })}
+          className="border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
+        >
+          <option value="New">🚀 New Launch</option>
+          <option value="Bestseller">⭐ Bestseller</option>
+          <option value="Sale">🔥 Sale</option>
+          <option value="">No tag</option>
         </select>
-        <input placeholder="Price (₹)" type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="border border-stone-300 rounded-md px-3 py-2 text-sm" />
-        <input placeholder="MRP (₹)" type="number" value={form.mrp} onChange={(e) => setForm({ ...form, mrp: e.target.value })} className="border border-stone-300 rounded-md px-3 py-2 text-sm" />
-        <input placeholder="Sizes, comma separated" value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} className="border border-stone-300 rounded-md px-3 py-2 text-sm sm:col-span-2" />
-        <textarea placeholder="Description" value={form.desc} onChange={(e) => setForm({ ...form, desc: e.target.value })} className="border border-stone-300 rounded-md px-3 py-2 text-sm sm:col-span-2" rows={2} />
+        <input
+          placeholder="Selling Price (₹) *"
+          type="number"
+          value={form.price}
+          onChange={(e) => setForm({ ...form, price: e.target.value })}
+          className="border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
+        />
+        <input
+          placeholder="MRP (Original Price ₹)"
+          type="number"
+          value={form.mrp}
+          onChange={(e) => setForm({ ...form, mrp: e.target.value })}
+          className="border border-stone-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-amber-500"
+        />
+        <input
+          placeholder="Available Sizes (e.g. Free Size, S, M, L, XL)"
+          value={form.sizes}
+          onChange={(e) => setForm({ ...form, sizes: e.target.value })}
+          className="border border-stone-300 rounded-md px-3 py-2 text-sm sm:col-span-2 focus:outline-none focus:border-amber-500"
+        />
+        <textarea
+          placeholder="Product Description..."
+          value={form.desc}
+          onChange={(e) => setForm({ ...form, desc: e.target.value })}
+          className="border border-stone-300 rounded-md px-3 py-2 text-sm sm:col-span-2 focus:outline-none focus:border-amber-500"
+          rows={2}
+        />
       </div>
       <div className="flex gap-3 mt-4">
         <button
           disabled={!valid}
-          onClick={() => onSave({
-            ...form,
-            id: form.id || uid("p"),
-            price: Number(form.price),
-            mrp: Number(form.mrp),
-            sizes: form.sizes.split(",").map((s) => s.trim()).filter(Boolean),
-          })}
-          className="bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-stone-950 font-medium px-5 py-2 rounded-full text-sm"
+          onClick={() => {
+            const numPrice = Number(form.price) || 0;
+            const numMrp = Number(form.mrp) || numPrice;
+            const sizeList = typeof form.sizes === "string"
+              ? form.sizes.split(",").map((s) => s.trim()).filter(Boolean)
+              : (Array.isArray(form.sizes) ? form.sizes : ["Free Size"]);
+
+            onSave({
+              ...form,
+              id: form.id || uid("p"),
+              price: numPrice,
+              mrp: numMrp,
+              sizes: sizeList.length > 0 ? sizeList : ["Free Size"],
+              tag: form.tag || "New",
+              desc: form.desc || `${form.name} from our latest collection.`
+            });
+          }}
+          className="bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-stone-950 font-medium px-5 py-2 rounded-full text-sm flex items-center gap-1 shadow"
         >
-          Save Product
+          {initial ? "Save Product" : "🚀 Launch Product"}
         </button>
         <button onClick={onCancel} className="text-stone-500 text-sm px-3">Cancel</button>
       </div>
@@ -796,26 +906,39 @@ function AdminProducts({ products, saveProduct, deleteProduct }) {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <div className="text-xs tracking-widest uppercase text-stone-500">{products.length} products</div>
-        {!adding && <button onClick={() => setAdding(true)} className="bg-stone-950 text-amber-300 text-xs tracking-widest uppercase px-4 py-2 rounded-full flex items-center gap-1"><Plus size={14} /> Add Product</button>}
+        <div className="text-xs tracking-widest uppercase text-stone-500 font-medium">{products.length} products in catalog</div>
+        {!adding && (
+          <button
+            onClick={() => setAdding(true)}
+            className="bg-stone-950 text-amber-300 text-xs tracking-widest uppercase px-4 py-2.5 rounded-full flex items-center gap-1 hover:bg-stone-900 shadow"
+          >
+            <Plus size={14} /> Launch New Product
+          </button>
+        )}
       </div>
       {adding && <ProductForm onSave={(p) => { saveProduct(p); setAdding(false); }} onCancel={() => setAdding(false)} />}
       {editing && <ProductForm initial={editing} onSave={(p) => { saveProduct(p); setEditing(null); }} onCancel={() => setEditing(null)} />}
-      <div className="bg-white border border-stone-200 rounded-md overflow-hidden">
+      <div className="bg-white border border-stone-200 rounded-md overflow-hidden shadow-sm">
         <table className="w-full text-sm">
           <thead className="bg-stone-100 text-stone-500 text-xs uppercase tracking-wider">
-            <tr><th className="text-left px-4 py-3">Name</th><th className="text-left px-4 py-3">Category</th><th className="text-left px-4 py-3">Price</th><th className="text-left px-4 py-3">Tag</th><th className="px-4 py-3"></th></tr>
+            <tr>
+              <th className="text-left px-4 py-3">Name</th>
+              <th className="text-left px-4 py-3">Category</th>
+              <th className="text-left px-4 py-3">Price</th>
+              <th className="text-left px-4 py-3">Tag</th>
+              <th className="px-4 py-3"></th>
+            </tr>
           </thead>
           <tbody>
             {products.map((p) => (
-              <tr key={p.id} className="border-t border-stone-100">
-                <td className="px-4 py-3 text-stone-800">{p.name}</td>
+              <tr key={p.id} className="border-t border-stone-100 hover:bg-stone-50/50">
+                <td className="px-4 py-3 text-stone-800 font-medium">{p.name}</td>
                 <td className="px-4 py-3 text-stone-500">{p.category}</td>
-                <td className="px-4 py-3 text-stone-800">{inr(p.price)}</td>
+                <td className="px-4 py-3 text-stone-800 font-medium">{inr(p.price)}</td>
                 <td className="px-4 py-3 text-stone-500">{p.tag || "—"}</td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => setEditing(p)} className="text-stone-500 hover:text-amber-700 mr-3"><Edit2 size={15} /></button>
-                  <button onClick={() => deleteProduct(p.id)} className="text-stone-500 hover:text-rose-700"><Trash2 size={15} /></button>
+                  <button onClick={() => setEditing(p)} className="text-stone-500 hover:text-amber-700 mr-3" title="Edit"><Edit2 size={15} /></button>
+                  <button onClick={() => deleteProduct(p.id)} className="text-stone-500 hover:text-rose-700" title="Delete"><Trash2 size={15} /></button>
                 </td>
               </tr>
             ))}
@@ -829,7 +952,7 @@ function AdminProducts({ products, saveProduct, deleteProduct }) {
 function AdminOrders({ orders, updateOrderStatus }) {
   const sorted = [...orders].sort((a, b) => b.date - a.date);
   return (
-    <div className="bg-white border border-stone-200 rounded-md overflow-hidden">
+    <div className="bg-white border border-stone-200 rounded-md overflow-hidden shadow-sm">
       <table className="w-full text-sm">
         <thead className="bg-stone-100 text-stone-500 text-xs uppercase tracking-wider">
           <tr><th className="text-left px-4 py-3">Order ID</th><th className="text-left px-4 py-3">Customer</th><th className="text-left px-4 py-3">Items</th><th className="text-left px-4 py-3">Total</th><th className="text-left px-4 py-3">Status</th></tr>
@@ -838,13 +961,13 @@ function AdminOrders({ orders, updateOrderStatus }) {
           {sorted.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-stone-400">No orders yet.</td></tr>}
           {sorted.map((o) => (
             <tr key={o.id} className="border-t border-stone-100">
-              <td className="px-4 py-3 text-stone-800">{o.id}</td>
-              <td className="px-4 py-3 text-stone-600">{o.address.name}<br /><span className="text-xs text-stone-400">{o.userEmail}</span></td>
+              <td className="px-4 py-3 text-stone-800 font-medium">{o.id}</td>
+              <td className="px-4 py-3 text-stone-600">{o.address?.name || "Customer"}<br /><span className="text-xs text-stone-400">{o.userEmail}</span></td>
               <td className="px-4 py-3 text-stone-600">{o.items.length}</td>
-              <td className="px-4 py-3 text-stone-800">{inr(o.total)}</td>
+              <td className="px-4 py-3 text-stone-800 font-medium">{inr(o.total)}</td>
               <td className="px-4 py-3">
-                <select value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value)} className="border border-stone-300 rounded-md px-2 py-1 text-xs">
-                  {Object.keys(STATUS_COLORS).map((s) => <option key={s} value={s}>{s}</option>)}
+                <select value={o.status} onChange={(e) => updateOrderStatus(o.id, e.target.value)} className="border border-stone-300 rounded-md px-2 py-1 text-xs focus:outline-none focus:border-amber-500">
+                  {["Placed", "Processing", "Shipped", "Delivered", "Cancelled"].map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </td>
             </tr>
@@ -855,17 +978,62 @@ function AdminOrders({ orders, updateOrderStatus }) {
   );
 }
 
-function AdminDashboard({ products, orders, users, saveProduct, deleteProduct, updateOrderStatus, setView }) {
+function AdminThemeManager({ activeTheme, onSelectTheme }) {
+  return (
+    <div>
+      <div className="mb-6">
+        <h2 className="font-serif text-2xl text-stone-900">Seasonal Theme Manager</h2>
+        <p className="text-stone-500 text-sm mt-1">
+          Select the active seasonal theme for your store. Only admins have access to change storefront themes.
+        </p>
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {Object.entries(SEASONAL_THEMES).map(([key, theme]) => {
+          const isActive = activeTheme === key;
+          return (
+            <button
+              key={key}
+              onClick={() => onSelectTheme(key)}
+              className={`text-left p-5 rounded-lg border-2 transition-all flex flex-col justify-between ${
+                isActive ? "border-amber-500 bg-amber-50/40 shadow-md scale-[1.02]" : "border-stone-200 bg-white hover:border-stone-300"
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-serif text-lg font-medium text-stone-900">{theme.name}</span>
+                  {isActive && (
+                    <span className="bg-amber-500 text-stone-950 text-[10px] uppercase tracking-widest font-bold px-2.5 py-0.5 rounded-full">
+                      Active
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-amber-700 mb-2 font-medium">{theme.badge}</div>
+                <p className="text-xs text-stone-500 leading-relaxed mb-4">{theme.tagline}</p>
+              </div>
+              <div className={`w-full py-2 rounded-md text-xs font-medium text-center uppercase tracking-wider ${isActive ? "bg-amber-500 text-stone-950 font-semibold" : "bg-stone-100 text-stone-700 hover:bg-stone-200"}`}>
+                {isActive ? "Currently Active" : "Activate Theme"}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function AdminDashboard({ products, orders, users, saveProduct, deleteProduct, updateOrderStatus, setView, activeTheme, onSelectTheme }) {
   const [tab, setTab] = useState("overview");
   const tabs = [
     ["overview", "Overview", BarChart3],
     ["products", "Products", Package],
     ["orders", "Orders", ShoppingBag],
+    ["theme", "Seasonal Themes", Sparkles],
   ];
   return (
     <div className="bg-stone-50 min-h-[70vh] flex flex-col md:flex-row">
       <aside className="md:w-56 bg-stone-950 md:min-h-[70vh] p-5 flex md:flex-col gap-2">
-        <div className="hidden md:block text-amber-300 font-serif text-xl mb-6">Admin</div>
+        <div className="hidden md:block text-amber-300 font-serif text-xl mb-6">Admin Panel</div>
         {tabs.map(([key, label, Icon]) => (
           <button
             key={key}
@@ -883,6 +1051,7 @@ function AdminDashboard({ products, orders, users, saveProduct, deleteProduct, u
         {tab === "overview" && <AdminOverview orders={orders} products={products} users={users} />}
         {tab === "products" && <AdminProducts products={products} saveProduct={saveProduct} deleteProduct={deleteProduct} />}
         {tab === "orders" && <AdminOrders orders={orders} updateOrderStatus={updateOrderStatus} />}
+        {tab === "theme" && <AdminThemeManager activeTheme={activeTheme} onSelectTheme={onSelectTheme} />}
       </main>
     </div>
   );
@@ -906,6 +1075,7 @@ export default function UmasFashionBoutique() {
   const [products, setProducts] = useState(SEED_PRODUCTS);
   const [users, setUsers] = useState(SEED_USERS);
   const [orders, setOrders] = useState([]);
+  const [activeTheme, setActiveTheme] = useState("regular");
   const [loaded, setLoaded] = useState(false);
 
   const [view, setView] = useState("home");
@@ -927,7 +1097,9 @@ export default function UmasFashionBoutique() {
       const p = await loadShared("umas:products", SEED_PRODUCTS);
       const u = await loadShared("umas:users", SEED_USERS);
       const o = await loadShared("umas:orders", []);
+      const th = await loadShared("umas:activeTheme", "regular");
       setProducts(p); setUsers(u); setOrders(o);
+      if (th && SEASONAL_THEMES[th]) setActiveTheme(th);
 
       // Always reset view to starting home page on fresh website load
       setView("home");
@@ -954,6 +1126,12 @@ export default function UmasFashionBoutique() {
   useEffect(() => {
     if (loaded && currentUser) saveShared(`umas:cart:${currentUser.email}`, cart);
   }, [cart, currentUser, loaded]);
+
+  const handleSelectTheme = async (themeKey) => {
+    setActiveTheme(themeKey);
+    await saveShared("umas:activeTheme", themeKey);
+    showToast(`Storefront theme updated to: ${SEASONAL_THEMES[themeKey]?.name || "Regular"}`);
+  };
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const subtotal = cart.reduce((s, i) => {
@@ -1036,9 +1214,9 @@ export default function UmasFashionBoutique() {
 
   const saveProduct = async (product) => {
     const exists = products.some((p) => p.id === product.id);
-    const updated = exists ? products.map((p) => (p.id === product.id ? product : p)) : [...products, product];
+    const updated = exists ? products.map((p) => (p.id === product.id ? product : p)) : [product, ...products];
     setProducts(updated); await saveShared("umas:products", updated);
-    showToast(exists ? "Product updated" : "Product added");
+    showToast(exists ? "Product details updated" : "🚀 New product launched successfully!");
   };
   const deleteProduct = async (id) => {
     const updated = products.filter((p) => p.id !== id);
@@ -1064,7 +1242,7 @@ export default function UmasFashionBoutique() {
         />
       )}
 
-      {view === "home" && <HomeView products={products} setView={setView} setCategoryFilter={setCategoryFilter} openProduct={openProduct} />}
+      {view === "home" && <HomeView products={products} setView={setView} setCategoryFilter={setCategoryFilter} openProduct={openProduct} activeTheme={activeTheme} />}
       {view === "shop" && <ShopView products={products} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} search={search} openProduct={openProduct} />}
       {view === "product" && activeProduct && <ProductDetailView product={activeProduct} addToCart={addToCart} setView={setView} />}
       {view === "cart" && <CartView cart={cart} products={products} updateQty={updateQty} removeItem={removeItem} setView={setView} subtotal={subtotal} />}
@@ -1073,7 +1251,12 @@ export default function UmasFashionBoutique() {
       {view === "account" && <AccountView currentUser={currentUser} orders={orders} setView={setView} />}
       {view === "admin" && (
         currentUser?.isAdmin ? (
-          <AdminDashboard products={products} orders={orders} users={users} saveProduct={saveProduct} deleteProduct={deleteProduct} updateOrderStatus={updateOrderStatus} setView={setView} />
+          <AdminDashboard
+            products={products} orders={orders} users={users}
+            saveProduct={saveProduct} deleteProduct={deleteProduct}
+            updateOrderStatus={updateOrderStatus} setView={setView}
+            activeTheme={activeTheme} onSelectTheme={handleSelectTheme}
+          />
         ) : (
           <div className="min-h-[70vh] flex items-center justify-center flex-col gap-4 bg-stone-50">
             <p className="text-stone-600">Admin access only.</p>
