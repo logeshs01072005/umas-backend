@@ -2729,7 +2729,7 @@ function PromoShowcaseManager({ promoSettings, onPromoUpdated }) {
 
 /* --------------------------------- Admin Dashboard --------------------------------- */
 
-function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, updateOrderStatus, setView, analyticsFilter, setAnalyticsFilter, promoSettings, onPromoUpdated }) {
+function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, updateOrderStatus, setView, analyticsFilter, setAnalyticsFilter, promoSettings, onPromoUpdated, showToast }) {
   const [adminTab, setAdminTab] = useState("analytics");
   const [paymentVerificationMethod, setPaymentVerificationMethod] = useState("all");
   const [customers, setCustomers] = useState([]);
@@ -4633,7 +4633,7 @@ export default function App() {
 
         {view === "admin" && (
           currentUser?.isAdmin ? (
-            <AdminDashboard promoSettings={promoSettings} onPromoUpdated={fetchPromoSettings} products={products} orders={adminOrders} stats={adminStats} saveProduct={saveProduct} deleteProduct={deleteProduct} setView={setView} analyticsFilter={adminStatsFilter} setAnalyticsFilter={setAdminStatsFilter} />
+            <AdminDashboard promoSettings={promoSettings} onPromoUpdated={fetchPromoSettings} products={products} orders={adminOrders} stats={adminStats} saveProduct={saveProduct} deleteProduct={deleteProduct} setView={setView} analyticsFilter={adminStatsFilter} setAnalyticsFilter={setAdminStatsFilter} showToast={showToast} />
           ) : (
             <div className="min-h-[70vh] flex items-center justify-center flex-col gap-4 bg-stone-50">
               <p className="text-stone-600">Admin access only.</p>
