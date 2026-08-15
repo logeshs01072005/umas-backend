@@ -3972,9 +3972,19 @@ const TRANSIENT_VIEWS = new Set(["upi", "checkout", "confirmation"]);
 export default function App() {
   // ── State declarations ────────────────────────────────────────────────────
   const [view, setViewRaw] = useState(() => {
+    // Clear any persistent view from previous browser sessions
+    if (typeof window !== "undefined") {
+      const isNewSession = !sessionStorage.getItem("umas:session_active");
+      if (isNewSession) {
+        sessionStorage.setItem("umas:session_active", "true");
+        localStorage.removeItem("umas:view");
+        window.location.hash = "";
+        return "home";
+      }
+    }
     const hash = window.location.hash.replace("#", "");
     if (["home", "shop", "cart", "checkout", "account", "admin", "product"].includes(hash)) return hash;
-    const saved = localStorage.getItem("umas:view");
+    const saved = sessionStorage.getItem("umas:view");
     if (saved && !TRANSIENT_VIEWS.has(saved)) return saved;
     return "home";
   });
@@ -4001,11 +4011,11 @@ export default function App() {
   const [seasonalTheme, setSeasonalTheme] = useState("regular");
   const [showNewLaunchesModal, setShowNewLaunchesModal] = useState(false);
 
-  // ── setView: persists to localStorage + URL hash ──────────────────────────
+  // ── setView: persists to sessionStorage + URL hash ──────────────────────────
   const setView = (nextView) => {
     setViewRaw(nextView);
     if (!TRANSIENT_VIEWS.has(nextView)) {
-      localStorage.setItem("umas:view", nextView);
+      sessionStorage.setItem("umas:view", nextView);
       window.location.hash = nextView;
     }
   };
