@@ -650,6 +650,7 @@ function ProductDetailView({ product, addToCart, setView, currentUser }) {
   const [reviews, setReviews] = useState([]);
   const [showNotifyModal, setShowNotifyModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [editingReview, setEditingReview] = useState(null);
 
   const pct = discountPct(product.price, product.mrp);
   const delivery = calculateEstimatedDelivery();
@@ -796,7 +797,18 @@ function ProductDetailView({ product, addToCart, setView, currentUser }) {
                     {rev.user_name}
                     <span className="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold uppercase">Verified Buyer</span>
                   </span>
-                  <span className="text-xs text-stone-400">{formatDateTime(rev.created_at)}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-stone-400">{formatDateTime(rev.created_at)}</span>
+                    {currentUser && rev.user_id && rev.user_id === currentUser._id && (
+                      <button
+                        onClick={() => { setEditingReview(rev); setShowReviewModal(true); }}
+                        className="text-xs text-amber-700 hover:text-amber-500 border border-amber-300 px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors"
+                        title="Edit your review"
+                      >
+                        <Edit2 size={11} /> Edit
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <div className="mb-2">
                   <RatingStars rating={rev.rating} size={14} />
@@ -809,7 +821,14 @@ function ProductDetailView({ product, addToCart, setView, currentUser }) {
       </div>
 
       {showNotifyModal && <StockNotifyModal product={product} onClose={() => setShowNotifyModal(false)} />}
-      {showReviewModal && <WriteReviewModal product={product} onClose={() => setShowReviewModal(false)} onSubmitted={fetchReviews} />}
+      {showReviewModal && (
+        <WriteReviewModal
+          product={product}
+          editingReview={editingReview}
+          onClose={() => { setShowReviewModal(false); setEditingReview(null); }}
+          onSubmitted={fetchReviews}
+        />
+      )}
     </div>
   );
 }
@@ -878,34 +897,39 @@ function StockNotifyModal({ product, onClose }) {
 
 /* -------------------------- Write Review Modal -------------------------- */
 
-function WriteReviewModal({ product, onClose, onSubmitted }) {
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState("");
+function WriteReviewModal({ product, editingReview, onClose, onSubmitted }) {
+  const [rating, setRating] = useState(editingReview?.rating || 5);
+  const [comment, setComment] = useState(editingReview?.comment || "");
   const [loading, setLoading] = useState(false);
+
+  const isEdit = Boolean(editingReview?._id);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     const token = localStorage.getItem("umas:token");
+    const url = isEdit ? `${API_BASE}/reviews/${editingReview._id}` : `${API_BASE}/reviews`;
+    const method = isEdit ? "PUT" : "POST";
+
     try {
-      const res = await fetch(`${API_BASE}/reviews`, {
-        method: "POST",
+      const res = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ productId: product.id, rating, comment }),
+        body: JSON.stringify(isEdit ? { rating, comment } : { productId: product?.id, rating, comment }),
       });
       const data = await res.json();
       if (res.ok) {
-        alert("Thank you! Your review has been submitted.");
-        onSubmitted();
+        alert(isEdit ? "Review updated successfully!" : "Thank you! Your review has been submitted.");
+        if (onSubmitted) onSubmitted();
         onClose();
       } else {
-        alert(data.error || "Failed to submit review.");
+        alert(data.error || "Failed to save review.");
       }
     } catch (err) {
-      alert("Error submitting review.");
+      alert("Error saving review.");
     } finally {
       setLoading(false);
     }
@@ -915,8 +939,8 @@ function WriteReviewModal({ product, onClose, onSubmitted }) {
     <div className="fixed inset-0 z-50 bg-stone-950/75 flex items-center justify-center p-4">
       <div className="bg-white rounded-md max-w-md w-full p-6 relative border border-stone-200 shadow-2xl">
         <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700"><X size={18} /></button>
-        <h2 className="font-serif text-xl text-stone-900 mb-1">Write a Review</h2>
-        <p className="text-stone-500 text-xs mb-4">Share your feedback for <b>{product.name}</b></p>
+        <h2 className="font-serif text-xl text-stone-900 mb-1">{isEdit ? "Edit Your Review" : "Write a Review"}</h2>
+        <p className="text-stone-500 text-xs mb-4">{isEdit ? "Update your rating & comments below." : `Share your feedback for ${product?.name || "this product"}`}</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -942,7 +966,7 @@ function WriteReviewModal({ product, onClose, onSubmitted }) {
           </div>
 
           <button type="submit" disabled={loading} className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-medium py-2.5 rounded-full text-sm">
-            {loading ? "Submitting…" : "Submit Review"}
+            {loading ? "Saving…" : (isEdit ? "Update Review" : "Submit Review")}
           </button>
         </form>
       </div>
@@ -2727,6 +2751,99 @@ function PromoShowcaseManager({ promoSettings, onPromoUpdated }) {
   );
 }
 
+/* --------------------------------- Admin Theme Manager --------------------------------- */
+
+function AdminThemeManager() {
+  const [activeTheme, setActiveTheme] = useState(() => localStorage.getItem("umas:activeTheme") || "summer");
+  const [saving, setSaving] = useState(false);
+
+  const themes = [
+    {
+      key: "summer",
+      name: "Summer Sun",
+      icon: "☀️",
+      desc: "Vibrant amber & yellow tones — lightweight chiffons & summer prints",
+      preview: "bg-gradient-to-br from-amber-800 via-orange-700 to-yellow-800",
+    },
+    {
+      key: "winter",
+      name: "Winter Snow",
+      icon: "❄️",
+      desc: "Cool sky blues & slate tones — cozy Kanjeevaram & winter bridal wear",
+      preview: "bg-gradient-to-br from-sky-950 via-blue-900 to-slate-950",
+    },
+    {
+      key: "rainy",
+      name: "Monsoon Rain",
+      icon: "🌧️",
+      desc: "Deep teal & emerald tones — georgette & rain-resistant silks",
+      preview: "bg-gradient-to-br from-teal-900 via-emerald-800 to-cyan-900",
+    },
+    {
+      key: "spring",
+      name: "Spring Blossom",
+      icon: "🌸",
+      desc: "Soft rose & pink tones — pastel organzas & floral celebration wear",
+      preview: "bg-gradient-to-br from-rose-900 via-pink-800 to-purple-900",
+    },
+  ];
+
+  const handleApply = (themeKey) => {
+    setSaving(true);
+    setActiveTheme(themeKey);
+    localStorage.setItem("umas:activeTheme", themeKey);
+    // Dispatch a storage event so the App root picks up the new theme live
+    window.dispatchEvent(new StorageEvent("storage", { key: "umas:activeTheme", newValue: themeKey }));
+    setTimeout(() => setSaving(false), 700);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="font-serif text-xl text-amber-300 mb-1">🎨 Seasonal Theme Control</h2>
+        <p className="text-stone-400 text-sm">Select the active storefront theme. This changes the website's hero section, colour palette, and seasonal announcement banner for all customers in real-time.</p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-5">
+        {themes.map((t) => (
+          <div
+            key={t.key}
+            className={`rounded-xl border-2 p-5 transition-all cursor-pointer ${activeTheme === t.key ? "border-amber-400 bg-stone-800/80 shadow-lg shadow-amber-500/10" : "border-stone-700 bg-stone-800/40 hover:border-stone-500"}`}
+            onClick={() => handleApply(t.key)}
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className={`w-12 h-12 rounded-lg ${t.preview} flex items-center justify-center text-2xl shadow-inner shrink-0`}>
+                {t.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-stone-100 text-sm">{t.name}</span>
+                  {activeTheme === t.key && (
+                    <span className="bg-amber-400 text-stone-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">✓ Active</span>
+                  )}
+                </div>
+                <p className="text-stone-400 text-xs mt-0.5">{t.desc}</p>
+              </div>
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); handleApply(t.key); }}
+              disabled={saving}
+              className={`w-full py-2 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${activeTheme === t.key ? "bg-amber-500 text-stone-950 shadow-md" : "bg-stone-700 text-stone-300 hover:bg-stone-600"}`}
+            >
+              {saving && activeTheme === t.key ? "Applying…" : activeTheme === t.key ? "✓ Currently Active" : `Apply ${t.name} Theme`}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-stone-800/60 border border-stone-700 rounded-lg p-4 text-xs text-stone-400">
+        <span className="text-amber-400 font-semibold">ℹ️ Note: </span>
+        Theme changes apply to the customer-facing storefront immediately. Only you (Admin) can change themes here — customers no longer see a theme toggle button.
+      </div>
+    </div>
+  );
+}
+
 /* --------------------------------- Admin Dashboard --------------------------------- */
 
 function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, updateOrderStatus, setView, analyticsFilter, setAnalyticsFilter, promoSettings, onPromoUpdated, showToast }) {
@@ -2750,6 +2867,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [newBanner, setNewBanner] = useState({ title: "", description: "", image_url: "", category: "Summer Season" });
+  const [editingAdminReview, setEditingAdminReview] = useState(null);
 
   // Inline stock edit state
   const [stockEditId, setStockEditId] = useState(null);
@@ -3055,6 +3173,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             ["customers", "Customer Management", Users],
             ["inventory", "Inventory & Stock", Package],
             ["banners", "Promotional Banners & Banners", ImageIcon],
+            ["theme", "Seasonal Theme Control", Sparkles],
             ["payments", "Payment Methods", CreditCard],
             ["payverify", `Payment Verification${pendingPayments.length > 0 ? ` (${pendingPayments.length})` : ""}`, ShieldCheck],
             ["tracking", "Order Tracking Management", MapPin],
@@ -3072,6 +3191,9 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
           ))}
         </div>
 
+
+        {/* Seasonal Theme Manager Tab */}
+        {adminTab === "theme" && <AdminThemeManager />}
 
         {/* 1. Analytics Tab */}
         {adminTab === "analytics" && (
@@ -3683,9 +3805,15 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                     <RatingStars rating={rev.rating} size={14} />
                   </div>
                   <p className="text-xs text-stone-300 mb-3">{rev.comment}</p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <button onClick={() => handleUpdateReviewStatus(rev._id, "Approved")} className="bg-emerald-800 text-emerald-100 text-[10px] px-2 py-1 rounded">Approve</button>
                     <button onClick={() => handleUpdateReviewStatus(rev._id, "Hidden")} className="bg-stone-700 text-stone-200 text-[10px] px-2 py-1 rounded">Hide</button>
+                    <button
+                      onClick={() => setEditingAdminReview(rev)}
+                      className="bg-amber-800 text-amber-100 text-[10px] px-2 py-1 rounded flex items-center gap-1"
+                    >
+                      <Edit2 size={10} /> Edit Review
+                    </button>
                   </div>
                 </div>
               ))}
@@ -3699,6 +3827,19 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
           product={editingProduct}
           onClose={() => setProductModalOpen(false)}
           onSave={saveProduct}
+        />
+      )}
+
+      {editingAdminReview && (
+        <WriteReviewModal
+          editingReview={editingAdminReview}
+          onClose={() => setEditingAdminReview(null)}
+          onSubmitted={async () => {
+            const token = localStorage.getItem("umas:token");
+            const res = await fetch(`${API_BASE}/reviews/admin`, { headers: { Authorization: `Bearer ${token}` } });
+            const data = await res.json();
+            if (res.ok) setReviews(data.reviews || []);
+          }}
         />
       )}
 
@@ -3987,7 +4128,7 @@ export default function App() {
   const [authError, setAuthError] = useState("");
   const [toast, setToast] = useState("");
   const [loaded, setLoaded] = useState(false);
-  const [seasonalTheme, setSeasonalTheme] = useState("regular");
+  const [seasonalTheme, setSeasonalTheme] = useState(() => localStorage.getItem("umas:activeTheme") || "summer");
   const [showNewLaunchesModal, setShowNewLaunchesModal] = useState(false);
 
   // ── setView: persists to sessionStorage + URL hash ──────────────────────────
@@ -4010,6 +4151,17 @@ export default function App() {
     };
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  // React to Admin theme changes dispatched via localStorage storage event
+  useEffect(() => {
+    const handleStorageTheme = (e) => {
+      if (e.key === "umas:activeTheme" && e.newValue) {
+        setSeasonalTheme(e.newValue);
+      }
+    };
+    window.addEventListener("storage", handleStorageTheme);
+    return () => window.removeEventListener("storage", handleStorageTheme);
   }, []);
 
   useEffect(() => { initApp(); }, []);

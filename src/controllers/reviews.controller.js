@@ -128,8 +128,38 @@ async function deleteReviewAdmin(req, res, next) {
   }
 }
 
+async function updateReview(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { rating, comment } = req.body;
+
+    const review = await Review.findById(id);
+    if (!review) return res.status(404).json({ error: "Review not found." });
+
+    if (req.user && req.user.id && review.user_id.toString() !== req.user.id.toString() && !req.user.isAdmin) {
+      return res.status(403).json({ error: "Unauthorized to edit this review." });
+    }
+
+    if (rating) {
+      const numericRating = Number(rating);
+      if (numericRating >= 1 && numericRating <= 5) {
+        review.rating = numericRating;
+      }
+    }
+    if (comment !== undefined) review.comment = comment;
+
+    await review.save();
+    await recalculateProductRatings(review.product_id);
+
+    res.json({ review, message: "Review updated successfully." });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createReview,
+  updateReview,
   getProductReviews,
   getAllReviewsAdmin,
   updateReviewStatusAdmin,
