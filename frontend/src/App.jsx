@@ -2329,6 +2329,78 @@ function ReturnRequestModal({ order, onClose, onSubmitted }) {
   );
 }
 
+/* ----------------------- New Product Launches Modal ----------------------- */
+
+function NewLaunchesModal({ products = [], onClose, onSelectProduct }) {
+  const newProducts = useMemo(() => {
+    const list = products.filter((p) => p.tag === "New" || p.tag === "Bestseller");
+    return list.length > 0 ? list : products.slice(0, 6);
+  }, [products]);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg max-w-3xl w-full max-h-[85vh] flex flex-col relative border border-amber-500/30 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="bg-stone-950 text-stone-100 p-5 flex items-center justify-between border-b border-amber-500/20">
+          <div>
+            <span className="text-amber-400 text-[10px] tracking-[0.3em] uppercase block font-semibold mb-0.5">Fresh Arrivals</span>
+            <h2 className="font-serif text-xl text-amber-300 flex items-center gap-2">
+              <Sparkles size={18} className="text-amber-400" /> New Product Launches
+            </h2>
+          </div>
+          <button onClick={onClose} className="p-2 text-stone-400 hover:text-amber-300 transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-6 overflow-y-auto flex-1">
+          <p className="text-stone-600 text-sm mb-6">
+            Explore our handpicked latest creations — fresh weaves, vibrant colors, and modern traditional couture.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {newProducts.map((product) => {
+              const pct = discountPct(product.price, product.mrp);
+              return (
+                <div
+                  key={product.id}
+                  onClick={() => { onSelectProduct(product); onClose(); }}
+                  className="bg-stone-50 border border-stone-200 rounded-md p-4 flex flex-col justify-between hover:border-amber-400 hover:shadow-md transition-all cursor-pointer group"
+                >
+                  <div>
+                    <ProductArt category={product.category} tag={product.tag || "New"} imageUrl={product.imageUrl} size="h-44" />
+                    <div className="text-[10px] uppercase tracking-widest text-stone-500 mt-3">{product.category}</div>
+                    <div className="font-serif text-base text-stone-900 group-hover:text-amber-700 font-medium leading-snug line-clamp-1 mt-0.5">
+                      {product.name}
+                    </div>
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-stone-200/60 flex items-center justify-between">
+                    <div>
+                      <span className="text-stone-900 font-medium text-sm">{inr(product.price)}</span>
+                      {pct > 0 && <span className="text-stone-400 text-xs line-through ml-1.5">{inr(product.mrp)}</span>}
+                    </div>
+                    <span className="text-amber-700 text-xs font-semibold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                      View <ArrowRight size={13} />
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="bg-stone-100 p-4 border-t border-stone-200 text-right">
+          <button
+            onClick={onClose}
+            className="bg-stone-950 hover:bg-stone-800 text-amber-300 text-xs font-medium uppercase tracking-widest px-6 py-2.5 rounded-full transition-colors"
+          >
+            Close Window
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* --------------------------------- Auth Modal & CAPTCHA --------------------------------- */
 
 function AuthModal({ onClose, onLogin, onSignup, error }) {
