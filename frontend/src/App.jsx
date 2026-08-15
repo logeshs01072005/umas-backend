@@ -3055,7 +3055,6 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             ["customers", "Customer Management", Users],
             ["inventory", "Inventory & Stock", Package],
             ["banners", "Promotional Banners & Banners", ImageIcon],
-            ["promoshowcase", "Ajio Seasonal Showcase Editor", Sparkles],
             ["payments", "Payment Methods", CreditCard],
             ["payverify", `Payment Verification${pendingPayments.length > 0 ? ` (${pendingPayments.length})` : ""}`, ShieldCheck],
             ["tracking", "Order Tracking Management", MapPin],
@@ -3073,11 +3072,6 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
           ))}
         </div>
 
-
-        {/* Seasonal Showcase & Hero Banner Control Tab */}
-        {adminTab === "promoshowcase" && (
-          <PromoShowcaseManager promoSettings={promoSettings} onPromoUpdated={onPromoUpdated} showToast={showToast} />
-        )}
 
         {/* 1. Analytics Tab */}
         {adminTab === "analytics" && (
