@@ -191,16 +191,6 @@ function Nav({ view, setView, cartCount, currentUser, onOpenAuth, onLogout, sear
         </nav>
 
         <div className="flex items-center gap-1 md:gap-3">
-          {/* Seasonal Theme Toggle */}
-          <button
-            onClick={() => setSeasonalTheme((prev) => (prev === "winter" ? "regular" : "winter"))}
-            className={`p-1.5 rounded-full text-xs font-semibold flex items-center gap-1 transition-all ${seasonalTheme === "winter" ? "bg-sky-950 text-sky-300 border border-sky-500/50" : "text-stone-400 hover:text-amber-300"}`}
-            title="Toggle Seasonal Winter Theme"
-          >
-            <Sparkles size={16} className={seasonalTheme === "winter" ? "text-sky-400 animate-pulse" : ""} />
-            <span className="hidden lg:inline">{seasonalTheme === "winter" ? "Winter Theme" : "Regular Theme"}</span>
-          </button>
-
           {/* New Product Launch Notification Bell */}
           <button
             onClick={onOpenNewLaunches}
@@ -391,19 +381,19 @@ function BannerSlider({ banners }) {
 /* ------------------------------- Seasonal Themes Configuration ------------------------------- */
 
 const SEASONAL_THEMES = {
-  regular: {
-    name: "Classic Boutique",
-    icon: "🌿",
-    announcement: "🔥 GRAND BOUTIQUE FESTIVAL LAUNCH • FLAT 20% OFF ON ALL SAREES & TOPS",
-    heroBadge: "NEW SEASON LAUNCH 2026",
-    heroTitle: "Elegance Woven in Every Thread",
-    heroDesc: "Discover our latest curated collection of Kanjeevaram Silks, Organza Sarees, Designer Tops, and Royal Lehengas.",
-    bgClass: "bg-stone-950 text-stone-100",
-    barClass: "bg-gradient-to-r from-rose-900 via-amber-700 to-rose-900 text-amber-200 border-amber-500/30",
-    heroClass: "bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950 border-amber-500/20",
-    badgeClass: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-    btnPrimary: "bg-amber-500 hover:bg-amber-400 text-stone-950 shadow-amber-500/20",
-    btnSecondary: "bg-stone-800 hover:bg-stone-700 text-amber-300 border-amber-500/30"
+  summer: {
+    name: "Summer Sun",
+    icon: "☀️",
+    announcement: "☀️ SUMMER BREEZE BOUTIQUE COLLECTION • FLAT 20% OFF ON ALL SAREES & TOPS",
+    heroBadge: "SUMMER SUN COLLECTION 2026",
+    heroTitle: "Lightweight Chiffons & Vibrant Summer Prints",
+    heroDesc: "Embrace breathable pure cottons, vibrant floral chiffons, and breezy designer kurtis crafted for summer elegance.",
+    bgClass: "bg-amber-950 text-amber-50",
+    barClass: "bg-gradient-to-r from-amber-800 via-orange-700 to-yellow-800 text-yellow-100 border-yellow-500/30",
+    heroClass: "bg-gradient-to-b from-amber-950 via-orange-950 to-stone-900 border-yellow-500/20",
+    badgeClass: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
+    btnPrimary: "bg-yellow-400 hover:bg-yellow-300 text-amber-950 shadow-yellow-500/20",
+    btnSecondary: "bg-amber-900 hover:bg-amber-800 text-yellow-200 border-yellow-500/30"
   },
   winter: {
     name: "Winter Snow",
@@ -418,20 +408,6 @@ const SEASONAL_THEMES = {
     badgeClass: "bg-sky-500/20 text-sky-300 border-sky-500/30",
     btnPrimary: "bg-sky-400 hover:bg-sky-300 text-slate-950 shadow-sky-500/20",
     btnSecondary: "bg-slate-900 hover:bg-slate-800 text-sky-300 border-sky-500/30"
-  },
-  summer: {
-    name: "Summer Sun",
-    icon: "☀️",
-    announcement: "☀️ SUMMER BREEZE BOUTIQUE COLLECTION • FLAT 20% OFF ON ALL SAREES & TOPS",
-    heroBadge: "SUMMER SUN COLLECTION 2026",
-    heroTitle: "Lightweight Chiffons & Vibrant Summer Prints",
-    heroDesc: "Embrace breathable pure cottons, vibrant floral chiffons, and breezy designer kurtis crafted for summer elegance.",
-    bgClass: "bg-amber-950 text-amber-50",
-    barClass: "bg-gradient-to-r from-amber-800 via-orange-700 to-yellow-800 text-yellow-100 border-yellow-500/30",
-    heroClass: "bg-gradient-to-b from-amber-950 via-orange-950 to-stone-900 border-yellow-500/20",
-    badgeClass: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
-    btnPrimary: "bg-yellow-400 hover:bg-yellow-300 text-amber-950 shadow-yellow-500/20",
-    btnSecondary: "bg-amber-900 hover:bg-amber-800 text-yellow-200 border-yellow-500/30"
   },
   rainy: {
     name: "Monsoon Rain",
@@ -470,7 +446,7 @@ function HomeView({ products, banners, promoSettings, setView, setCategoryFilter
     return products.filter((p) => p.tag === "Bestseller" || p.tag === "Sale" || p.tag === "New Arrival").slice(0, 8);
   }, [products]);
 
-  const activeTheme = SEASONAL_THEMES[seasonalTheme] || SEASONAL_THEMES.regular;
+  const activeTheme = SEASONAL_THEMES[seasonalTheme] || SEASONAL_THEMES.summer;
 
   return (
     <div className={`transition-colors duration-500 ${activeTheme.bgClass}`}>
@@ -1597,7 +1573,6 @@ function EBillInvoiceComponent({ order }) {
           <p className="font-bold uppercase text-stone-800 tracking-wider mb-1">Payment Breakdown:</p>
           <p>Method: <b className="uppercase text-stone-900">{order.paymentMethod || "COD"}</b></p>
           <p>Payment Status: <b className={`uppercase ${order.paymentStatus === "paid" ? "text-emerald-600" : "text-amber-600"}`}>{order.paymentStatus || "Confirmed"}</b></p>
-          {order.paymentReference && <p className="break-all">Reference / Txn ID: <b className="font-mono text-stone-900">{order.paymentReference}</b></p>}
         </div>
       </div>
 
@@ -1904,16 +1879,12 @@ function CustomerProfileView({ currentUser, orders, setView, onProfileUpdated, o
                       >
                         <Truck size={14} /> Track Order
                       </button>
-                      {ord.invoiceUrl && (
-                        <a
-                          href={getImageUrl(ord.invoiceUrl)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="border border-stone-300 text-stone-700 text-xs px-3 py-1.5 rounded-full hover:bg-stone-100 flex items-center gap-1"
-                        >
-                          <FileText size={14} /> Invoice
-                        </a>
-                      )}
+                      <button
+                        onClick={() => setSelectedEBillOrder(ord)}
+                        className="bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs px-3 py-1.5 rounded-full flex items-center gap-1 font-semibold shadow-sm transition-colors"
+                      >
+                        <FileText size={14} /> E-Bill Invoice
+                      </button>
                     </div>
                   </div>
 
@@ -2087,6 +2058,20 @@ function CustomerProfileView({ currentUser, orders, setView, onProfileUpdated, o
 
       {trackingModalOrder && <OrderTrackingModal order={trackingModalOrder} onClose={() => setTrackingModalOrder(null)} />}
       {returnModalOrder && <ReturnRequestModal order={returnModalOrder} onClose={() => setReturnModalOrder(null)} onSubmitted={fetchReturns} />}
+
+      {selectedEBillOrder && (
+        <div className="fixed inset-0 z-50 bg-stone-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto relative border border-stone-300 shadow-2xl p-6">
+            <button
+              onClick={() => setSelectedEBillOrder(null)}
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 p-1 font-bold z-10"
+            >
+              <X size={20} />
+            </button>
+            <EBillInvoiceComponent order={selectedEBillOrder} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

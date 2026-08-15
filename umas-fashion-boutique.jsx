@@ -24,16 +24,6 @@ const CATEGORY_META = {
 };
 
 const SEASONAL_THEMES = {
-  regular: {
-    id: "regular",
-    name: "Regular / Classic",
-    badge: "Classic Elegance",
-    heroBg: "bg-stone-950",
-    heroText: "text-amber-400",
-    buttonBg: "bg-amber-500 hover:bg-amber-400 text-stone-950",
-    border: "border-amber-500/20",
-    tagline: "Woven traditions, finished for the modern wardrobe."
-  },
   summer: {
     id: "summer",
     name: "Summer Collection",
@@ -297,8 +287,8 @@ function ProductCard({ product, onOpen }) {
 
 /* ----------------------------------- Home view ---------------------------------- */
 
-function HomeView({ products, setView, setCategoryFilter, openProduct, activeTheme = "regular" }) {
-  const theme = SEASONAL_THEMES[activeTheme] || SEASONAL_THEMES.regular;
+function HomeView({ products, setView, setCategoryFilter, openProduct, activeTheme = "summer" }) {
+  const theme = SEASONAL_THEMES[activeTheme] || SEASONAL_THEMES.summer;
   const featured = products.filter((p) => p.tag === "Bestseller").slice(0, 4);
 
   return (
@@ -1075,7 +1065,7 @@ export default function UmasFashionBoutique() {
   const [products, setProducts] = useState(SEED_PRODUCTS);
   const [users, setUsers] = useState(SEED_USERS);
   const [orders, setOrders] = useState([]);
-  const [activeTheme, setActiveTheme] = useState("regular");
+  const [activeTheme, setActiveTheme] = useState("summer");
   const [loaded, setLoaded] = useState(false);
 
   const [view, setView] = useState("home");
@@ -1097,7 +1087,7 @@ export default function UmasFashionBoutique() {
       const p = await loadShared("umas:products", SEED_PRODUCTS);
       const u = await loadShared("umas:users", SEED_USERS);
       const o = await loadShared("umas:orders", []);
-      const th = await loadShared("umas:activeTheme", "regular");
+      const th = await loadShared("umas:activeTheme", "summer");
       setProducts(p); setUsers(u); setOrders(o);
       if (th && SEASONAL_THEMES[th]) setActiveTheme(th);
 
