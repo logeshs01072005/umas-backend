@@ -187,7 +187,12 @@ function Nav({ view, setView, cartCount, currentUser, onOpenAuth, onLogout, sear
         <nav className="hidden md:flex items-center gap-8">
           {navLink("Home", "home")}
           {navLink("Shop", "shop")}
-          {currentUser && navLink("My Profile", "account")}
+          <button
+            onClick={() => { if (currentUser) { setView("account"); } else { onOpenAuth(); } }}
+            className={`text-sm tracking-widest uppercase transition-colors ${view === "account" ? "text-amber-400 font-medium" : "text-stone-300 hover:text-amber-300"}`}
+          >
+            My Profile
+          </button>
         </nav>
 
         <div className="flex items-center gap-1 md:gap-3">
@@ -224,36 +229,20 @@ function Nav({ view, setView, cartCount, currentUser, onOpenAuth, onLogout, sear
           </div>
 
           <div className="relative">
-            <button onClick={() => setAccountOpen((v) => !v)} className="p-2 text-stone-300 hover:text-amber-300" aria-label="Account">
+            <button
+              onClick={() => {
+                if (currentUser) {
+                  setView("account");
+                } else {
+                  onOpenAuth();
+                }
+              }}
+              className={`p-2 transition-colors ${view === "account" ? "text-amber-400" : "text-stone-300 hover:text-amber-300"}`}
+              aria-label="Account"
+              title={currentUser ? "My Profile" : "Login / Sign up"}
+            >
               <User size={19} />
             </button>
-            {accountOpen && (
-              <div className="absolute right-0 mt-2 w-56 bg-stone-900 border border-amber-500/30 rounded-md shadow-xl py-2 text-sm z-50">
-                {currentUser ? (
-                  <>
-                    <div className="px-4 py-2 text-stone-400 text-xs border-b border-stone-800">
-                      Signed in as<br />
-                      <span className="text-amber-300 font-medium">{currentUser.name}</span>
-                    </div>
-                    <button onClick={() => { setView("account"); setAccountOpen(false); }} className="w-full text-left px-4 py-2 text-stone-200 hover:bg-stone-800 flex items-center gap-2">
-                      <User size={14} /> My Profile &amp; Orders
-                    </button>
-                    {currentUser.isAdmin && (
-                      <button onClick={() => { setView("admin"); setAccountOpen(false); }} className="w-full text-left px-4 py-2 text-amber-400 hover:bg-stone-800 flex items-center gap-2 font-medium">
-                        <LayoutDashboard size={14} /> Admin Panel
-                      </button>
-                    )}
-                    <button onClick={() => { onLogout(); setAccountOpen(false); }} className="w-full text-left px-4 py-2 text-rose-400 hover:bg-stone-800 flex items-center gap-2">
-                      <LogOut size={14} /> Log out
-                    </button>
-                  </>
-                ) : (
-                  <button onClick={() => { onOpenAuth(); setAccountOpen(false); }} className="w-full text-left px-4 py-2 text-stone-200 hover:bg-stone-800">
-                    Login / Sign up
-                  </button>
-                )}
-              </div>
-            )}
           </div>
 
           <button onClick={() => setView("cart")} className="relative p-2 text-stone-300 hover:text-amber-300" aria-label="Cart">
@@ -275,7 +264,12 @@ function Nav({ view, setView, cartCount, currentUser, onOpenAuth, onLogout, sear
         <div className="md:hidden border-t border-stone-800 px-5 py-4 flex flex-col gap-4 bg-stone-950">
           {navLink("Home", "home")}
           {navLink("Shop", "shop")}
-          {currentUser && navLink("My Profile", "account")}
+          <button
+            onClick={() => { if (currentUser) { setView("account"); } else { onOpenAuth(); } setMenuOpen(false); }}
+            className={`text-left text-sm tracking-widest uppercase transition-colors ${view === "account" ? "text-amber-400 font-medium" : "text-stone-300 hover:text-amber-300"}`}
+          >
+            My Profile
+          </button>
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -1902,7 +1896,24 @@ function ConfirmationView({ order, setView, orders = [] }) {
 
 /* ------------------------------- Customer Profile View ------------------------------- */
 
-function CustomerProfileView({ currentUser, orders, setView, onProfileUpdated, onRefreshProfile, showToast }) {
+function CustomerProfileView({ currentUser, orders, setView, onProfileUpdated, onRefreshProfile, showToast, onOpenAuth }) {
+  if (!currentUser) {
+    return (
+      <div className="bg-stone-50 min-h-[70vh] py-16 px-6 text-center flex items-center justify-center">
+        <div className="max-w-md w-full bg-white border border-stone-200 rounded-2xl p-8 shadow-xl">
+          <User size={48} className="text-amber-500 mx-auto mb-4" />
+          <h2 className="font-serif text-2xl text-stone-900 font-bold mb-2">My Profile & Orders</h2>
+          <p className="text-stone-500 text-sm mb-6">Please log in to view your profile details, order history, track shipments, and download invoices.</p>
+          <button
+            onClick={onOpenAuth}
+            className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold py-3 rounded-full text-sm shadow-lg shadow-amber-500/20 transition-all"
+          >
+            Login / Create Account
+          </button>
+        </div>
+      </div>
+    );
+  }
   const [activeTab, setActiveTab] = useState("orders");
   const [selectedEBillOrder, setSelectedEBillOrder] = useState(null);
   const [profileForm, setProfileForm] = useState({
@@ -4950,7 +4961,7 @@ export default function App() {
         {view === "checkout" && <CheckoutView cart={cart} subtotal={subtotal} currentUser={currentUser} onOpenAuth={() => setAuthOpen(true)} placeOrder={placeOrder} setView={setView} />}
         {view === "upi" && <UpiView order={upiOrder} onConfirmPayment={confirmUpiPayment} onBack={() => setView("checkout")} onCancel={cancelPendingUpiOrder} />}
         {view === "confirmation" && <ConfirmationView order={lastOrder} setView={handleSetView} orders={orders} />}
-        {view === "account" && <CustomerProfileView currentUser={currentUser} orders={orders} setView={handleSetView} onProfileUpdated={(u) => setCurrentUser(u)} onRefreshProfile={() => fetchMe(localStorage.getItem("umas:token"))} showToast={showToast} />}
+        {view === "account" && <CustomerProfileView currentUser={currentUser} orders={orders} setView={handleSetView} onProfileUpdated={(u) => setCurrentUser(u)} onRefreshProfile={() => fetchMe(localStorage.getItem("umas:token"))} showToast={showToast} onOpenAuth={() => setAuthOpen(true)} />}
 
         {/* New Product Launch Notification Modal */}
         {showNewLaunchesModal && (
