@@ -1896,24 +1896,7 @@ function ConfirmationView({ order, setView, orders = [] }) {
 
 /* ------------------------------- Customer Profile View ------------------------------- */
 
-function CustomerProfileView({ currentUser, orders, setView, onProfileUpdated, onRefreshProfile, showToast, onOpenAuth }) {
-  if (!currentUser) {
-    return (
-      <div className="bg-stone-50 min-h-[70vh] py-16 px-6 text-center flex items-center justify-center">
-        <div className="max-w-md w-full bg-white border border-stone-200 rounded-2xl p-8 shadow-xl">
-          <User size={48} className="text-amber-500 mx-auto mb-4" />
-          <h2 className="font-serif text-2xl text-stone-900 font-bold mb-2">My Profile & Orders</h2>
-          <p className="text-stone-500 text-sm mb-6">Please log in to view your profile details, order history, track shipments, and download invoices.</p>
-          <button
-            onClick={onOpenAuth}
-            className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold py-3 rounded-full text-sm shadow-lg shadow-amber-500/20 transition-all"
-          >
-            Login / Create Account
-          </button>
-        </div>
-      </div>
-    );
-  }
+function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdated, onRefreshProfile, showToast, onOpenAuth }) {
   const [activeTab, setActiveTab] = useState("orders");
   const [selectedEBillOrder, setSelectedEBillOrder] = useState(null);
   const [profileForm, setProfileForm] = useState({
@@ -2005,8 +1988,26 @@ function CustomerProfileView({ currentUser, orders, setView, onProfileUpdated, o
   };
 
   const sortedOrders = useMemo(() => {
-    return [...orders].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    return [...(orders || [])].sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   }, [orders]);
+
+  if (!currentUser) {
+    return (
+      <div className="bg-stone-50 min-h-[70vh] py-16 px-6 text-center flex items-center justify-center">
+        <div className="max-w-md w-full bg-white border border-stone-200 rounded-2xl p-8 shadow-xl">
+          <User size={48} className="text-amber-500 mx-auto mb-4" />
+          <h2 className="font-serif text-2xl text-stone-900 font-bold mb-2">My Profile & Orders</h2>
+          <p className="text-stone-500 text-sm mb-6">Please log in to view your profile details, order history, track shipments, and download invoices.</p>
+          <button
+            onClick={onOpenAuth}
+            className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold py-3 rounded-full text-sm shadow-lg shadow-amber-500/20 transition-all"
+          >
+            Login / Create Account
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-stone-50 min-h-[75vh] py-10 px-6">
