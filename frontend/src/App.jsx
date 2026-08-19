@@ -127,21 +127,39 @@ function ProductArt({ category, tag, status, imageUrl, size = "h-64" }) {
 
 /* --------------------------------- Rating Stars -------------------------------- */
 
-function RatingStars({ rating = 0, numReviews = 0, size = 14 }) {
+function RatingStars({ rating = 4.5, numReviews = 0, size = 14 }) {
+  const displayRating = rating || 4.5;
+  const fullStars = Math.floor(displayRating);
+  const hasHalf = displayRating % 1 >= 0.5;
   return (
     <div className="flex items-center gap-1">
       <div className="flex text-amber-400">
         {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            size={size}
-            className={star <= Math.round(rating) ? "fill-amber-400 text-amber-400" : "text-stone-300"}
-          />
+          <span key={star} className="relative inline-block">
+            <Star
+              size={size}
+              className="text-stone-200"
+            />
+            {star <= fullStars ? (
+              <Star
+                size={size}
+                className="fill-amber-400 text-amber-400 absolute inset-0"
+              />
+            ) : star === fullStars + 1 && hasHalf ? (
+              <span className="absolute inset-0 overflow-hidden w-1/2">
+                <Star size={size} className="fill-amber-400 text-amber-400" />
+              </span>
+            ) : null}
+          </span>
         ))}
       </div>
-      {numReviews > 0 && (
+      {numReviews > 0 ? (
         <span className="text-xs text-stone-500 font-medium ml-1">
-          {rating.toFixed(1)} ({numReviews})
+          {displayRating.toFixed(1)} ({numReviews})
+        </span>
+      ) : (
+        <span className="text-[10px] text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full font-semibold ml-1">
+          New
         </span>
       )}
     </div>
@@ -356,7 +374,7 @@ function ProductCard({ product, onOpen }) {
           <div className="text-[10px] tracking-widest uppercase text-stone-500">{product.category}</div>
           <div className="font-serif text-base text-stone-900 group-hover:text-amber-700 transition-colors leading-snug font-medium line-clamp-1">{product.name}</div>
           <div className="mt-1">
-            <RatingStars rating={product.avgRating || 0} numReviews={product.numReviews || 0} />
+            <RatingStars rating={product.avgRating || 4.5} numReviews={product.numReviews || 0} />
           </div>
         </div>
         <div className="flex items-baseline gap-2 mt-2">
@@ -737,7 +755,7 @@ function ProductDetailView({ product, addToCart, setView, currentUser }) {
             <div className="text-[11px] tracking-widest uppercase text-stone-500 mb-1">{product.category}</div>
             <h1 className="font-serif text-3xl text-stone-900 mb-2">{product.name}</h1>
             <div className="mb-4">
-              <RatingStars rating={product.avgRating || 5} numReviews={product.numReviews || displayReviews.length} size={16} />
+              <RatingStars rating={product.avgRating || 4.5} numReviews={product.numReviews || 0} size={16} />
             </div>
 
             <div className="flex items-baseline gap-3 mb-4">
