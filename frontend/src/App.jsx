@@ -187,12 +187,8 @@ function Nav({ view, setView, cartCount, currentUser, onOpenAuth, onLogout, sear
         <nav className="hidden md:flex items-center gap-8">
           {navLink("Home", "home")}
           {navLink("Shop", "shop")}
-          <button
-            onClick={() => { if (currentUser) { setView("account"); } else { onOpenAuth(); } }}
-            className={`text-sm tracking-widest uppercase transition-colors ${view === "account" ? "text-amber-400 font-medium" : "text-stone-300 hover:text-amber-300"}`}
-          >
-            My Profile
-          </button>
+          {navLink("My Profile", "account")}
+          {currentUser?.isAdmin && navLink("Admin Panel", "admin")}
         </nav>
 
         <div className="flex items-center gap-1 md:gap-3">
@@ -228,21 +224,55 @@ function Nav({ view, setView, cartCount, currentUser, onOpenAuth, onLogout, sear
             )}
           </div>
 
+          {/* Account & User Dropdown */}
           <div className="relative">
             <button
-              onClick={() => {
-                if (currentUser) {
-                  setView("account");
-                } else {
-                  onOpenAuth();
-                }
-              }}
-              className={`p-2 transition-colors ${view === "account" ? "text-amber-400" : "text-stone-300 hover:text-amber-300"}`}
+              onClick={() => setAccountOpen((v) => !v)}
+              className={`p-2 transition-colors ${view === "account" || view === "admin" ? "text-amber-400 font-bold" : "text-stone-300 hover:text-amber-300"}`}
               aria-label="Account"
-              title={currentUser ? "My Profile" : "Login / Sign up"}
+              title="Account Menu"
             >
               <User size={19} />
             </button>
+            {accountOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-stone-900 border border-amber-500/30 rounded-md shadow-xl py-2 text-sm z-50">
+                {currentUser ? (
+                  <>
+                    <div className="px-4 py-2 text-stone-400 text-xs border-b border-stone-800">
+                      Signed in as<br />
+                      <span className="text-amber-300 font-medium">{currentUser.name}</span>
+                    </div>
+                    <button
+                      onClick={() => { setView("account"); setAccountOpen(false); }}
+                      className="w-full text-left px-4 py-2 text-stone-200 hover:bg-stone-800 flex items-center gap-2"
+                    >
+                      <User size={14} /> My Profile &amp; Orders
+                    </button>
+                    {currentUser.isAdmin && (
+                      <button
+                        onClick={() => { setView("admin"); setAccountOpen(false); }}
+                        className="w-full text-left px-4 py-2 text-amber-400 hover:bg-stone-800 flex items-center gap-2 font-medium"
+                      >
+                        <LayoutDashboard size={14} /> Admin Panel
+                      </button>
+                    )}
+                    <button
+                      onClick={() => { onLogout(); setAccountOpen(false); }}
+                      className="w-full text-left px-4 py-2 text-rose-400 hover:bg-stone-800 flex items-center gap-2"
+                    >
+                      <LogOut size={14} /> Log out
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => { onOpenAuth(); setAccountOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-amber-300 hover:bg-stone-800 font-semibold flex items-center gap-2"
+                  >
+                    <User size={14} /> Login / Sign up
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           <button onClick={() => setView("cart")} className="relative p-2 text-stone-300 hover:text-amber-300" aria-label="Cart">
@@ -264,12 +294,23 @@ function Nav({ view, setView, cartCount, currentUser, onOpenAuth, onLogout, sear
         <div className="md:hidden border-t border-stone-800 px-5 py-4 flex flex-col gap-4 bg-stone-950">
           {navLink("Home", "home")}
           {navLink("Shop", "shop")}
-          <button
-            onClick={() => { if (currentUser) { setView("account"); } else { onOpenAuth(); } setMenuOpen(false); }}
-            className={`text-left text-sm tracking-widest uppercase transition-colors ${view === "account" ? "text-amber-400 font-medium" : "text-stone-300 hover:text-amber-300"}`}
-          >
-            My Profile
-          </button>
+          {navLink("My Profile", "account")}
+          {currentUser?.isAdmin && navLink("Admin Panel", "admin")}
+          {currentUser ? (
+            <button
+              onClick={() => { onLogout(); setMenuOpen(false); }}
+              className="text-left text-sm tracking-widest uppercase text-rose-400 hover:text-rose-300 flex items-center gap-2"
+            >
+              <LogOut size={16} /> Log out
+            </button>
+          ) : (
+            <button
+              onClick={() => { onOpenAuth(); setMenuOpen(false); }}
+              className="text-left text-sm tracking-widest uppercase text-amber-300 hover:text-amber-200 flex items-center gap-2 font-bold"
+            >
+              <User size={16} /> Login / Sign up
+            </button>
+          )}
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
