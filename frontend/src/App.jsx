@@ -6,7 +6,7 @@ import {
   ArrowRight, Mail, Lock, Edit2, Upload, AlertCircle, Star,
   Clock, RotateCcw, Truck, ShieldCheck, Sliders, Calendar,
   Users, RefreshCw, FileText, Phone, MapPin, CreditCard, Tag,
-  TrendingUp, Bell, Image as ImageIcon, Sparkles, CheckCircle, XCircle, Printer
+  TrendingUp, Bell, Image as ImageIcon, Sparkles, CheckCircle, XCircle, Printer, Download
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
