@@ -80,9 +80,43 @@ async function updatePromoSettings(req, res, next) {
   }
 }
 
+async function getActiveTheme(req, res, next) {
+  try {
+    let settingDoc = await Setting.findOne({ key: "active_theme" });
+    if (!settingDoc) {
+      settingDoc = await Setting.create({ key: "active_theme", value: { theme: "summer" } });
+    }
+    res.json({ activeTheme: settingDoc.value?.theme || "summer" });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function updateActiveTheme(req, res, next) {
+  try {
+    const { theme } = req.body;
+    if (!theme) {
+      return res.status(400).json({ error: "Theme string is required." });
+    }
+
+    const settingDoc = await Setting.findOneAndUpdate(
+      { key: "active_theme" },
+      { value: { theme }, updated_at: Date.now() },
+      { new: true, upsert: true }
+    );
+
+    res.json({ activeTheme: settingDoc.value.theme, message: "Global seasonal theme updated successfully." });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getPaymentSettings,
   updatePaymentSettings,
   getPromoSettings,
   updatePromoSettings,
+  getActiveTheme,
+  updateActiveTheme,
 };
+
