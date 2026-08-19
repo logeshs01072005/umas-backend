@@ -45,6 +45,7 @@ h4 {
 .gold-gradient-text {
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #78350f 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
