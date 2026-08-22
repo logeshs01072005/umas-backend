@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const mongoose = require("mongoose");
 const Order = require("../models/Order");
 const Product = require("../models/Product");
 const CartItem = require("../models/CartItem");
@@ -234,22 +235,34 @@ async function getOrderById(req, res, next) {
 async function getOrderTracking(req, res, next) {
   try {
     const { id } = req.params;
-    let tracking = await DeliveryTracking.findOne({ order_id: id });
-    const order = await Order.findById(id);
+    let order = null;
+
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      order = await Order.findById(id).populate("user_id", "email");
+    }
+    if (!order) {
+      order = await Order.findOne({ order_number: id }).populate("user_id", "email");
+    }
+    if (!order) {
+      order = await Order.findOne({ order_number: new RegExp(`^${id}$`, "i") }).populate("user_id", "email");
+    }
 
     if (!order) return res.status(404).json({ error: "Order not found." });
 
+    let tracking = await DeliveryTracking.findOne({ order_id: order._id });
+
     if (!tracking) {
-      const estimatedDate = new Date(order.created_at);
+      const estimatedDate = new Date(order.created_at || Date.now());
       estimatedDate.setDate(estimatedDate.getDate() + 5);
 
       tracking = await DeliveryTracking.create({
         order_id: order._id,
         order_number: order.order_number,
         current_status: order.status === "Placed" ? "Order Placed" : order.status,
+        carrier: "Express Delivery",
         estimated_delivery: estimatedDate,
         timeline: [
-          { status: "Order Placed", description: "Order has been placed.", timestamp: order.created_at },
+          { status: "Order Placed", description: "Order has been placed successfully.", timestamp: order.created_at || Date.now() },
         ],
       });
     }

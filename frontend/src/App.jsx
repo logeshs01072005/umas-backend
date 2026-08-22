@@ -125,41 +125,34 @@ function ProductArt({ category, tag, status, imageUrl, size = "h-64" }) {
   );
 }
 
+/* --------------------------------- Order Payment Helper -------------------------------- */
+
+function isOrderPaid(order) {
+  if (!order) return false;
+  const pStatus = (order.paymentStatus || order.payment_status || "").toLowerCase();
+  const oStatus = (order.status || "").toLowerCase();
+  return pStatus === "paid" || pStatus === "completed" || pStatus === "success" || oStatus === "delivered";
+}
+
 /* --------------------------------- Rating Stars -------------------------------- */
 
-function RatingStars({ rating = 4.5, numReviews = 0, size = 14 }) {
-  const displayRating = rating || 4.5;
-  const fullStars = Math.floor(displayRating);
-  const hasHalf = displayRating % 1 >= 0.5;
+function RatingStars({ rating = 0, numReviews = 0, size = 14 }) {
+  if (!rating && !numReviews) return null;
+  const displayRating = rating || 0;
   return (
     <div className="flex items-center gap-1">
       <div className="flex text-amber-400">
         {[1, 2, 3, 4, 5].map((star) => (
-          <span key={star} className="relative inline-block">
-            <Star
-              size={size}
-              className="text-stone-200"
-            />
-            {star <= fullStars ? (
-              <Star
-                size={size}
-                className="fill-amber-400 text-amber-400 absolute inset-0"
-              />
-            ) : star === fullStars + 1 && hasHalf ? (
-              <span className="absolute inset-0 overflow-hidden w-1/2">
-                <Star size={size} className="fill-amber-400 text-amber-400" />
-              </span>
-            ) : null}
-          </span>
+          <Star
+            key={star}
+            size={size}
+            className={star <= Math.round(displayRating) ? "fill-amber-400 text-amber-400" : "text-stone-300"}
+          />
         ))}
       </div>
-      {numReviews > 0 ? (
+      {numReviews > 0 && (
         <span className="text-xs text-stone-500 font-medium ml-1">
           {displayRating.toFixed(1)} ({numReviews})
-        </span>
-      ) : (
-        <span className="text-[10px] text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full font-semibold ml-1">
-          New
         </span>
       )}
     </div>
@@ -374,7 +367,7 @@ function ProductCard({ product, onOpen }) {
           <div className="text-[10px] tracking-widest uppercase text-stone-500">{product.category}</div>
           <div className="font-serif text-base text-stone-900 group-hover:text-amber-700 transition-colors leading-snug font-medium line-clamp-1">{product.name}</div>
           <div className="mt-1">
-            <RatingStars rating={product.avgRating || 4.5} numReviews={product.numReviews || 0} />
+            <RatingStars rating={product.avgRating || 0} numReviews={product.numReviews || 0} />
           </div>
         </div>
         <div className="flex items-baseline gap-2 mt-2">
@@ -755,7 +748,7 @@ function ProductDetailView({ product, addToCart, setView, currentUser }) {
             <div className="text-[11px] tracking-widest uppercase text-stone-500 mb-1">{product.category}</div>
             <h1 className="font-serif text-3xl text-stone-900 mb-2">{product.name}</h1>
             <div className="mb-4">
-              <RatingStars rating={product.avgRating || 4.5} numReviews={product.numReviews || 0} size={16} />
+              <RatingStars rating={product.avgRating || 0} numReviews={product.numReviews || 0} size={16} />
             </div>
 
             <div className="flex items-baseline gap-3 mb-4">
@@ -1008,17 +1001,18 @@ function WriteReviewModal({ product, editingReview, onClose, onSubmitted }) {
           </div>
 
           <div>
-            <label className="block text-xs uppercase tracking-wider text-stone-600 mb-1">Review Comments</label>
+            <label className="block text-xs uppercase tracking-wider text-stone-700 font-bold mb-1">Review Comments</label>
             <textarea
               rows={4}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Tell us about the fabric, fit, and overall quality..."
-              className="w-full border border-stone-300 rounded-md p-3 text-sm focus:outline-none focus:border-amber-500"
+              className="w-full bg-white text-stone-900 border border-stone-300 rounded-md p-3 text-sm focus:outline-none focus:border-amber-500 placeholder:text-stone-400 shadow-sm"
+              style={{ color: "#1c1917", backgroundColor: "#ffffff" }}
             />
           </div>
 
-          <button type="submit" disabled={loading} className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-medium py-2.5 rounded-full text-sm">
+          <button type="submit" disabled={loading} className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold py-2.5 rounded-full text-sm shadow-md transition-all">
             {loading ? "Saving…" : (isEdit ? "Update Review" : "Submit Review")}
           </button>
         </form>
@@ -1659,6 +1653,10 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
 
 function downloadSingleInvoice(order) {
   if (!order) return;
+  if (!isOrderPaid(order)) {
+    alert("Official E-Bill Invoice can only be downloaded once payment is verified and confirmed.");
+    return;
+  }
   const formattedDate = order.createdAt
     ? new Date(order.createdAt).toLocaleDateString("en-IN", {
       year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit"
@@ -1724,7 +1722,7 @@ function downloadSingleInvoice(order) {
       <div>
         <strong style="text-transform: uppercase; color: #78716c; font-size: 10px; letter-spacing: 0.08em;">Payment Breakdown:</strong>
         <div style="margin-top: 4px; color: #1c1917;">Payment Method: <strong>${(order.paymentMethod || "COD").toUpperCase()}</strong></div>
-        <div style="color: #1c1917;">Payment Status: <strong style="color: ${order.paymentStatus === 'paid' ? '#15803d' : '#b45309'};">${(order.paymentStatus || "Confirmed").toUpperCase()}</strong></div>
+        <div style="color: #1c1917;">Payment Status: <strong style="color: #15803d;">PAID / CONFIRMED</strong></div>
         <div style="color: #1c1917;">Order Status: <strong>${order.status || "Processing"}</strong></div>
       </div>
     </div>
@@ -1744,37 +1742,50 @@ function downloadSingleInvoice(order) {
     </table>
 
     <div class="totals">
-      <div style="width: 230px; display: flex; justify-content: space-between; color: #57534e;">
-        <span>Subtotal:</span> <span>₹${Number(order.subtotal || order.total).toLocaleString("en-IN")}</span>
-      </div>
-      <div style="width: 230px; display: flex; justify-content: space-between; color: #57534e;">
-        <span>Shipping:</span> <span>${order.shippingFee ? "₹" + Number(order.shippingFee).toLocaleString("en-IN") : "FREE"}</span>
-      </div>
+      <div>Subtotal: <strong>₹${Number(order.subtotal || order.total).toLocaleString("en-IN")}</strong></div>
+      <div>Shipping Fee: <strong>${order.shippingFee ? `₹${Number(order.shippingFee).toLocaleString("en-IN")}` : "FREE"}</strong></div>
       <div class="grand-total">
-        <span>Grand Total:</span> <span>₹${Number(order.total).toLocaleString("en-IN")}</span>
+        <span>Grand Total Paid:</span>
+        <span>₹${Number(order.total).toLocaleString("en-IN")}</span>
       </div>
     </div>
 
     <div class="footer">
-      Thank you for shopping at Uma's Fashion & Boutique! This is a verified electronic computer-generated invoice.
+      Thank you for shopping with Uma's Fashion & Boutique! This is a system-generated verified electronic invoice.
     </div>
   </div>
+  <script>window.onload = function() { window.print(); }</script>
 </body>
 </html>`;
 
   const blob = new Blob([htmlContent], { type: "text/html" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `Invoice_${order.orderNumber || order.id}.html`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  const win = window.open(url, "_blank");
+  if (!win) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Invoice_${order.orderNumber || order.id}.html`;
+    a.click();
+  }
 }
 
 function EBillInvoiceComponent({ order }) {
   if (!order) return null;
+  if (!isOrderPaid(order)) {
+    return (
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center max-w-xl mx-auto my-6 shadow-sm">
+        <AlertCircle size={36} className="text-amber-600 mx-auto mb-2" />
+        <h3 className="font-serif text-lg font-bold text-stone-900 mb-1">E-Bill Available After Payment Confirmation</h3>
+        <p className="text-xs text-stone-600 mb-2">
+          {order.paymentStatus === "verification_requested"
+            ? `Your payment reference (${order.paymentReference || "Submitted"}) is currently under admin review. Official printable E-Bill will be generated once payment is approved.`
+            : order.paymentMethod === "cod"
+              ? "For Cash on Delivery orders, physical invoice is provided upon delivery."
+              : "Official E-Bill invoices are only generated after payment completion."}
+        </p>
+      </div>
+    );
+  }
 
   const printBill = () => {
     window.print();
@@ -1810,8 +1821,8 @@ function EBillInvoiceComponent({ order }) {
         </div>
         <div>
           <p className="font-bold uppercase text-stone-800 tracking-wider mb-1">Payment Breakdown:</p>
-          <p>Method: <b className="uppercase text-stone-900">{order.paymentMethod || "COD"}</b></p>
-          <p>Payment Status: <b className={`uppercase ${order.paymentStatus === "paid" ? "text-emerald-600" : "text-amber-600"}`}>{order.paymentStatus || "Confirmed"}</b></p>
+          <p>Method: <b className="uppercase text-stone-900">{order.paymentMethod || "ONLINE"}</b></p>
+          <p>Payment Status: <b className="uppercase text-emerald-600">PAID / CONFIRMED</b></p>
         </div>
       </div>
 
@@ -1887,8 +1898,13 @@ function EBillLookupSection({ orders = [] }) {
         (o.paymentReference && String(o.paymentReference).toLowerCase() === clean)
     );
     if (found) {
-      setMatchedOrder(found);
-      setError("");
+      if (!isOrderPaid(found)) {
+        setMatchedOrder(null);
+        setError(`Order #${found.orderNumber} found, but payment is still ${found.paymentStatus === "verification_requested" ? "under admin review" : "pending"}. Official E-Bill will be accessible once payment is confirmed.`);
+      } else {
+        setMatchedOrder(found);
+        setError("");
+      }
     } else {
       setMatchedOrder(null);
       setError("No matching order or transaction ID found. Please check your Reference ID or Order Number.");
@@ -1915,7 +1931,7 @@ function EBillLookupSection({ orders = [] }) {
       {error && <div className="text-xs text-rose-600 bg-rose-50 p-3 rounded border border-rose-200 mb-2">{error}</div>}
       {matchedOrder && (
         <div className="mt-4">
-          <div className="text-xs font-bold text-emerald-700 bg-emerald-50 p-2 rounded mb-2">Order found! Displaying printable E-Bill below:</div>
+          <div className="text-xs font-bold text-emerald-700 bg-emerald-50 p-2 rounded mb-2">Order verified &amp; paid! Displaying printable E-Bill below:</div>
           <EBillInvoiceComponent order={matchedOrder} />
         </div>
       )}
@@ -1925,22 +1941,44 @@ function EBillLookupSection({ orders = [] }) {
 
 function ConfirmationView({ order, setView, orders = [] }) {
   if (!order) return null;
+  const paid = isOrderPaid(order);
+
   return (
     <div className="bg-stone-50 min-h-[70vh] py-16 px-6 text-center">
       <div className="max-w-2xl mx-auto bg-white border border-stone-200 rounded-md p-8 shadow-lg">
         <CheckCircle size={48} className="text-emerald-600 mx-auto mb-4" />
         <h1 className="font-serif text-3xl text-stone-900 mb-2">Order Confirmed!</h1>
         <p className="text-stone-500 text-sm mb-4">Thank you for shopping with Uma's. Your order number is <b>#{order.orderNumber}</b>.</p>
-        {order.paymentStatus === "paid" && (
-          <div className="text-emerald-700 bg-emerald-50 border border-emerald-200 text-sm p-3 rounded-md mb-4">
-            Your payment via Razorpay has been verified and confirmed.
+
+        {paid ? (
+          <>
+            <div className="text-emerald-700 bg-emerald-50 border border-emerald-200 text-sm p-3 rounded-md mb-4">
+              ✓ Payment has been verified and confirmed. Your official printable E-Bill Invoice is displayed below:
+            </div>
+            {/* Render E-Bill Invoice Component right below payment confirmation */}
+            <div className="my-6">
+              <EBillInvoiceComponent order={order} />
+            </div>
+          </>
+        ) : (
+          <div className="my-6 p-5 bg-amber-50 border border-amber-200 rounded-xl text-left">
+            <div className="font-bold text-amber-900 text-sm mb-1 flex items-center gap-2">
+              <ShieldCheck size={18} className="text-amber-700" />
+              {order.paymentStatus === "verification_requested"
+                ? "Payment Verification Under Review"
+                : order.paymentMethod === "cod"
+                  ? "Cash on Delivery Order Placed"
+                  : "Payment Status: Pending"}
+            </div>
+            <p className="text-stone-600 text-xs leading-relaxed">
+              {order.paymentStatus === "verification_requested"
+                ? `Your payment reference ID (${order.paymentReference || "Submitted"}) has been submitted for admin verification. Once verified, your official E-Bill Invoice will be available in your Account Profile.`
+                : order.paymentMethod === "cod"
+                  ? "Your order has been placed with Cash on Delivery. Physical invoice will be provided upon delivery."
+                  : "Your order is placed. The official E-Bill invoice will be accessible after payment completion."}
+            </p>
           </div>
         )}
-
-        {/* Render E-Bill Invoice Component right below payment confirmation */}
-        <div className="my-6">
-          <EBillInvoiceComponent order={order} />
-        </div>
 
         <EBillLookupSection orders={orders.length > 0 ? orders : [order]} />
 
@@ -2153,18 +2191,30 @@ function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdat
                       >
                         <Truck size={14} /> Track
                       </button>
-                      <button
-                        onClick={() => downloadSingleInvoice(ord)}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1 font-bold shadow-sm transition-colors"
-                      >
-                        <Download size={14} /> Download Bill
-                      </button>
-                      <button
-                        onClick={() => setSelectedEBillOrder(ord)}
-                        className="bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs px-3 py-1.5 rounded-full flex items-center gap-1 font-semibold shadow-sm transition-colors"
-                      >
-                        <FileText size={14} /> View Invoice
-                      </button>
+                      {isOrderPaid(ord) ? (
+                        <>
+                          <button
+                            onClick={() => downloadSingleInvoice(ord)}
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1 font-bold shadow-sm transition-colors"
+                          >
+                            <Download size={14} /> Download Bill
+                          </button>
+                          <button
+                            onClick={() => setSelectedEBillOrder(ord)}
+                            className="bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs px-3 py-1.5 rounded-full flex items-center gap-1 font-semibold shadow-sm transition-colors"
+                          >
+                            <FileText size={14} /> View Invoice
+                          </button>
+                        </>
+                      ) : (
+                        <span className="text-[11px] font-semibold text-stone-500 bg-stone-100 border border-stone-300 px-3 py-1 rounded-full">
+                          {ord.paymentStatus === "verification_requested"
+                            ? "Verification Pending"
+                            : ord.paymentMethod === "cod"
+                              ? "COD (Bill on Delivery)"
+                              : "Payment Pending"}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -2363,15 +2413,19 @@ function OrderTrackingModal({ order, onClose }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!order) return;
     const token = localStorage.getItem("umas:token");
-    fetch(`${API_BASE}/orders/${order.id}/tracking`, { headers: { Authorization: `Bearer ${token}` } })
+    const orderIdentifier = order._id || order.id || order.orderNumber;
+    fetch(`${API_BASE}/orders/${orderIdentifier}/tracking`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
       .then((res) => res.json())
       .then((data) => {
-        setTracking(data.tracking);
+        if (data.tracking) setTracking(data.tracking);
         setLoading(false);
       })
       .catch((e) => setLoading(false));
-  }, [order.id]);
+  }, [order]);
 
   const steps = ["Order Placed", "Payment Confirmed", "Processing", "Packed", "Shipped", "Out for Delivery", "Delivered"];
   const currentStepIdx = tracking ? steps.indexOf(tracking.current_status) : steps.indexOf(order.status);
@@ -3030,9 +3084,13 @@ function PromoShowcaseManager({ promoSettings, onPromoUpdated }) {
 
 /* --------------------------------- Admin Theme Manager --------------------------------- */
 
-function AdminThemeManager() {
-  const [activeTheme, setActiveTheme] = useState(() => localStorage.getItem("umas:activeTheme") || "summer");
+function AdminThemeManager({ activeTheme, onThemeUpdated, showToast }) {
+  const [selectedTheme, setSelectedTheme] = useState(activeTheme || "summer");
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (activeTheme) setSelectedTheme(activeTheme);
+  }, [activeTheme]);
 
   const themes = [
     {
@@ -3065,27 +3123,49 @@ function AdminThemeManager() {
     },
   ];
 
-  const handleApply = (themeKey) => {
+  const handleApply = async (themeKey) => {
     setSaving(true);
-    setActiveTheme(themeKey);
-    localStorage.setItem("umas:activeTheme", themeKey);
-    // Dispatch a storage event so the App root picks up the new theme live
-    window.dispatchEvent(new StorageEvent("storage", { key: "umas:activeTheme", newValue: themeKey }));
-    setTimeout(() => setSaving(false), 700);
+    setSelectedTheme(themeKey);
+    const token = localStorage.getItem("umas:token");
+
+    try {
+      const res = await fetch(`${API_BASE}/settings/admin/active-theme`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ theme: themeKey }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem("umas:activeTheme", themeKey);
+        if (onThemeUpdated) onThemeUpdated(themeKey);
+        window.dispatchEvent(new StorageEvent("storage", { key: "umas:activeTheme", newValue: themeKey }));
+        if (showToast) showToast(`Global store theme updated to "${themeKey.toUpperCase()}"! All mobile & desktop visitors now see this theme.`);
+      } else {
+        alert(data.error || "Failed to update global theme.");
+      }
+    } catch (err) {
+      console.error("Error updating theme:", err);
+      alert("Error saving theme to server.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-serif text-xl text-amber-300 mb-1">🎨 Seasonal Theme Control</h2>
-        <p className="text-stone-400 text-sm">Select the active storefront theme. This changes the website's hero section, colour palette, and seasonal announcement banner for all customers in real-time.</p>
+        <h2 className="font-serif text-xl text-amber-300 mb-1">🎨 Global Seasonal Theme Control</h2>
+        <p className="text-stone-400 text-sm">Select the active storefront theme. When changed here, the new seasonal theme updates globally across all customer mobile phones, tablets, and desktop browsers in real time.</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-5">
         {themes.map((t) => (
           <div
             key={t.key}
-            className={`rounded-xl border-2 p-5 transition-all cursor-pointer ${activeTheme === t.key ? "border-amber-400 bg-stone-800/80 shadow-lg shadow-amber-500/10" : "border-stone-700 bg-stone-800/40 hover:border-stone-500"}`}
+            className={`rounded-xl border-2 p-5 transition-all cursor-pointer ${selectedTheme === t.key ? "border-amber-400 bg-stone-800/80 shadow-lg shadow-amber-500/10" : "border-stone-700 bg-stone-800/40 hover:border-stone-500"}`}
             onClick={() => handleApply(t.key)}
           >
             <div className="flex items-center gap-3 mb-3">
@@ -3095,8 +3175,8 @@ function AdminThemeManager() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-stone-100 text-sm">{t.name}</span>
-                  {activeTheme === t.key && (
-                    <span className="bg-amber-400 text-stone-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">✓ Active</span>
+                  {selectedTheme === t.key && (
+                    <span className="bg-amber-400 text-stone-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">✓ Active Everywhere</span>
                   )}
                 </div>
                 <p className="text-stone-400 text-xs mt-0.5">{t.desc}</p>
@@ -3105,17 +3185,17 @@ function AdminThemeManager() {
             <button
               onClick={(e) => { e.stopPropagation(); handleApply(t.key); }}
               disabled={saving}
-              className={`w-full py-2 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${activeTheme === t.key ? "bg-amber-500 text-stone-950 shadow-md" : "bg-stone-700 text-stone-300 hover:bg-stone-600"}`}
+              className={`w-full py-2 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${selectedTheme === t.key ? "bg-amber-500 text-stone-950 shadow-md font-extrabold" : "bg-stone-700 text-stone-300 hover:bg-stone-600"}`}
             >
-              {saving && activeTheme === t.key ? "Applying…" : activeTheme === t.key ? "✓ Currently Active" : `Apply ${t.name} Theme`}
+              {saving && selectedTheme === t.key ? "Publishing Globally…" : selectedTheme === t.key ? "✓ Currently Active (All Devices)" : `Apply ${t.name} to All Visitors`}
             </button>
           </div>
         ))}
       </div>
 
       <div className="bg-stone-800/60 border border-stone-700 rounded-lg p-4 text-xs text-stone-400">
-        <span className="text-amber-400 font-semibold">ℹ️ Note: </span>
-        Theme changes apply to the customer-facing storefront immediately. Only you (Admin) can change themes here — customers no longer see a theme toggle button.
+        <span className="text-amber-400 font-semibold">ℹ️ Global Cloud Sync: </span>
+        Changes are saved directly to the database. Whenever any customer opens the site on mobile or PC, they automatically receive this chosen seasonal theme.
       </div>
     </div>
   );
@@ -3123,11 +3203,16 @@ function AdminThemeManager() {
 
 /* --------------------------------- Admin Dashboard --------------------------------- */
 
-function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, updateOrderStatus, setView, analyticsFilter, setAnalyticsFilter, promoSettings, onPromoUpdated, showToast }) {
+function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, updateOrderStatus, setView, analyticsFilter, setAnalyticsFilter, promoSettings, onPromoUpdated, showToast, activeTheme, onThemeUpdated }) {
   const [adminTab, setAdminTab] = useState("analytics");
   const [paymentVerificationMethod, setPaymentVerificationMethod] = useState("all");
   const [customers, setCustomers] = useState([]);
   const [banners, setBanners] = useState([]);
+  const [adminOrderList, setAdminOrderList] = useState(orders || []);
+
+  useEffect(() => {
+    if (orders) setAdminOrderList(orders);
+  }, [orders]);
 
   const [returnReqs, setReturnReqs] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -3163,6 +3248,10 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
+      const oRes = await fetch(`${API_BASE}/admin/orders`, { headers });
+      const oData = await oRes.json();
+      if (oRes.ok) setAdminOrderList(oData.orders || []);
+
       const cRes = await fetch(`${API_BASE}/admin/customers`, { headers });
       const cData = await cRes.json();
       if (cRes.ok) setCustomers(cData.customers || []);
@@ -3470,7 +3559,13 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
 
 
         {/* Seasonal Theme Manager Tab */}
-        {adminTab === "theme" && <AdminThemeManager />}
+        {adminTab === "theme" && (
+          <AdminThemeManager
+            activeTheme={activeTheme}
+            onThemeUpdated={onThemeUpdated}
+            showToast={showToast}
+          />
+        )}
 
         {/* 1. Analytics Tab */}
         {adminTab === "analytics" && (
@@ -3877,13 +3972,13 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             <button onClick={fetchAdminData} className="bg-stone-800 text-amber-300 text-xs px-3 py-2 rounded uppercase tracking-wider hover:bg-stone-700">
               Refresh Orders
             </button>
-            {orders.length === 0 ? (
+            {adminOrderList.length === 0 ? (
               <div className="bg-stone-800 border border-stone-700 rounded-md p-10 text-center text-stone-400">
                 No orders available for tracking.
               </div>
             ) : (
               <div className="space-y-4">
-                {orders.map((order) => (
+                {adminOrderList.map((order) => (
                   <div key={order.id} className="bg-stone-800 border border-stone-700 rounded-md p-5">
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div>
@@ -4447,6 +4542,19 @@ export default function App() {
     if (currentUser?.isAdmin) fetchAdminData();
   }, [adminStatsFilter]);
 
+  const fetchActiveTheme = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/settings/active-theme`);
+      const data = await res.json();
+      if (res.ok && data.activeTheme) {
+        setSeasonalTheme(data.activeTheme);
+        localStorage.setItem("umas:activeTheme", data.activeTheme);
+      }
+    } catch (e) {
+      console.error("Error fetching active theme:", e);
+    }
+  };
+
   const fetchPromoSettings = async () => {
     try {
       const res = await fetch(`${API_BASE}/settings/promo`);
@@ -4463,6 +4571,7 @@ export default function App() {
   };
 
   const initApp = async () => {
+    await fetchActiveTheme();
     await fetchProducts();
     await fetchBanners();
     await fetchPromoSettings();
@@ -5056,7 +5165,21 @@ export default function App() {
 
         {view === "admin" && (
           currentUser?.isAdmin ? (
-            <AdminDashboard promoSettings={promoSettings} onPromoUpdated={fetchPromoSettings} products={products} orders={adminOrders} stats={adminStats} saveProduct={saveProduct} deleteProduct={deleteProduct} setView={setView} analyticsFilter={adminStatsFilter} setAnalyticsFilter={setAdminStatsFilter} showToast={showToast} />
+            <AdminDashboard
+              promoSettings={promoSettings}
+              onPromoUpdated={fetchPromoSettings}
+              products={products}
+              orders={adminOrders}
+              stats={adminStats}
+              saveProduct={saveProduct}
+              deleteProduct={deleteProduct}
+              setView={setView}
+              analyticsFilter={adminStatsFilter}
+              setAnalyticsFilter={setAdminStatsFilter}
+              showToast={showToast}
+              activeTheme={seasonalTheme}
+              onThemeUpdated={(t) => setSeasonalTheme(t)}
+            />
           ) : (
             <div className="min-h-[70vh] flex items-center justify-center flex-col gap-4 bg-stone-50">
               <p className="text-stone-600">Admin access only.</p>
