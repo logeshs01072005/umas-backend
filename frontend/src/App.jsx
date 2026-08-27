@@ -82,7 +82,7 @@ function Toast({ message }) {
 
 /* ----------------------------- Product art block ---------------------------- */
 
-function ProductArt({ category, tag, status, imageUrl, size = "h-64", showStatusTag = false }) {
+function ProductArt({ category, tag, status, imageUrl, size = "h-64", showStatusTag = true }) {
   const displayTag = showStatusTag ? (tag || (status && status !== "Available" ? status : null)) : null;
 
   if (imageUrl) {
