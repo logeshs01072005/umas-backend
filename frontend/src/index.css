@@ -35,14 +35,57 @@ h4,
   background: #a8a29e;
 }
 
-/* Input text clarity fix */
-input,
-textarea,
-select {
-  color: #1c1917 !important;
+/* Ensure customer-facing (light bg) inputs always have readable dark text */
+.bg-white input,
+.bg-white textarea,
+.bg-white select,
+.bg-stone-50 input,
+.bg-stone-50 textarea,
+.bg-stone-50 select,
+.bg-amber-50 input,
+.bg-amber-50 textarea {
+  color: #1c1917;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #a8a29e !important;
+  color: #78716c;
+}
+
+/* Dark mode inputs and text contrast */
+.bg-stone-900 input,
+.bg-stone-900 textarea,
+.bg-stone-900 select,
+.bg-stone-800 input,
+.bg-stone-800 textarea,
+.bg-stone-800 select {
+  color: #f5f5f4;
+}
+
+.bg-stone-900 input::placeholder,
+.bg-stone-800 input::placeholder,
+.bg-stone-900 textarea::placeholder,
+.bg-stone-800 textarea::placeholder {
+  color: #a8a29e;
+}
+
+/* Admin panel text contrast overrides */
+.text-stone-100 {
+  color: #f5f5f4 !important;
+}
+
+.text-stone-200 {
+  color: #e7e5e4 !important;
+}
+
+.text-stone-300 {
+  color: #d6d3d1 !important;
+}
+
+/* High contrast print adjustments */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+  }
 }

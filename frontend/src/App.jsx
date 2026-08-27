@@ -12,6 +12,8 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line
 } from "recharts";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 /* ---------------------------- Configurations ---------------------------- */
 
@@ -1654,118 +1656,184 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
 function downloadSingleInvoice(order) {
   if (!order) return;
   if (!isOrderPaid(order)) {
-    alert("Official E-Bill Invoice can only be downloaded once payment is verified and confirmed.");
+    alert("Official E-Bill Invoice PDF is only available after payment is verified and confirmed.");
     return;
   }
-  const formattedDate = order.createdAt
-    ? new Date(order.createdAt).toLocaleDateString("en-IN", {
-      year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit"
-    })
-    : new Date().toLocaleDateString("en-IN");
 
-  const itemsHtml = (order.items || []).map((it) => `
-    <tr>
-      <td style="padding: 12px; border-bottom: 1px solid #e7e5e4;">
-        <strong style="color: #1c1917; font-size: 14px;">${it.name}</strong><br/>
-        <span style="font-size: 11px; color: #78716c;">Size: ${it.size || "Standard"} • Category: ${it.category || "Boutique"}</span>
-      </td>
-      <td style="padding: 12px; border-bottom: 1px solid #e7e5e4; text-align: center; font-weight: 600;">${it.quantity}</td>
-      <td style="padding: 12px; border-bottom: 1px solid #e7e5e4; text-align: right;">₹${Number(it.price).toLocaleString("en-IN")}</td>
-      <td style="padding: 12px; border-bottom: 1px solid #e7e5e4; text-align: right; font-weight: 700; color: #1c1917;">₹${Number(it.price * it.quantity).toLocaleString("en-IN")}</td>
-    </tr>
-  `).join("");
+  try {
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
 
-  const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Invoice #${order.orderNumber || order.id}</title>
-  <style>
-    body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #fafaf9; color: #292524; padding: 40px 20px; margin: 0; }
-    .invoice-card { background: #ffffff; max-width: 680px; margin: 0 auto; padding: 36px; border: 1px solid #e7e5e4; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #f59e0b; padding-bottom: 20px; margin-bottom: 24px; }
-    .brand { font-size: 26px; font-weight: 700; color: #78350f; font-family: Georgia, serif; }
-    .subbrand { font-size: 12px; color: #78716c; margin-top: 4px; }
-    .badge { background: #d97706; color: #ffffff; font-size: 10px; font-weight: 800; padding: 4px 12px; border-radius: 20px; display: inline-block; text-transform: uppercase; letter-spacing: 0.1em; }
-    .inv-num { font-size: 15px; font-weight: 700; color: #1c1917; margin-top: 8px; }
-    .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #f5f5f4; padding: 18px; border-radius: 12px; font-size: 12px; margin-bottom: 24px; }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 24px; }
-    th { text-align: left; padding: 10px 12px; border-bottom: 2px solid #d6d3d1; color: #57534e; text-transform: uppercase; font-size: 10px; letter-spacing: 0.08em; font-weight: 700; }
-    .totals { font-size: 13px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .grand-total { font-size: 16px; font-weight: 800; color: #b45309; border-top: 2px solid #f59e0b; padding-top: 10px; width: 230px; display: flex; justify-content: space-between; margin-top: 4px; }
-    .footer { text-align: center; margin-top: 32px; font-size: 11px; color: #a8a29e; border-top: 1px solid #e7e5e4; padding-top: 18px; }
-  </style>
-</head>
-<body>
-  <div class="invoice-card">
-    <div class="header">
-      <div>
-        <div class="brand">Uma's Fashion & Boutique</div>
-        <div class="subbrand">123 Luxury Avenue, Fashion District, India</div>
-        <div class="subbrand">GSTIN: 33AAAAA0000A1Z5 | care@umasboutique.com</div>
-      </div>
-      <div style="text-align: right;">
-        <div class="badge">OFFICIAL BOUTIQUE E-BILL</div>
-        <div class="inv-num">Invoice #${order.orderNumber || order.id}</div>
-        <div style="font-size: 11px; color: #78716c; margin-top: 4px;">Date: ${formattedDate}</div>
-      </div>
-    </div>
+    const formattedDate = order.createdAt
+      ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+        year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit"
+      })
+      : new Date().toLocaleDateString("en-IN");
 
-    <div class="details-grid">
-      <div>
-        <strong style="text-transform: uppercase; color: #78716c; font-size: 10px; letter-spacing: 0.08em;">Billed & Shipped To:</strong>
-        <div style="font-weight: 700; color: #1c1917; font-size: 14px; margin-top: 4px;">${order.shipName || order.user?.name || "Valued Customer"}</div>
-        <div style="color: #44403c; margin-top: 2px;">${order.shipAddress || "Delivery Address on File"}</div>
-        <div style="color: #44403c;">${order.shipCity ? order.shipCity + " - " + (order.shipPincode || "") : ""}</div>
-        <div style="color: #78716c; margin-top: 2px;">Phone: ${order.shipPhone || "N/A"}</div>
-      </div>
-      <div>
-        <strong style="text-transform: uppercase; color: #78716c; font-size: 10px; letter-spacing: 0.08em;">Payment Breakdown:</strong>
-        <div style="margin-top: 4px; color: #1c1917;">Payment Method: <strong>${(order.paymentMethod || "COD").toUpperCase()}</strong></div>
-        <div style="color: #1c1917;">Payment Status: <strong style="color: #15803d;">PAID / CONFIRMED</strong></div>
-        <div style="color: #1c1917;">Order Status: <strong>${order.status || "Processing"}</strong></div>
-      </div>
-    </div>
+    // Header Background Bar
+    doc.setFillColor(28, 25, 23); // #1c1917
+    doc.rect(0, 0, 210, 32, "F");
 
-    <table>
-      <thead>
-        <tr>
-          <th>Item Description</th>
-          <th style="text-align: center;">Qty</th>
-          <th style="text-align: right;">Price</th>
-          <th style="text-align: right;">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${itemsHtml}
-      </tbody>
-    </table>
+    // Brand Name
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(245, 158, 11); // #f59e0b amber
+    doc.text("Uma's Fashion & Boutique", 14, 14);
 
-    <div class="totals">
-      <div>Subtotal: <strong>₹${Number(order.subtotal || order.total).toLocaleString("en-IN")}</strong></div>
-      <div>Shipping Fee: <strong>${order.shippingFee ? `₹${Number(order.shippingFee).toLocaleString("en-IN")}` : "FREE"}</strong></div>
-      <div class="grand-total">
-        <span>Grand Total Paid:</span>
-        <span>₹${Number(order.total).toLocaleString("en-IN")}</span>
-      </div>
-    </div>
+    // Brand Subtitle
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(214, 211, 209); // #d6d3d1
+    doc.text("123 Luxury Avenue, Fashion District, India  |  GSTIN: 33AAAAA0000A1Z5", 14, 20);
+    doc.text("Support: care@umasboutique.com  |  Official Boutique Invoice", 14, 25);
 
-    <div class="footer">
-      Thank you for shopping with Uma's Fashion & Boutique! This is a system-generated verified electronic invoice.
-    </div>
-  </div>
-  <script>window.onload = function() { window.print(); }</script>
-</body>
-</html>`;
+    // E-Bill Tag & Invoice #
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(255, 255, 255);
+    doc.text("OFFICIAL E-BILL (PDF)", 196, 13, { align: "right" });
 
-  const blob = new Blob([htmlContent], { type: "text/html" });
-  const url = URL.createObjectURL(blob);
-  const win = window.open(url, "_blank");
-  if (!win) {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `Invoice_${order.orderNumber || order.id}.html`;
-    a.click();
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(245, 158, 11);
+    doc.text(`Invoice #${order.orderNumber || order.id?.slice(-8) || "1001"}`, 196, 19, { align: "right" });
+    doc.setTextColor(214, 211, 209);
+    doc.text(`Date: ${formattedDate}`, 196, 24, { align: "right" });
+
+    // Customer & Payment Details Card
+    doc.setFillColor(245, 245, 244); // #f5f5f4
+    doc.roundedRect(14, 37, 182, 34, 3, 3, "F");
+    doc.setDrawColor(231, 229, 228);
+    doc.roundedRect(14, 37, 182, 34, 3, 3, "S");
+
+    // Customer Left Column
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    doc.setTextColor(120, 113, 108); // #78716c
+    doc.text("BILLED & SHIPPED TO:", 18, 43);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9.5);
+    doc.setTextColor(28, 25, 23);
+    doc.text(String(order.shipName || order.user?.name || "Valued Customer"), 18, 49);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(68, 64, 60);
+    const addr = String(order.shipAddress || "Delivery Address on File");
+    doc.text(addr.length > 55 ? addr.substring(0, 53) + "..." : addr, 18, 54);
+    doc.text(`${order.shipCity ? order.shipCity + " - " + (order.shipPincode || "") : "India"}  |  Ph: ${order.shipPhone || "N/A"}`, 18, 59);
+
+    // Payment Right Column
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    doc.setTextColor(120, 113, 108);
+    doc.text("PAYMENT & ORDER STATUS:", 115, 43);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(28, 25, 23);
+    doc.text(`Payment Method: ${(order.paymentMethod || "ONLINE").toUpperCase()}`, 115, 49);
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(21, 128, 61); // emerald green
+    doc.text("Payment Status: PAID / CONFIRMED", 115, 54);
+
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(68, 64, 60);
+    doc.text(`Order Status: ${order.status || "Confirmed"}`, 115, 59);
+
+    // Items Table
+    const tableRows = (order.items || []).map((item, idx) => [
+      idx + 1,
+      item.name || "Boutique Item",
+      item.category || "Apparel",
+      item.size || "Standard",
+      item.quantity || 1,
+      `INR ${Number(item.price || 0).toLocaleString("en-IN")}`,
+      `INR ${Number((item.price || 0) * (item.quantity || 1)).toLocaleString("en-IN")}`,
+    ]);
+
+    autoTable(doc, {
+      startY: 75,
+      head: [["#", "Item Description", "Category", "Size", "Qty", "Unit Price", "Total Amount"]],
+      body: tableRows,
+      theme: "striped",
+      headStyles: {
+        fillColor: [28, 25, 23], // #1c1917
+        textColor: [245, 158, 11], // #f59e0b
+        fontStyle: "bold",
+        fontSize: 8,
+        halign: "center",
+      },
+      columnStyles: {
+        0: { halign: "center", cellWidth: 10 },
+        1: { halign: "left", cellWidth: 58 },
+        2: { halign: "center", cellWidth: 25 },
+        3: { halign: "center", cellWidth: 18 },
+        4: { halign: "center", cellWidth: 14 },
+        5: { halign: "right", cellWidth: 28 },
+        6: { halign: "right", cellWidth: 29 },
+      },
+      bodyStyles: {
+        fontSize: 8,
+        textColor: [41, 37, 36],
+      },
+      alternateRowStyles: {
+        fillColor: [250, 250, 249],
+      },
+      margin: { left: 14, right: 14 },
+    });
+
+    const finalY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : 120) + 8;
+
+    // Totals Box
+    doc.setFillColor(245, 245, 244);
+    doc.roundedRect(120, finalY, 76, 26, 2, 2, "F");
+    doc.setDrawColor(217, 119, 6);
+    doc.roundedRect(120, finalY, 76, 26, 2, 2, "S");
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(87, 83, 78);
+    doc.text("Subtotal:", 124, finalY + 6);
+    doc.text(`INR ${Number(order.subtotal || order.total).toLocaleString("en-IN")}`, 192, finalY + 6, { align: "right" });
+
+    doc.text("Shipping Fee:", 124, finalY + 12);
+    doc.text(order.shippingFee ? `INR ${Number(order.shippingFee).toLocaleString("en-IN")}` : "FREE", 192, finalY + 12, { align: "right" });
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(180, 83, 9); // #b45309
+    doc.text("Grand Total Paid:", 124, finalY + 20);
+    doc.text(`INR ${Number(order.total).toLocaleString("en-IN")}`, 192, finalY + 20, { align: "right" });
+
+    // Official Stamp
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(21, 128, 61);
+    doc.text("✓ VERIFIED DIGITAL INVOICE", 14, finalY + 8);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(120, 113, 108);
+    doc.text("Authenticated electronic GST invoice issued by Uma's Boutique.", 14, finalY + 14);
+    doc.text("All taxes and GST included as applicable.", 14, finalY + 19);
+
+    // Footer
+    doc.setDrawColor(231, 229, 228);
+    doc.line(14, 280, 196, 280);
+    doc.setFontSize(7.5);
+    doc.setTextColor(168, 162, 158);
+    doc.text("Uma's Fashion & Boutique  •  care@umasboutique.com  •  Thank you for shopping!", 105, 286, { align: "center" });
+
+    // Save as actual PDF
+    doc.save(`Invoice_${order.orderNumber || order.id || "order"}.pdf`);
+  } catch (err) {
+    console.error("PDF generation error:", err);
+    alert("Error generating PDF invoice. Please try again.");
   }
 }
 
@@ -1778,10 +1846,10 @@ function EBillInvoiceComponent({ order }) {
         <h3 className="font-serif text-lg font-bold text-stone-900 mb-1">E-Bill Available After Payment Confirmation</h3>
         <p className="text-xs text-stone-600 mb-2">
           {order.paymentStatus === "verification_requested"
-            ? `Your payment reference (${order.paymentReference || "Submitted"}) is currently under admin review. Official printable E-Bill will be generated once payment is approved.`
+            ? `Your payment reference (${order.paymentReference || "Submitted"}) is currently under admin review. Official PDF E-Bill will be generated once payment is approved.`
             : order.paymentMethod === "cod"
               ? "For Cash on Delivery orders, physical invoice is provided upon delivery."
-              : "Official E-Bill invoices are only generated after payment completion."}
+              : "Official PDF E-Bill invoices are only generated after payment completion."}
         </p>
       </div>
     );
@@ -1804,7 +1872,7 @@ function EBillInvoiceComponent({ order }) {
           <p className="text-xs text-stone-500">GSTIN: 33AAAAA0000A1Z5 | Support: care@umasboutique.com</p>
         </div>
         <div className="text-right">
-          <span className="inline-block bg-amber-500 text-stone-950 font-bold text-xs uppercase px-3 py-1 rounded">E-OFFICIAL INVOICE</span>
+          <span className="inline-block bg-amber-500 text-stone-950 font-bold text-xs uppercase px-3 py-1 rounded">OFFICIAL E-BILL</span>
           <p className="text-sm font-semibold text-stone-800 mt-2">Invoice #{order.orderNumber || order.id?.slice(-8)}</p>
           <p className="text-xs text-stone-500">Date: {formattedDate}</p>
         </div>
@@ -1860,15 +1928,15 @@ function EBillInvoiceComponent({ order }) {
         </div>
       </div>
 
-      {/* Print Controls */}
+      {/* Print / Download Controls */}
       <div className="mt-8 pt-4 border-t border-stone-200 flex flex-wrap justify-between items-center gap-3 print:hidden">
-        <span className="text-xs text-stone-500">Verified official boutique invoice document.</span>
+        <span className="text-xs text-stone-500">Verified official boutique PDF invoice.</span>
         <div className="flex items-center gap-2">
           <button
             onClick={() => downloadSingleInvoice(order)}
             className="bg-amber-500 hover:bg-amber-400 text-stone-950 px-4 py-2.5 rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md transition-all"
           >
-            <Download size={15} /> Download Bill (1-Click)
+            <Download size={15} /> Download PDF E-Bill
           </button>
           <button
             onClick={printBill}
@@ -3783,9 +3851,9 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
           <div className="space-y-6">
             <h2 className="font-serif text-xl text-amber-300">Promotional Banners Management</h2>
             <form onSubmit={handleSaveBanner} className="bg-stone-800 p-4 rounded-md border border-stone-700 space-y-3 max-w-xl">
-              <input placeholder="Banner Title" value={newBanner.title} onChange={(e) => setNewBanner({ ...newBanner, title: e.target.value })} className="w-full bg-stone-900 border border-stone-700 p-2 text-xs rounded" required />
-              <input placeholder="Description" value={newBanner.description} onChange={(e) => setNewBanner({ ...newBanner, description: e.target.value })} className="w-full bg-stone-900 border border-stone-700 p-2 text-xs rounded" />
-              <select value={newBanner.category} onChange={(e) => setNewBanner({ ...newBanner, category: e.target.value })} className="w-full bg-stone-900 border border-stone-700 p-2 text-xs rounded">
+              <input placeholder="Banner Title" value={newBanner.title} onChange={(e) => setNewBanner({ ...newBanner, title: e.target.value })} className="w-full bg-stone-900 border border-stone-700 p-2 text-xs rounded text-stone-100 placeholder:text-stone-500" required />
+              <input placeholder="Description" value={newBanner.description} onChange={(e) => setNewBanner({ ...newBanner, description: e.target.value })} className="w-full bg-stone-900 border border-stone-700 p-2 text-xs rounded text-stone-100 placeholder:text-stone-500" />
+              <select value={newBanner.category} onChange={(e) => setNewBanner({ ...newBanner, category: e.target.value })} className="w-full bg-stone-900 border border-stone-700 p-2 text-xs rounded text-stone-100">
                 <option value="Summer Season">Summer Season</option>
                 <option value="Winter Season">Winter Season</option>
                 <option value="Festival Offers">Festival Offers</option>
@@ -3905,29 +3973,29 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       {/* Customer Info */}
-                      <div className="bg-stone-900 rounded p-3">
-                        <div className="text-[10px] uppercase text-stone-500 mb-2 tracking-wider">Customer</div>
-                        <div className="text-xs text-stone-200 font-medium">{order.customer.name}</div>
-                        <div className="text-xs text-stone-400">{order.customer.email}</div>
-                        <div className="text-xs text-stone-400">{order.customer.phone}</div>
+                      <div className="bg-stone-900 rounded p-3.5 border border-stone-800">
+                        <div className="text-[10px] uppercase text-amber-400/90 font-bold mb-2 tracking-wider">Customer Information</div>
+                        <div className="text-xs text-stone-100 font-semibold">{order.customer.name}</div>
+                        <div className="text-xs text-stone-300 mt-0.5">{order.customer.email}</div>
+                        <div className="text-xs text-stone-300 mt-0.5">{order.customer.phone}</div>
                       </div>
                       {/* Shipping Info */}
-                      <div className="bg-stone-900 rounded p-3">
-                        <div className="text-[10px] uppercase text-stone-500 mb-2 tracking-wider">Shipping Address</div>
-                        <div className="text-xs text-stone-200">{order.shipping.name}</div>
-                        <div className="text-xs text-stone-400">{order.shipping.address}, {order.shipping.city} - {order.shipping.pincode}</div>
-                        <div className="text-xs text-stone-400">{order.shipping.phone}</div>
+                      <div className="bg-stone-900 rounded p-3.5 border border-stone-800">
+                        <div className="text-[10px] uppercase text-amber-400/90 font-bold mb-2 tracking-wider">Shipping Address</div>
+                        <div className="text-xs text-stone-100 font-semibold">{order.shipping.name}</div>
+                        <div className="text-xs text-stone-300 mt-0.5">{order.shipping.address}, {order.shipping.city} - {order.shipping.pincode}</div>
+                        <div className="text-xs text-stone-300 mt-0.5">{order.shipping.phone}</div>
                       </div>
                     </div>
 
                     {/* Order Items */}
-                    <div className="bg-stone-900 rounded p-3">
-                      <div className="text-[10px] uppercase text-stone-500 mb-2 tracking-wider">Order Items</div>
-                      <div className="space-y-1">
+                    <div className="bg-stone-900 rounded p-3.5 border border-stone-800">
+                      <div className="text-[10px] uppercase text-amber-400/90 font-bold mb-2 tracking-wider">Order Items</div>
+                      <div className="space-y-1.5">
                         {order.items.map((item, idx) => (
                           <div key={idx} className="flex justify-between text-xs">
-                            <span className="text-stone-300">{item.name} <span className="text-stone-500">({item.size})</span> × {item.qty}</span>
-                            <span className="text-amber-300">{inr(item.price * item.qty)}</span>
+                            <span className="text-stone-200 font-medium">{item.name} <span className="text-stone-400">({item.size})</span> × {item.qty}</span>
+                            <span className="text-amber-300 font-bold">{inr(item.price * item.qty)}</span>
                           </div>
                         ))}
                       </div>
