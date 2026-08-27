@@ -82,8 +82,8 @@ function Toast({ message }) {
 
 /* ----------------------------- Product art block ---------------------------- */
 
-function ProductArt({ category, tag, status, imageUrl, size = "h-64" }) {
-  const displayTag = tag || (status && status !== "Available" ? status : null);
+function ProductArt({ category, tag, status, imageUrl, size = "h-64", showStatusTag = false }) {
+  const displayTag = showStatusTag ? (tag || (status && status !== "Available" ? status : null)) : null;
 
   if (imageUrl) {
     const fullUrl = getImageUrl(imageUrl);
@@ -629,7 +629,7 @@ function HomeView({ products, banners, promoSettings, setView, setCategoryFilter
 
 /* ----------------------------------- Shop view ---------------------------------- */
 
-function ShopView({ products, categoryFilter, setCategoryFilter, search, openProduct }) {
+function ShopView({ products, categoryFilter, setCategoryFilter, search, openProduct, categories = DEFAULT_CATEGORIES }) {
   const [sort, setSort] = useState("featured");
 
   const filtered = useMemo(() => {
@@ -668,11 +668,11 @@ function ShopView({ products, categoryFilter, setCategoryFilter, search, openPro
           >
             All
           </button>
-          {CATEGORIES.map((c) => (
+          {(categories && categories.length > 0 ? categories : DEFAULT_CATEGORIES).map((c) => (
             <button
               key={c}
               onClick={() => setCategoryFilter(c)}
-              className={`px-4 py-1.5 rounded-full text-xs tracking-widest uppercase border ${categoryFilter === c ? "bg-stone-950 text-amber-300 border-stone-950" : "border-stone-300 text-stone-600"}`}
+              className={`px-4 py-1.5 rounded-full text-xs tracking-widest uppercase border transition-all ${categoryFilter === c ? "bg-stone-950 text-amber-300 border-stone-950 font-bold" : "border-stone-300 text-stone-600 hover:border-amber-500"}`}
             >
               {c}
             </button>
@@ -5297,7 +5297,7 @@ export default function App() {
         )}
 
         {view === "home" && <HomeView products={products} banners={banners} promoSettings={promoSettings} setView={setView} setCategoryFilter={setCategoryFilter} openProduct={openProduct} seasonalTheme={seasonalTheme} />}
-        {view === "shop" && <ShopView products={products} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} search={search} openProduct={openProduct} />}
+        {view === "shop" && <ShopView products={products} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} search={search} openProduct={openProduct} categories={categories} />}
         {view === "product" && activeProduct && <ProductDetailView product={activeProduct} addToCart={addToCart} setView={setView} currentUser={currentUser} />}
         {view === "cart" && <CartView cart={cart} updateQty={updateQty} removeItem={removeItem} setView={setView} subtotal={subtotal} />}
         {view === "checkout" && <CheckoutView cart={cart} subtotal={subtotal} currentUser={currentUser} onOpenAuth={() => setAuthOpen(true)} placeOrder={placeOrder} setView={setView} />}
