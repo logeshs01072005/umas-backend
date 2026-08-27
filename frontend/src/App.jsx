@@ -1661,10 +1661,6 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
 
 function downloadSingleInvoice(order) {
   if (!order) return;
-  if (!isOrderPaid(order)) {
-    alert("Official E-Bill Invoice PDF is only available after payment is verified and confirmed.");
-    return;
-  }
 
   try {
     const doc = new jsPDF({
@@ -1673,15 +1669,28 @@ function downloadSingleInvoice(order) {
       format: "a4",
     });
 
+    const isPaid = isOrderPaid(order);
+
     const formattedDate = order.createdAt
       ? new Date(order.createdAt).toLocaleDateString("en-IN", {
         year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit"
       })
-      : new Date().toLocaleDateString("en-IN");
+      : new Date().toLocaleDateString("en-IN", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
+    // Customer Detail Extractions
+    const customerName = String(order.shipName || order.user?.name || order.customerName || "Valued Customer");
+    const customerAddr = String(order.shipAddress || order.address || "Address on file");
+    const cityStatePin = [
+      order.shipCity || order.city,
+      order.shipState || order.state,
+      order.shipPincode || order.pincode || order.zip
+    ].filter(Boolean).join(" - ");
+    const customerPhone = String(order.shipPhone || order.phone || order.user?.phone || "N/A");
+    const customerEmail = String(order.shipEmail || order.email || order.user?.email || "N/A");
 
     // Header Background Bar
     doc.setFillColor(28, 25, 23); // #1c1917
-    doc.rect(0, 0, 210, 32, "F");
+    doc.rect(0, 0, 210, 34, "F");
 
     // Brand Name
     doc.setFont("helvetica", "bold");
@@ -1689,12 +1698,12 @@ function downloadSingleInvoice(order) {
     doc.setTextColor(245, 158, 11); // #f59e0b amber
     doc.text("Uma's Fashion & Boutique", 14, 14);
 
-    // Brand Subtitle
+    // Brand Subtitle (Clean & Authentic Header - Old Fake Details Removed)
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
+    doc.setFontSize(8.5);
     doc.setTextColor(214, 211, 209); // #d6d3d1
-    doc.text("123 Luxury Avenue, Fashion District, India  |  GSTIN: 33AAAAA0000A1Z5", 14, 20);
-    doc.text("Support: care@umasboutique.com  |  Official Boutique Invoice", 14, 25);
+    doc.text("Official Store E-Bill & GST Invoice  |  GSTIN: 33AAAAA0000A1Z5", 14, 21);
+    doc.text("Customer Support Email: care@umasboutique.com", 14, 27);
 
     // E-Bill Tag & Invoice #
     doc.setFont("helvetica", "bold");
@@ -1707,50 +1716,57 @@ function downloadSingleInvoice(order) {
     doc.setTextColor(245, 158, 11);
     doc.text(`Invoice #${order.orderNumber || order.id?.slice(-8) || "1001"}`, 196, 19, { align: "right" });
     doc.setTextColor(214, 211, 209);
-    doc.text(`Date: ${formattedDate}`, 196, 24, { align: "right" });
+    doc.setFontSize(8);
+    doc.text(`Date: ${formattedDate}`, 196, 25, { align: "right" });
 
-    // Customer & Payment Details Card
+    // Customer & Payment Details Card (Height expanded for complete address, phone & email)
     doc.setFillColor(245, 245, 244); // #f5f5f4
-    doc.roundedRect(14, 37, 182, 34, 3, 3, "F");
+    doc.roundedRect(14, 38, 182, 38, 3, 3, "F");
     doc.setDrawColor(231, 229, 228);
-    doc.roundedRect(14, 37, 182, 34, 3, 3, "S");
+    doc.roundedRect(14, 38, 182, 38, 3, 3, "S");
 
     // Customer Left Column
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7.5);
     doc.setTextColor(120, 113, 108); // #78716c
-    doc.text("BILLED & SHIPPED TO:", 18, 43);
+    doc.text("BILLED & SHIPPED TO:", 18, 44);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9.5);
     doc.setTextColor(28, 25, 23);
-    doc.text(String(order.shipName || order.user?.name || "Valued Customer"), 18, 49);
+    doc.text(customerName, 18, 50);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(68, 64, 60);
-    const addr = String(order.shipAddress || "Delivery Address on File");
-    doc.text(addr.length > 55 ? addr.substring(0, 53) + "..." : addr, 18, 54);
-    doc.text(`${order.shipCity ? order.shipCity + " - " + (order.shipPincode || "") : "India"}  |  Ph: ${order.shipPhone || "N/A"}`, 18, 59);
+    doc.text(customerAddr.length > 55 ? customerAddr.substring(0, 53) + "..." : customerAddr, 18, 55);
+    doc.text(cityStatePin || "India", 18, 60);
+    doc.text(`Phone: ${customerPhone}  |  Email: ${customerEmail}`, 18, 65);
 
     // Payment Right Column
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7.5);
     doc.setTextColor(120, 113, 108);
-    doc.text("PAYMENT & ORDER STATUS:", 115, 43);
+    doc.text("PAYMENT & ORDER DETAILS:", 115, 44);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(28, 25, 23);
-    doc.text(`Payment Method: ${(order.paymentMethod || "ONLINE").toUpperCase()}`, 115, 49);
+    doc.text(`Payment Method: ${(order.paymentMethod || "ONLINE").toUpperCase()}`, 115, 50);
 
     doc.setFont("helvetica", "bold");
-    doc.setTextColor(21, 128, 61); // emerald green
-    doc.text("Payment Status: PAID / CONFIRMED", 115, 54);
+    if (isPaid) {
+      doc.setTextColor(21, 128, 61); // emerald green
+      doc.text("Payment Status: PAID / CONFIRMED", 115, 55);
+    } else {
+      doc.setTextColor(180, 83, 9); // amber/orange
+      doc.text("Payment Status: PENDING / COD", 115, 55);
+    }
 
     doc.setFont("helvetica", "normal");
     doc.setTextColor(68, 64, 60);
-    doc.text(`Order Status: ${order.status || "Confirmed"}`, 115, 59);
+    doc.text(`Order Status: ${(order.status || "Confirmed").toUpperCase()}`, 115, 60);
+    doc.text(`Order ID: ${order.id || "N/A"}`, 115, 65);
 
     // Items Table
     const tableRows = (order.items || []).map((item, idx) => [
@@ -1764,7 +1780,7 @@ function downloadSingleInvoice(order) {
     ]);
 
     autoTable(doc, {
-      startY: 75,
+      startY: 80,
       head: [["#", "Item Description", "Category", "Size", "Qty", "Unit Price", "Total Amount"]],
       body: tableRows,
       theme: "striped",
@@ -1794,7 +1810,7 @@ function downloadSingleInvoice(order) {
       margin: { left: 14, right: 14 },
     });
 
-    const finalY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : 120) + 8;
+    const finalY = (doc.lastAutoTable ? doc.lastAutoTable.finalY : 125) + 8;
 
     // Totals Box
     doc.setFillColor(245, 245, 244);
@@ -1814,14 +1830,19 @@ function downloadSingleInvoice(order) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(180, 83, 9); // #b45309
-    doc.text("Grand Total Paid:", 124, finalY + 20);
+    doc.text(isPaid ? "Grand Total Paid:" : "Grand Total Due:", 124, finalY + 20);
     doc.text(`INR ${Number(order.total).toLocaleString("en-IN")}`, 192, finalY + 20, { align: "right" });
 
     // Official Stamp
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8);
-    doc.setTextColor(21, 128, 61);
-    doc.text("✓ VERIFIED DIGITAL INVOICE", 14, finalY + 8);
+    if (isPaid) {
+      doc.setTextColor(21, 128, 61);
+      doc.text("✓ VERIFIED DIGITAL INVOICE", 14, finalY + 8);
+    } else {
+      doc.setTextColor(180, 83, 9);
+      doc.text("• OFFICIAL STORE E-BILL (PENDING PAYMENT)", 14, finalY + 8);
+    }
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
     doc.setTextColor(120, 113, 108);
@@ -1836,7 +1857,7 @@ function downloadSingleInvoice(order) {
     doc.text("Uma's Fashion & Boutique  •  care@umasboutique.com  •  Thank you for shopping!", 105, 286, { align: "center" });
 
     // Save as actual PDF
-    doc.save(`Invoice_${order.orderNumber || order.id || "order"}.pdf`);
+    doc.save(`Invoice_${order.orderNumber || order.id?.slice(-8) || "order"}.pdf`);
   } catch (err) {
     console.error("PDF generation error:", err);
     alert("Error generating PDF invoice. Please try again.");
