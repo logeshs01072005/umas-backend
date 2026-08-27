@@ -22,12 +22,14 @@ const IMAGE_BASE = "";
 const UPI_ID = "logeshs01072005@okhdfcbank";
 const UPI_NAME = "Uma Fashion Boutique";
 
-const CATEGORIES = ["Sarees", "Lehengas", "Kurtis", "Western Wear", "Accessories", "Footwear"];
+const DEFAULT_CATEGORIES = ["Sarees", "Lehengas", "Kurtis", "Tops", "Western Wear", "Accessories", "Footwear"];
+const CATEGORIES = DEFAULT_CATEGORIES;
 
 const CATEGORY_META = {
   Sarees: { icon: ShoppingBag, from: "from-rose-100", to: "to-orange-100" },
   Lehengas: { icon: ShoppingBag, from: "from-red-100", to: "to-rose-200" },
   Kurtis: { icon: ShoppingBag, from: "from-amber-100", to: "to-yellow-100" },
+  Tops: { icon: ShoppingBag, from: "from-amber-100", to: "to-orange-100" },
   "Western Wear": { icon: ShoppingBag, from: "from-stone-100", to: "to-neutral-200" },
   Accessories: { icon: ShoppingBag, from: "from-yellow-100", to: "to-amber-200" },
   Footwear: { icon: ShoppingBag, from: "from-orange-100", to: "to-amber-100" },
@@ -491,7 +493,11 @@ const SEASONAL_THEMES = {
 
 function HomeView({ products, banners, promoSettings, setView, setCategoryFilter, openProduct, seasonalTheme }) {
   const featured = useMemo(() => {
-    return products.filter((p) => p.tag === "Bestseller" || p.tag === "Sale" || p.tag === "New Arrival").slice(0, 8);
+    // Show available products, prioritizing tagged products while including all available items
+    const available = products.filter((p) => p.status !== "Out of Stock" && p.status !== "Unavailable" && p.stock > 0);
+    const tagged = available.filter((p) => p.tag && p.tag !== "Available");
+    if (tagged.length >= 4) return tagged.slice(0, 8);
+    return available.length > 0 ? available.slice(0, 8) : products.slice(0, 8);
   }, [products]);
 
   const activeTheme = SEASONAL_THEMES[seasonalTheme] || SEASONAL_THEMES.summer;
@@ -554,14 +560,14 @@ function HomeView({ products, banners, promoSettings, setView, setCategoryFilter
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {[
-            { name: "Sarees", tag: "Silk & Georgette", bg: "from-rose-900 to-amber-950" },
-            { name: "Tops & Blouses", tag: "Designer Fits", bg: "from-amber-950 to-stone-900" },
-            { name: "Kurtis & Sets", tag: "Casual & Workwear", bg: "from-purple-950 to-stone-900" },
-            { name: "Bridal & Lehengas", tag: "Royal Ethnic", bg: "from-rose-950 to-purple-900" },
+            { name: "Sarees", catKey: "Sarees", tag: "Silk & Georgette", bg: "from-rose-900 to-amber-950" },
+            { name: "Tops", catKey: "Tops", tag: "Designer Fits", bg: "from-amber-950 to-stone-900" },
+            { name: "Kurtis", catKey: "Kurtis", tag: "Casual & Workwear", bg: "from-purple-950 to-stone-900" },
+            { name: "Bridal & Lehengas", catKey: "Lehengas", tag: "Royal Ethnic", bg: "from-rose-950 to-purple-900" },
           ].map((cat) => (
             <div
               key={cat.name}
-              onClick={() => { setCategoryFilter(cat.name); setView("shop"); }}
+              onClick={() => { setCategoryFilter(cat.catKey); setView("shop"); }}
               className={`relative rounded-2xl p-6 bg-gradient-to-br ${cat.bg} border border-amber-500/30 hover:border-amber-400 cursor-pointer overflow-hidden group transition-all duration-300 hover:shadow-2xl hover:shadow-amber-500/10 text-left min-h-[160px] flex flex-col justify-end`}
             >
               <div className="absolute top-4 right-4 text-amber-400/40 group-hover:text-amber-300 transition-colors">
@@ -1025,11 +1031,11 @@ function WriteReviewModal({ product, editingReview, onClose, onSubmitted }) {
 
 /* -------------------------- Admin Product Form Modal -------------------------- */
 
-function ProductFormModal({ product, onClose, onSave }) {
+function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEGORIES }) {
   const [form, setForm] = useState({
     id: product?.id || null,
     name: product?.name || "",
-    category: product?.category || CATEGORIES[0],
+    category: product?.category || (categories[0] || "Sarees"),
     description: product?.description || product?.desc || "",
     price: product?.price || 1999,
     mrp: product?.mrp || 2999,
@@ -1152,7 +1158,7 @@ function ProductFormModal({ product, onClose, onSave }) {
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
                 className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
               >
-                {CATEGORIES.map((c) => (
+                {(categories && categories.length > 0 ? categories : DEFAULT_CATEGORIES).map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
@@ -3271,12 +3277,13 @@ function AdminThemeManager({ activeTheme, onThemeUpdated, showToast }) {
 
 /* --------------------------------- Admin Dashboard --------------------------------- */
 
-function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, updateOrderStatus, setView, analyticsFilter, setAnalyticsFilter, promoSettings, onPromoUpdated, showToast, activeTheme, onThemeUpdated }) {
+function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, updateOrderStatus, setView, analyticsFilter, setAnalyticsFilter, promoSettings, onPromoUpdated, showToast, activeTheme, onThemeUpdated, categories = DEFAULT_CATEGORIES, onAddCategory, onDeleteCategory }) {
   const [adminTab, setAdminTab] = useState("analytics");
   const [paymentVerificationMethod, setPaymentVerificationMethod] = useState("all");
   const [customers, setCustomers] = useState([]);
   const [banners, setBanners] = useState([]);
   const [adminOrderList, setAdminOrderList] = useState(orders || []);
+  const [newCategoryInput, setNewCategoryInput] = useState("");
 
   useEffect(() => {
     if (orders) setAdminOrderList(orders);
@@ -3763,6 +3770,65 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
               >
                 <Plus size={14} /> Add Product
               </button>
+            </div>
+
+            {/* Category Management Control */}
+            <div className="bg-stone-800 border border-stone-700 rounded-md p-5 space-y-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-700 pb-3">
+                <div>
+                  <h3 className="font-serif text-base text-amber-300 flex items-center gap-2 font-bold">
+                    <Tag size={16} /> Product Category Options Manager
+                  </h3>
+                  <p className="text-xs text-stone-400">Add new categories or manage existing choices for storefront filtering and product creation.</p>
+                </div>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <input
+                    type="text"
+                    placeholder="New category (e.g. Jewelry)"
+                    value={newCategoryInput}
+                    onChange={(e) => setNewCategoryInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (onAddCategory) onAddCategory(newCategoryInput);
+                        setNewCategoryInput("");
+                      }
+                    }}
+                    className="bg-stone-900 border border-stone-700 text-stone-100 px-3 py-1.5 rounded text-xs focus:outline-none focus:border-amber-400 flex-1 sm:w-56"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onAddCategory) onAddCategory(newCategoryInput);
+                      setNewCategoryInput("");
+                    }}
+                    className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs px-4 py-1.5 rounded flex items-center gap-1 shrink-0"
+                  >
+                    <Plus size={14} /> Add Option
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                {categories.map((cat) => (
+                  <span
+                    key={cat}
+                    className="inline-flex items-center gap-1.5 bg-stone-900 border border-stone-700 text-amber-300 text-xs px-3 py-1 rounded-full font-medium shadow-sm"
+                  >
+                    <span>{cat}</span>
+                    {categories.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => { if (onDeleteCategory) onDeleteCategory(cat); }}
+                        className="text-stone-400 hover:text-rose-400 p-0.5 rounded-full transition-colors"
+                        title={`Remove ${cat} category`}
+                      >
+                        <X size={12} />
+                      </button>
+                    )}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="bg-stone-800 border border-stone-700 rounded-md overflow-hidden">
@@ -4265,6 +4331,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
       {productModalOpen && (
         <ProductFormModal
           product={editingProduct}
+          categories={categories}
           onClose={() => setProductModalOpen(false)}
           onSave={saveProduct}
         />
@@ -4570,6 +4637,44 @@ export default function App() {
   const [loaded, setLoaded] = useState(false);
   const [seasonalTheme, setSeasonalTheme] = useState(() => localStorage.getItem("umas:activeTheme") || "summer");
   const [showNewLaunchesModal, setShowNewLaunchesModal] = useState(false);
+
+  const [categories, setCategories] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("umas:categories");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (e) { }
+      }
+    }
+    return DEFAULT_CATEGORIES;
+  });
+
+  const handleAddCategory = (newCat) => {
+    if (!newCat || !newCat.trim()) return;
+    const trimmed = newCat.trim();
+    if (categories.some((c) => c.toLowerCase() === trimmed.toLowerCase())) {
+      alert("Category already exists!");
+      return;
+    }
+    const updated = [...categories, trimmed];
+    setCategories(updated);
+    localStorage.setItem("umas:categories", JSON.stringify(updated));
+    showToast(`Category "${trimmed}" added!`);
+  };
+
+  const handleDeleteCategory = (catToDelete) => {
+    if (categories.length <= 1) {
+      alert("Must keep at least one category.");
+      return;
+    }
+    if (!confirm(`Are you sure you want to remove the "${catToDelete}" category option?`)) return;
+    const updated = categories.filter((c) => c !== catToDelete);
+    setCategories(updated);
+    localStorage.setItem("umas:categories", JSON.stringify(updated));
+    showToast(`Category "${catToDelete}" removed.`);
+  };
 
   // ── setView: persists to sessionStorage + URL hash ──────────────────────────
   const setView = (nextView) => {
@@ -5247,6 +5352,9 @@ export default function App() {
               showToast={showToast}
               activeTheme={seasonalTheme}
               onThemeUpdated={(t) => setSeasonalTheme(t)}
+              categories={categories}
+              onAddCategory={handleAddCategory}
+              onDeleteCategory={handleDeleteCategory}
             />
           ) : (
             <div className="min-h-[70vh] flex items-center justify-center flex-col gap-4 bg-stone-50">
