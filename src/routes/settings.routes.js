@@ -1,5 +1,5 @@
 const express = require("express");
-const { getPaymentSettings, updatePaymentSettings, getPromoSettings, updatePromoSettings, getActiveTheme, updateActiveTheme } = require("../controllers/settings.controller");
+const { getPaymentSettings, updatePaymentSettings, getPromoSettings, updatePromoSettings, getActiveTheme, updateActiveTheme, getCategories, updateCategories } = require("../controllers/settings.controller");
 const { requireAuth, requireAdmin } = require("../middleware/auth");
 
 const router = express.Router();
@@ -12,6 +12,9 @@ router.put("/admin/promo", requireAuth, requireAdmin, updatePromoSettings);
 
 router.get("/active-theme", getActiveTheme);
 router.put("/admin/active-theme", requireAuth, requireAdmin, updateActiveTheme);
+
+router.get("/categories", getCategories);
+router.put("/admin/categories", requireAuth, requireAdmin, updateCategories);
 
 module.exports = router;
 

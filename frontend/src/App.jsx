@@ -4661,18 +4661,20 @@ export default function App() {
   const [seasonalTheme, setSeasonalTheme] = useState(() => localStorage.getItem("umas:activeTheme") || "summer");
   const [showNewLaunchesModal, setShowNewLaunchesModal] = useState(false);
 
-  const [categories, setCategories] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("umas:categories");
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-        } catch (e) { }
-      }
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+
+  const persistCategoriesToDB = async (updatedList) => {
+    const token = localStorage.getItem("umas:token");
+    try {
+      await fetch(`${API_BASE}/settings/admin/categories`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ categories: updatedList }),
+      });
+    } catch (e) {
+      console.error("Failed to persist categories:", e);
     }
-    return DEFAULT_CATEGORIES;
-  });
+  };
 
   const handleAddCategory = (newCat) => {
     if (!newCat || !newCat.trim()) return;
@@ -4683,8 +4685,8 @@ export default function App() {
     }
     const updated = [...categories, trimmed];
     setCategories(updated);
-    localStorage.setItem("umas:categories", JSON.stringify(updated));
-    showToast(`Category "${trimmed}" added!`);
+    persistCategoriesToDB(updated);
+    showToast(`Category "${trimmed}" added! All customers will now see it in the shop.`);
   };
 
   const handleDeleteCategory = (catToDelete) => {
@@ -4692,11 +4694,11 @@ export default function App() {
       alert("Must keep at least one category.");
       return;
     }
-    if (!confirm(`Are you sure you want to remove the "${catToDelete}" category option?`)) return;
+    if (!confirm(`Are you sure you want to remove the "${catToDelete}" category? Customers will no longer see it in the shop.`)) return;
     const updated = categories.filter((c) => c !== catToDelete);
     setCategories(updated);
-    localStorage.setItem("umas:categories", JSON.stringify(updated));
-    showToast(`Category "${catToDelete}" removed.`);
+    persistCategoriesToDB(updated);
+    showToast(`Category "${catToDelete}" removed. Customers will no longer see it.`);
   };
 
   // ── setView: persists to sessionStorage + URL hash ──────────────────────────
@@ -4761,6 +4763,18 @@ export default function App() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/settings/categories`);
+      const data = await res.json();
+      if (res.ok && Array.isArray(data.categories) && data.categories.length > 0) {
+        setCategories(data.categories);
+      }
+    } catch (e) {
+      console.error("Error fetching categories:", e);
+    }
+  };
+
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 4000);
@@ -4768,6 +4782,7 @@ export default function App() {
 
   const initApp = async () => {
     await fetchActiveTheme();
+    await fetchCategories();
     await fetchProducts();
     await fetchBanners();
     await fetchPromoSettings();

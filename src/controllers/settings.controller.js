@@ -1,5 +1,7 @@
 const Setting = require("../models/Setting");
 
+const DEFAULT_CATEGORIES = ["Sarees", "Lehengas", "Kurtis", "Tops", "Western Wear", "Accessories", "Footwear"];
+
 const DEFAULT_PAYMENT_SETTINGS = {
   cod: { enabled: true, customMessage: "Cash on Delivery available" },
   online: { enabled: true, customMessage: "Pay securely via Razorpay (UPI, Cards, Net Banking)" },
@@ -111,6 +113,36 @@ async function updateActiveTheme(req, res, next) {
   }
 }
 
+async function getCategories(req, res, next) {
+  try {
+    let settingDoc = await Setting.findOne({ key: "categories" });
+    if (!settingDoc) {
+      settingDoc = await Setting.create({ key: "categories", value: { list: DEFAULT_CATEGORIES } });
+    }
+    const list = settingDoc.value?.list;
+    res.json({ categories: Array.isArray(list) && list.length > 0 ? list : DEFAULT_CATEGORIES });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function updateCategories(req, res, next) {
+  try {
+    const { categories } = req.body;
+    if (!Array.isArray(categories) || categories.length === 0) {
+      return res.status(400).json({ error: "categories must be a non-empty array." });
+    }
+    const settingDoc = await Setting.findOneAndUpdate(
+      { key: "categories" },
+      { value: { list: categories }, updated_at: Date.now() },
+      { new: true, upsert: true }
+    );
+    res.json({ categories: settingDoc.value.list, message: "Categories updated successfully." });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getPaymentSettings,
   updatePaymentSettings,
@@ -118,5 +150,7 @@ module.exports = {
   updatePromoSettings,
   getActiveTheme,
   updateActiveTheme,
+  getCategories,
+  updateCategories,
 };
 
