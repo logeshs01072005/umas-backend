@@ -143,4 +143,10 @@ const orderSchema = new mongoose.Schema({
   },
 });
 
+// Indexes for ultra-fast query execution
+orderSchema.index({ user_id: 1, created_at: -1 });
+orderSchema.index({ created_at: -1 });
+orderSchema.index({ status: 1 });
+orderSchema.index({ payment_status: 1 });
+
 module.exports = mongoose.model("Order", orderSchema);

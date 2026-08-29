@@ -82,6 +82,24 @@ textarea::placeholder {
   color: #d6d3d1 !important;
 }
 
+/* Mobile responsive scrolling and table overflow */
+.mobile-scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.mobile-scroll-y {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Ensure touch scroll is smooth across all mobile containers */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* High contrast print adjustments */
 @media print {
   body {

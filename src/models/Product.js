@@ -81,4 +81,9 @@ const productSchema = new mongoose.Schema({
   },
 });
 
+// Indexes for high performance searching, filtering, and sorting
+productSchema.index({ is_active: 1, created_at: -1 });
+productSchema.index({ category: 1, is_active: 1 });
+productSchema.index({ price: 1 });
+
 module.exports = mongoose.model("Product", productSchema);

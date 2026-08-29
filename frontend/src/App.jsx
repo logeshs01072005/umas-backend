@@ -2428,35 +2428,37 @@ function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdat
                 No payment transactions recorded.
               </div>
             ) : (
-              <div className="bg-white border border-stone-200 rounded-md overflow-hidden shadow-sm">
-                <table className="w-full text-left text-xs text-stone-600">
-                  <thead className="bg-stone-900 text-amber-300 uppercase tracking-wider">
-                    <tr>
-                      <th className="p-3">Txn ID</th>
-                      <th className="p-3">Method</th>
-                      <th className="p-3">Type</th>
-                      <th className="p-3">Amount</th>
-                      <th className="p-3">Status</th>
-                      <th className="p-3">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-stone-200">
-                    {transactions.map((t) => (
-                      <tr key={t._id} className="hover:bg-stone-50">
-                        <td className="p-3 font-mono font-medium">{t.transaction_id}</td>
-                        <td className="p-3">{t.payment_method}</td>
-                        <td className="p-3 font-semibold">{t.type}</td>
-                        <td className="p-3 font-bold text-stone-900">{inr(t.amount)}</td>
-                        <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${t.status === "Success" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
-                            {t.status}
-                          </span>
-                        </td>
-                        <td className="p-3 text-stone-400">{formatDateTime(t.created_at)}</td>
+              <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
+                  <table className="w-full text-left text-xs text-stone-600 min-w-[540px]">
+                    <thead className="bg-stone-900 text-amber-300 uppercase tracking-wider">
+                      <tr>
+                        <th className="p-3">Txn ID</th>
+                        <th className="p-3">Method</th>
+                        <th className="p-3">Type</th>
+                        <th className="p-3">Amount</th>
+                        <th className="p-3">Status</th>
+                        <th className="p-3">Date</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-stone-200">
+                      {transactions.map((t) => (
+                        <tr key={t._id} className="hover:bg-stone-50">
+                          <td className="p-3 font-mono font-medium">{t.transaction_id}</td>
+                          <td className="p-3">{t.payment_method}</td>
+                          <td className="p-3 font-semibold">{t.type}</td>
+                          <td className="p-3 font-bold text-stone-900">{inr(t.amount)}</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${t.status === "Success" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+                              {t.status}
+                            </span>
+                          </td>
+                          <td className="p-3 text-stone-400">{formatDateTime(t.created_at)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>
@@ -3693,47 +3695,51 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
   };
 
   return (
-    <div className="bg-stone-900 min-h-screen text-stone-100 p-6">
+    <div className="min-h-screen text-slate-100 p-3 sm:p-6" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #0f172a 100%)" }}>
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-amber-500/20 pb-6 mb-8">
+        {/* Admin Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 border-b border-indigo-500/30 pb-5 mb-6 sm:mb-8">
           <div>
-            <span className="text-amber-400 text-xs tracking-widest uppercase">Admin Management</span>
-            <h1 className="font-serif text-3xl text-stone-50 font-medium">Boutique Control Center</h1>
+            <span className="text-indigo-400 text-[10px] sm:text-xs tracking-widest uppercase font-semibold">⚙ Admin Control Panel</span>
+            <h1 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-0.5">Boutique Control Center</h1>
+            <p className="text-slate-400 text-xs mt-0.5 hidden sm:block">Uma's Fashion & Boutique — Admin Management</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button
               onClick={() => { setEditingProduct(null); setProductModalOpen(true); }}
-              className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full flex items-center gap-1.5 shadow-lg"
+              className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 sm:px-5 sm:py-2.5 rounded-full flex items-center gap-1.5 shadow-lg transition-colors"
             >
-              <Plus size={16} /> Add New Product
+              <Plus size={14} /> Add Product
             </button>
-            <button onClick={() => setView("home")} className="bg-stone-800 text-amber-300 text-xs uppercase tracking-wider px-4 py-2.5 rounded-full hover:bg-stone-700">
-              Exit Admin Panel
+            <button onClick={() => setView("home")} className="bg-slate-800/80 border border-slate-700 text-indigo-300 text-xs uppercase tracking-wider px-3 py-2 sm:px-4 sm:py-2.5 rounded-full hover:bg-slate-700 transition-colors">
+              ← Exit
             </button>
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex border-b border-stone-800 overflow-x-auto mb-8 gap-2">
+        {/* Navigation Tabs — horizontally scrollable on mobile */}
+        <div className="flex border-b border-slate-700/60 overflow-x-auto mb-6 sm:mb-8 gap-1 pb-0 -mx-3 px-3 sm:mx-0 sm:px-0" style={{ WebkitOverflowScrolling: "touch" }}>
           {[
-            ["analytics", "Analytics Dashboard", BarChart3],
-            ["customers", "Customer Management", Users],
-            ["inventory", "Inventory & Stock", Package],
-            ["banners", "Promotional Banners & Banners", ImageIcon],
-            ["theme", "Seasonal Theme Control", Sparkles],
-            ["payments", "Payment Methods", CreditCard],
-            ["payverify", `Payment Verification${pendingPayments.length > 0 ? ` (${pendingPayments.length})` : ""}`, ShieldCheck],
-            ["tracking", "Order Tracking Management", MapPin],
-            ["returns", "Return Claims & Refund Management", RotateCcw],
-            ["reviews", "Reviews Moderation", Star],
+            ["analytics", "Analytics", BarChart3],
+            ["customers", "Customers", Users],
+            ["inventory", "Inventory", Package],
+            ["banners", "Banners", ImageIcon],
+            ["theme", "Theme", Sparkles],
+            ["payments", "Payments", CreditCard],
+            ["payverify", `Verify${pendingPayments.length > 0 ? ` (${pendingPayments.length})` : ""}`, ShieldCheck],
+            ["tracking", "Tracking", MapPin],
+            ["returns", "Returns", RotateCcw],
+            ["reviews", "Reviews", Star],
           ].map(([tabKey, label, Icon]) => (
             <button
               key={tabKey}
               onClick={() => setAdminTab(tabKey)}
-              className={`flex items-center gap-2 px-4 py-3 text-xs uppercase tracking-wider font-bold border-b-2 shrink-0 ${adminTab === tabKey ? "border-amber-400 text-amber-300 bg-stone-800/60" : "border-transparent text-stone-400 hover:text-stone-200"
-                } ${tabKey === "payverify" && pendingPayments.length > 0 ? "text-amber-400" : ""}`}
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-3 text-[10px] sm:text-xs uppercase tracking-wider font-bold border-b-2 shrink-0 transition-all whitespace-nowrap ${adminTab === tabKey
+                ? "border-amber-400 text-amber-300 bg-indigo-900/40"
+                : "border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-600"
+              } ${tabKey === "payverify" && pendingPayments.length > 0 ? "text-amber-400 border-amber-500/50" : ""}`}
             >
-              <Icon size={16} /> {label}
+              <Icon size={14} /> {label}
             </button>
           ))}
         </div>
@@ -3777,22 +3783,22 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
               </div>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="bg-stone-800/80 border border-stone-700 p-5 rounded-md">
-                <div className="text-stone-400 text-xs uppercase tracking-wider">Total Revenue</div>
-                <div className="text-2xl font-serif text-amber-400 font-bold mt-1">{inr(stats?.revenue || 0)}</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              <div className="bg-slate-800/70 border border-indigo-500/20 p-4 sm:p-5 rounded-xl shadow-lg">
+                <div className="text-slate-400 text-xs uppercase tracking-wider">Total Revenue</div>
+                <div className="text-xl sm:text-2xl font-serif text-amber-400 font-bold mt-1">{inr(stats?.revenue || 0)}</div>
               </div>
-              <div className="bg-stone-800/80 border border-stone-700 p-5 rounded-md">
-                <div className="text-stone-400 text-xs uppercase tracking-wider">Total Orders</div>
-                <div className="text-2xl font-serif text-stone-100 font-bold mt-1">{stats?.totalOrders || 0}</div>
+              <div className="bg-slate-800/70 border border-indigo-500/20 p-4 sm:p-5 rounded-xl shadow-lg">
+                <div className="text-slate-400 text-xs uppercase tracking-wider">Total Orders</div>
+                <div className="text-xl sm:text-2xl font-serif text-slate-100 font-bold mt-1">{stats?.totalOrders || 0}</div>
               </div>
-              <div className="bg-stone-800/80 border border-stone-700 p-5 rounded-md">
-                <div className="text-stone-400 text-xs uppercase tracking-wider">Total Customers</div>
-                <div className="text-2xl font-serif text-stone-100 font-bold mt-1">{stats?.totalCustomers || customers.length}</div>
+              <div className="bg-slate-800/70 border border-indigo-500/20 p-4 sm:p-5 rounded-xl shadow-lg">
+                <div className="text-slate-400 text-xs uppercase tracking-wider">Total Customers</div>
+                <div className="text-xl sm:text-2xl font-serif text-slate-100 font-bold mt-1">{stats?.totalCustomers || customers.length}</div>
               </div>
-              <div className="bg-stone-800/80 border border-stone-700 p-5 rounded-md">
-                <div className="text-stone-400 text-xs uppercase tracking-wider">Pending Orders</div>
-                <div className="text-2xl font-serif text-amber-500 font-bold mt-1">{stats?.pendingOrders || 0}</div>
+              <div className="bg-slate-800/70 border border-indigo-500/20 p-4 sm:p-5 rounded-xl shadow-lg">
+                <div className="text-slate-400 text-xs uppercase tracking-wider">Pending Orders</div>
+                <div className="text-xl sm:text-2xl font-serif text-amber-500 font-bold mt-1">{stats?.pendingOrders || 0}</div>
               </div>
             </div>
 
@@ -3819,48 +3825,51 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
         {adminTab === "customers" && (
           <div className="space-y-6">
             <h2 className="font-serif text-xl text-amber-300">Customer Management</h2>
-            <div className="bg-stone-800 border border-stone-700 rounded-md overflow-hidden">
-              <table className="w-full text-left text-xs text-stone-300">
-                <thead className="bg-stone-950 text-amber-300 uppercase tracking-wider">
-                  <tr>
-                    <th className="p-3">Full Name</th>
-                    <th className="p-3">Email Address</th>
-                    <th className="p-3">Phone Number</th>
-                    <th className="p-3">Registration Date</th>
-                    <th className="p-3">Account Status</th>
-                    <th className="p-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-700">
-                  {customers.map((c) => (
-                    <tr key={c.id} className="hover:bg-stone-750">
-                      <td className="p-3 font-medium text-stone-100">{c.name}</td>
-                      <td className="p-3">{c.email}</td>
-                      <td className="p-3">{c.phone}</td>
-                      <td className="p-3 text-stone-400">{formatDateTime(c.registrationDate)}</td>
-                      <td className="p-3">
-                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${c.status === "Active" ? "bg-emerald-900 text-emerald-300" : "bg-rose-900 text-rose-300"}`}>
-                          {c.status}
-                        </span>
-                      </td>
-                      <td className="p-3 flex gap-2">
-                        <button
-                          onClick={() => handleViewCustomerDetail(c)}
-                          className="bg-stone-700 hover:bg-stone-600 text-amber-300 px-2.5 py-1 rounded text-xs flex items-center gap-1"
-                        >
-                          <ShoppingBag size={11} /> Cart & Orders
-                        </button>
-                        <button
-                          onClick={() => handleToggleCustomerStatus(c.id, c.status)}
-                          className={`px-3 py-1 rounded text-xs font-medium ${c.status === "Active" ? "bg-rose-800 text-stone-100 hover:bg-rose-700" : "bg-emerald-800 text-stone-100 hover:bg-emerald-700"}`}
-                        >
-                          {c.status === "Active" ? "Block" : "Unblock"}
-                        </button>
-                      </td>
+            {/* Scrollable table on mobile */}
+            <div className="bg-slate-800/70 border border-indigo-500/20 rounded-xl overflow-hidden shadow-lg">
+              <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
+                <table className="w-full text-left text-xs text-slate-300 min-w-[640px]">
+                  <thead className="bg-slate-950/80 text-amber-300 uppercase tracking-wider">
+                    <tr>
+                      <th className="p-3">Full Name</th>
+                      <th className="p-3">Email Address</th>
+                      <th className="p-3">Phone Number</th>
+                      <th className="p-3">Registration Date</th>
+                      <th className="p-3">Account Status</th>
+                      <th className="p-3">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-700/50">
+                    {customers.map((c) => (
+                      <tr key={c.id} className="hover:bg-indigo-900/20 transition-colors">
+                        <td className="p-3 font-medium text-slate-100">{c.name}</td>
+                        <td className="p-3">{c.email}</td>
+                        <td className="p-3">{c.phone}</td>
+                        <td className="p-3 text-slate-400">{formatDateTime(c.registrationDate)}</td>
+                        <td className="p-3">
+                          <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${c.status === "Active" ? "bg-emerald-900/60 text-emerald-300 border border-emerald-700" : "bg-rose-900/60 text-rose-300 border border-rose-700"}`}>
+                            {c.status}
+                          </span>
+                        </td>
+                        <td className="p-3 flex gap-2">
+                          <button
+                            onClick={() => handleViewCustomerDetail(c)}
+                            className="bg-slate-700 hover:bg-slate-600 text-amber-300 px-2.5 py-1 rounded text-xs flex items-center gap-1"
+                          >
+                            <ShoppingBag size={11} /> Cart & Orders
+                          </button>
+                          <button
+                            onClick={() => handleToggleCustomerStatus(c.id, c.status)}
+                            className={`px-3 py-1 rounded text-xs font-medium ${c.status === "Active" ? "bg-rose-800/70 text-rose-100 hover:bg-rose-700" : "bg-emerald-800/70 text-slate-100 hover:bg-emerald-700"}`}
+                          >
+                            {c.status === "Active" ? "Block" : "Unblock"}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
@@ -3937,83 +3946,72 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
               </div>
             </div>
 
-            <div className="bg-stone-800 border border-stone-700 rounded-md overflow-hidden">
-              <table className="w-full text-left text-xs text-stone-300">
-                <thead className="bg-stone-950 text-amber-300 uppercase tracking-wider">
-                  <tr>
-                    <th className="p-3">Product Name</th>
-                    <th className="p-3">Category</th>
-                    <th className="p-3">Price</th>
-                    <th className="p-3">Stock Quantity</th>
-                    <th className="p-3">Status Tag</th>
-                    <th className="p-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-700">
-                  {products.map((p) => (
-                    <tr key={p.id} className="hover:bg-stone-750">
-                      <td className="p-3 font-medium text-stone-100 flex items-center gap-2">
-                        {p.imageUrl && <img src={getImageUrl(p.imageUrl)} alt="" className="w-8 h-8 object-cover rounded" />}
-                        <span>{p.name}</span>
-                      </td>
-                      <td className="p-3">{p.category}</td>
-                      <td className="p-3">{inr(p.price)}</td>
-                      <td className="p-3">
-                        {stockEditId === p.id ? (
-                          <div className="flex items-center gap-1">
-                            <input
-                              type="number"
-                              min="0"
-                              value={stockEditVal}
-                              onChange={(e) => setStockEditVal(e.target.value)}
-                              className="w-20 bg-stone-900 border border-amber-500 text-amber-300 px-2 py-1 rounded text-xs"
-                              autoFocus
-                            />
-                            <button
-                              onClick={() => handleSaveStock(p.id)}
-                              className="bg-emerald-700 hover:bg-emerald-600 text-white px-2 py-1 rounded text-xs"
-                            >
-                              <Check size={11} />
-                            </button>
-                            <button
-                              onClick={() => { setStockEditId(null); setStockEditVal(""); }}
-                              className="bg-stone-700 text-stone-300 px-2 py-1 rounded text-xs"
-                            >
-                              <X size={11} />
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <span className={`font-bold ${p.stock <= (p.lowStockThreshold || 5) ? "text-rose-400" : "text-amber-400"}`}>{p.stock}</span>
-                            <button
-                              onClick={() => { setStockEditId(p.id); setStockEditVal(String(p.stock)); }}
-                              className="text-stone-500 hover:text-amber-300"
-                              title="Edit stock"
-                            >
-                              <Edit2 size={11} />
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                      <td className="p-3">
-                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${p.status === "Available" ? "bg-emerald-900 text-emerald-300" :
-                          p.status === "Coming Soon" ? "bg-blue-900 text-blue-300" :
-                            "bg-rose-900 text-rose-300"
-                          }`}>
-                          {p.status || "Available"}
-                        </span>
-                      </td>
-                      <td className="p-3 flex gap-2">
-                        <button onClick={() => { setEditingProduct(p); setProductModalOpen(true); }} className="bg-stone-700 hover:bg-stone-600 text-amber-300 px-2.5 py-1 rounded text-xs flex items-center gap-1">
-                          <Edit2 size={12} /> Edit
-                        </button>
-                        <button onClick={() => saveProduct({ ...p, stock: p.stock + 10 })} className="bg-amber-500 text-stone-950 px-2 py-1 rounded text-xs font-bold">+10 Stock</button>
-                        <button onClick={() => deleteProduct(p.id)} className="bg-rose-900 text-rose-200 px-2 py-1 rounded text-xs">Delete</button>
-                      </td>
+            <div className="bg-slate-800/70 border border-indigo-500/20 rounded-xl overflow-hidden shadow-lg">
+              <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
+                <table className="w-full text-left text-xs text-slate-300 min-w-[640px]">
+                  <thead className="bg-slate-950/80 text-amber-300 uppercase tracking-wider">
+                    <tr>
+                      <th className="p-3">Product Name</th>
+                      <th className="p-3">Category</th>
+                      <th className="p-3">Price</th>
+                      <th className="p-3">Stock Quantity</th>
+                      <th className="p-3">Status Tag</th>
+                      <th className="p-3">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-700/50">
+                    {products.map((p) => (
+                      <tr key={p.id} className="hover:bg-indigo-900/20 transition-colors">
+                        <td className="p-3 font-medium text-slate-100 flex items-center gap-2">
+                          {p.imageUrl && <img src={getImageUrl(p.imageUrl)} alt="" className="w-8 h-8 object-cover rounded-lg border border-slate-600" />}
+                          <span>{p.name}</span>
+                        </td>
+                        <td className="p-3">{p.category}</td>
+                        <td className="p-3 font-semibold text-amber-400">{inr(p.price)}</td>
+                        <td className="p-3">
+                          {stockEditId === p.id ? (
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="number"
+                                min="0"
+                                value={stockEditVal}
+                                onChange={(e) => setStockEditVal(e.target.value)}
+                                className="w-20 bg-slate-900 border border-amber-500 text-amber-300 px-2 py-1 rounded text-xs"
+                                autoFocus
+                              />
+                              <button onClick={() => handleSaveStock(p.id)} className="bg-emerald-700 hover:bg-emerald-600 text-white px-2 py-1 rounded text-xs">
+                                <Check size={11} />
+                              </button>
+                              <button onClick={() => { setStockEditId(null); setStockEditVal(""); }} className="bg-slate-700 text-slate-300 px-2 py-1 rounded text-xs">
+                                <X size={11} />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <span className={`font-bold ${p.stock <= (p.lowStockThreshold || 5) ? "text-rose-400" : "text-emerald-400"}`}>{p.stock}</span>
+                              <button onClick={() => { setStockEditId(p.id); setStockEditVal(String(p.stock)); }} className="text-slate-500 hover:text-amber-300" title="Edit stock">
+                                <Edit2 size={11} />
+                              </button>
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-3">
+                          <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${p.status === "Available" ? "bg-emerald-900/50 text-emerald-300 border-emerald-700" : p.status === "Coming Soon" ? "bg-blue-900/50 text-blue-300 border-blue-700" : "bg-rose-900/50 text-rose-300 border-rose-700"}`}>
+                            {p.status || "Available"}
+                          </span>
+                        </td>
+                        <td className="p-3 flex gap-2 flex-wrap">
+                          <button onClick={() => { setEditingProduct(p); setProductModalOpen(true); }} className="bg-slate-700 hover:bg-slate-600 text-amber-300 px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                            <Edit2 size={12} /> Edit
+                          </button>
+                          <button onClick={() => saveProduct({ ...p, stock: p.stock + 10 })} className="bg-amber-500 text-slate-950 px-2 py-1 rounded text-xs font-bold">+10 Stock</button>
+                          <button onClick={() => deleteProduct(p.id)} className="bg-rose-900/70 text-rose-200 px-2 py-1 rounded text-xs border border-rose-800">Delete</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
