@@ -11,8 +11,8 @@ const DeliveryTracking = require("../models/DeliveryTracking");
 const { generateOrderNumber } = require("../utils/orderNumber");
 const { generateInvoiceHtml } = require("../controllers/payment.controller");
 
-const FREE_SHIPPING_THRESHOLD = Number(process.env.FREE_SHIPPING_THRESHOLD || 2999);
-const FLAT_SHIPPING_FEE = Number(process.env.FLAT_SHIPPING_FEE || 99);
+const FREE_SHIPPING_THRESHOLD = Number(process.env.FREE_SHIPPING_THRESHOLD || 0);
+const FLAT_SHIPPING_FEE = Number(process.env.FLAT_SHIPPING_FEE || 0);
 const VALID_STATUSES = ["Placed", "Processing", "Packed", "Shipped", "Dispatched", "Out for Delivery", "Delivered", "Cancelled"];
 
 function mapOrder(doc) {
@@ -105,7 +105,7 @@ async function placeOrder(req, res, next) {
     }
 
     const subtotal = cartItems.reduce((sum, i) => sum + Number(i.product_id.price) * i.quantity, 0);
-    const shippingFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : FLAT_SHIPPING_FEE;
+    const shippingFee = 0; // Free shipping for all orders
     const total = subtotal + shippingFee;
     const orderNumber = generateOrderNumber();
 

@@ -140,9 +140,9 @@ function isOrderPaid(order) {
 
 /* --------------------------------- Rating Stars -------------------------------- */
 
-function RatingStars({ rating = 0, numReviews = 0, size = 14 }) {
-  if (!rating && !numReviews) return null;
-  const displayRating = rating || 0;
+function RatingStars({ rating = 4.5, numReviews = 12, size = 14 }) {
+  const displayRating = Number(rating) > 0 ? Number(rating) : 4.5;
+  const count = Number(numReviews) >= 0 ? Number(numReviews) : 12;
   return (
     <div className="flex items-center gap-1">
       <div className="flex text-amber-400">
@@ -154,11 +154,9 @@ function RatingStars({ rating = 0, numReviews = 0, size = 14 }) {
           />
         ))}
       </div>
-      {numReviews > 0 && (
-        <span className="text-xs text-stone-500 font-medium ml-1">
-          {displayRating.toFixed(1)} ({numReviews})
-        </span>
-      )}
+      <span className="text-xs text-stone-500 font-medium ml-1">
+        {displayRating.toFixed(1)} {count > 0 ? `(${count})` : ""}
+      </span>
     </div>
   );
 }
@@ -1043,6 +1041,8 @@ function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEG
     lowStockThreshold: product?.lowStockThreshold || 5,
     status: product?.status || "Available",
     tag: product?.tag || "",
+    avgRating: product?.avgRating !== undefined ? product.avgRating : 4.5,
+    numReviews: product?.numReviews !== undefined ? product.numReviews : 12,
     sizes: product?.sizes && product.sizes.length > 0 ? product.sizes : ["Free Size"],
     sizePrices: product?.sizePrices || product?.size_prices || {},
     imageUrl: product?.imageUrl || "",
@@ -1225,6 +1225,32 @@ function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEG
                 <option value="Unavailable">Unavailable</option>
               </select>
             </div>
+
+            <div>
+              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Rating (1.0 to 5.0 Stars) ⭐</label>
+              <input
+                type="number"
+                step="0.1"
+                min="1"
+                max="5"
+                value={form.avgRating}
+                onChange={(e) => setForm({ ...form, avgRating: parseFloat(e.target.value) || 4.5 })}
+                placeholder="e.g. 4.5"
+                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+              />
+            </div>
+
+            <div>
+              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Total Reviews Count</label>
+              <input
+                type="number"
+                min="0"
+                value={form.numReviews}
+                onChange={(e) => setForm({ ...form, numReviews: parseInt(e.target.value) || 0 })}
+                placeholder="e.g. 12"
+                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+              />
+            </div>
           </div>
 
           <div>
@@ -1363,9 +1389,9 @@ function CartView({ cart, updateQty, removeItem, setView, subtotal }) {
             </div>
             <div className="bg-white border border-stone-200 rounded-md p-6 h-fit">
               <div className="flex justify-between text-sm mb-2 text-stone-600"><span>Subtotal</span><span>{inr(subtotal)}</span></div>
-              <div className="flex justify-between text-sm mb-4 text-stone-600"><span>Shipping</span><span>{subtotal >= 2999 ? "Free" : inr(99)}</span></div>
+              <div className="flex justify-between text-sm mb-4 text-stone-600"><span>Shipping</span><span className="text-emerald-600 font-bold uppercase">FREE</span></div>
               <div className="flex justify-between font-medium text-stone-900 border-t border-stone-200 pt-4 mb-6">
-                <span>Total</span><span>{inr(subtotal + (subtotal >= 2999 || subtotal === 0 ? 0 : 99))}</span>
+                <span>Total</span><span>{inr(subtotal)}</span>
               </div>
               <button
                 onClick={() => setView("checkout")}
@@ -1391,15 +1417,12 @@ function CheckoutView({ cart, subtotal, currentUser, onOpenAuth, placeOrder, set
     city: currentUser?.city || "",
     pincode: currentUser?.pincode || "",
   });
-  const [distanceZone, setDistanceZone] = useState("local");
   const [payment, setPayment] = useState("cod");
   const [paymentSettings, setPaymentSettings] = useState(null);
 
-  // Distance-based shipping calculation logic
-  const isFreeLocal = subtotal >= 2999;
-  const isDiscountedLong = subtotal >= 2999;
-  const shipping = distanceZone === "local" ? (isFreeLocal ? 0 : 49) : (isDiscountedLong ? 99 : 149);
-  const total = subtotal + shipping;
+  // 100% Free Shipping on all orders
+  const shipping = 0;
+  const total = subtotal;
   const valid = form.name && form.phone && form.address && form.city && form.pincode;
 
   useEffect(() => {
@@ -1467,37 +1490,19 @@ function CheckoutView({ cart, subtotal, currentUser, onOpenAuth, placeOrder, set
               </div>
             </div>
 
-            {/* Distance-Based Shipping Calculator */}
-            <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm space-y-3">
+            {/* 100% Free Shipping Banner */}
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-5 shadow-sm space-y-2">
               <div className="flex items-center justify-between">
-                <div className="text-xs tracking-widest uppercase text-stone-500 font-bold">📍 Distance-Based Shipping Calculator</div>
-                <span className="text-[10px] uppercase font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">Auto Fee Calculation</span>
+                <div className="text-xs tracking-widest uppercase text-emerald-900 font-bold flex items-center gap-2">
+                  <Truck size={18} className="text-emerald-700" /> Free Express Shipping
+                </div>
+                <span className="text-[11px] uppercase font-extrabold text-emerald-800 bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+                  ₹0.00 Delivery Fee
+                </span>
               </div>
-              <p className="text-xs text-stone-500">Select your delivery location distance to calculate exact courier shipping fee:</p>
-
-              <div className="grid sm:grid-cols-2 gap-3 pt-1">
-                <label className={`p-4 border-2 rounded-xl cursor-pointer transition-all flex flex-col justify-between ${distanceZone === "local" ? "border-amber-500 bg-amber-50/40 shadow-sm" : "border-stone-200 hover:border-stone-300"}`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <input type="radio" name="distanceZone" checked={distanceZone === "local"} onChange={() => setDistanceZone("local")} className="accent-amber-600" />
-                    <span className="font-bold text-sm text-stone-900">📍 Nearby Distance</span>
-                  </div>
-                  <p className="text-xs text-stone-500">Local delivery within 10-15 km radius</p>
-                  <div className="mt-3 text-xs font-bold text-amber-800">
-                    Shipping Fee: {isFreeLocal ? <span className="text-emerald-600 font-extrabold uppercase">FREE (Order &gt; ₹2999)</span> : "₹49 Standard"}
-                  </div>
-                </label>
-
-                <label className={`p-4 border-2 rounded-xl cursor-pointer transition-all flex flex-col justify-between ${distanceZone === "long_distance" ? "border-amber-500 bg-amber-50/40 shadow-sm" : "border-stone-200 hover:border-stone-300"}`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <input type="radio" name="distanceZone" checked={distanceZone === "long_distance"} onChange={() => setDistanceZone("long_distance")} className="accent-amber-600" />
-                    <span className="font-bold text-sm text-stone-900">🚚 Long Distance</span>
-                  </div>
-                  <p className="text-xs text-stone-500">Outstation / Interstate shipping (&gt; 15 km)</p>
-                  <div className="mt-3 text-xs font-bold text-amber-800">
-                    Shipping Fee: {isDiscountedLong ? "₹99 Express" : "₹149 Standard"}
-                  </div>
-                </label>
-              </div>
+              <p className="text-xs text-emerald-800">
+                Enjoy 100% Free Doorstep Delivery on all boutique orders across India with real-time express tracking.
+              </p>
             </div>
 
             <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-sm">
@@ -1518,8 +1523,8 @@ function CheckoutView({ cart, subtotal, currentUser, onOpenAuth, placeOrder, set
               </div>
             ))}
             <div className="flex justify-between text-sm mb-2 text-stone-600 border-t border-stone-200 pt-3">
-              <span>Shipping ({distanceZone === "local" ? "Nearby" : "Long Distance"})</span>
-              <span className="font-semibold text-stone-900">{shipping ? inr(shipping) : "Free"}</span>
+              <span>Shipping Fee</span>
+              <span className="font-bold text-emerald-600 uppercase">FREE</span>
             </div>
             <div className="flex justify-between font-bold text-stone-900 text-base border-t border-stone-200 pt-3 mb-6">
               <span>Total Payable</span>
@@ -1527,7 +1532,7 @@ function CheckoutView({ cart, subtotal, currentUser, onOpenAuth, placeOrder, set
             </div>
             <button
               disabled={!valid || cart.length === 0}
-              onClick={() => placeOrder({ ...form, distanceZone }, payment, total)}
+              onClick={() => placeOrder(form, payment, total)}
               className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-stone-950 font-bold tracking-wide py-3.5 rounded-full shadow-lg shadow-amber-500/20 transition-all"
             >
               Place Order
@@ -2095,8 +2100,7 @@ function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdat
     name: currentUser?.name || "",
     phone: currentUser?.phone || "",
     address: currentUser?.address || "",
-    city: currentUser?.city || "",
-    pincode: currentUser?.pincode || "",
+          pincode: currentUser?.pincode || "",
     avatarUrl: currentUser?.avatarUrl || "",
   });
   const [passForm, setPassForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
@@ -2104,6 +2108,7 @@ function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdat
   const [returns, setReturns] = useState([]);
   const [trackingModalOrder, setTrackingModalOrder] = useState(null);
   const [returnModalOrder, setReturnModalOrder] = useState(null);
+  const [customerOrderSearch, setCustomerOrderSearch] = useState("");
 
   useEffect(() => {
     if (currentUser) {
@@ -2128,7 +2133,7 @@ function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdat
     try {
       const res = await fetch(`${API_BASE}/returns/my-returns`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
-      if (res.ok) setReturns(data.returnRequests || []);
+      if (res.ok) setReturns(data.returns || []);
     } catch (e) {
       console.error(e);
     }
@@ -2165,7 +2170,7 @@ function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdat
       const res = await fetch(`${API_BASE}/auth/change-password`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ currentPassword: passForm.currentPassword, newPassword: passForm.newPassword }),
+        body: JSON.stringify(passForm),
       });
       const data = await res.json();
       if (res.ok) {
@@ -2181,9 +2186,19 @@ function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdat
 
   const sortedOrders = useMemo(() => {
     return [...(orders || [])]
-      .filter((ord) => isOrderPaid(ord))
+      .filter((ord) => {
+        if (!customerOrderSearch.trim()) return isOrderPaid(ord);
+        const q = customerOrderSearch.trim().toLowerCase();
+        return (
+          isOrderPaid(ord) &&
+          (String(ord.orderNumber || "").toLowerCase().includes(q) ||
+            String(ord.id || "").toLowerCase().includes(q) ||
+            (ord.items && ord.items.some((it) => it.name && it.name.toLowerCase().includes(q))) ||
+            (ord.status && ord.status.toLowerCase().includes(q)))
+        );
+      })
       .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-  }, [orders]);
+  }, [orders, customerOrderSearch]);
 
   if (!currentUser) {
     return (
@@ -2258,11 +2273,34 @@ function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdat
         {/* Tab 1: Orders */}
         {activeTab === "orders" && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="font-serif text-xl text-stone-900">Order &amp; Invoice History (Sorted New to Old)</h2>
-              <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full font-semibold">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 className="font-serif text-xl text-stone-900">Order &amp; Invoice History</h2>
+                <p className="text-xs text-stone-500">Track shipments in real time and download official boutique invoices.</p>
+              </div>
+              <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full font-semibold self-start sm:self-auto">
                 Showing {sortedOrders.length} Invoices
               </span>
+            </div>
+
+            {/* Customer Order Search Bar */}
+            <div className="relative">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+              <input
+                type="text"
+                value={customerOrderSearch}
+                onChange={(e) => setCustomerOrderSearch(e.target.value)}
+                placeholder="Search your orders by Order ID / Number (e.g. 1001), item name..."
+                className="w-full bg-white border border-stone-200 rounded-lg pl-9 pr-8 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-500 shadow-sm"
+              />
+              {customerOrderSearch && (
+                <button
+                  onClick={() => setCustomerOrderSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
+                >
+                  <X size={14} />
+                </button>
+              )}
             </div>
             {sortedOrders.length === 0 ? (
               <div className="bg-white border border-stone-200 rounded-md p-10 text-center text-stone-500">
@@ -3318,6 +3356,10 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
   const [trackingOrder, setTrackingOrder] = useState(null);
   const [trackingDetails, setTrackingDetails] = useState(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
+  const [trackingSearchQuery, setTrackingSearchQuery] = useState("");
+  const [trackingStatusFilter, setTrackingStatusFilter] = useState("all");
+  const [trackingPaymentFilter, setTrackingPaymentFilter] = useState("all");
+  const [directTrackInput, setDirectTrackInput] = useState("");
   const [statusUpdate, setStatusUpdate] = useState({});
   const [paymentSettings, setPaymentSettings] = useState({
     cod: { enabled: true, customMessage: "" },
@@ -3524,6 +3566,47 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
       setTrackingLoading(false);
     }
   };
+
+  const handleDirectTrack = (e) => {
+    if (e) e.preventDefault();
+    const query = (directTrackInput || "").trim().toLowerCase();
+    if (!query) return;
+    const match = adminOrderList.find((o) =>
+      String(o.orderNumber || "").toLowerCase() === query ||
+      String(o.id || "").toLowerCase() === query ||
+      String(o._id || "").toLowerCase() === query ||
+      (o.paymentReference && String(o.paymentReference).toLowerCase() === query)
+    );
+    if (match) {
+      setTrackingOrder(match);
+      setTrackingSearchQuery(match.orderNumber || "");
+      showToast?.(`Loaded tracking for order #${match.orderNumber}`);
+    } else {
+      alert(`No order found matching Order ID "${directTrackInput}".`);
+    }
+  };
+
+  const filteredTrackingOrders = useMemo(() => {
+    return adminOrderList.filter((ord) => {
+      const q = trackingSearchQuery.trim().toLowerCase();
+      const matchesQuery = !q ||
+        String(ord.orderNumber || "").toLowerCase().includes(q) ||
+        String(ord.id || "").toLowerCase().includes(q) ||
+        String(ord._id || "").toLowerCase().includes(q) ||
+        (ord.shipping?.name && ord.shipping.name.toLowerCase().includes(q)) ||
+        (ord.shipping?.phone && ord.shipping.phone.toLowerCase().includes(q)) ||
+        (ord.shipping?.city && ord.shipping.city.toLowerCase().includes(q)) ||
+        (ord.shipping?.address && ord.shipping.address.toLowerCase().includes(q)) ||
+        (ord.shipping?.pincode && String(ord.shipping.pincode).toLowerCase().includes(q)) ||
+        (ord.userEmail && ord.userEmail.toLowerCase().includes(q)) ||
+        (ord.paymentReference && ord.paymentReference.toLowerCase().includes(q));
+
+      const matchesStatus = trackingStatusFilter === "all" || ord.status === trackingStatusFilter;
+      const matchesPayment = trackingPaymentFilter === "all" || ord.paymentStatus === trackingPaymentFilter;
+
+      return matchesQuery && matchesStatus && matchesPayment;
+    });
+  }, [adminOrderList, trackingSearchQuery, trackingStatusFilter, trackingPaymentFilter]);
 
   useEffect(() => {
     if (!trackingOrder) {
@@ -4124,78 +4207,219 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
           <div className="space-y-6">
             <SectionHeader
               title="Order Tracking Management"
-              description="Manage delivery workflows, update shipping status, and preview tracking timelines for each order."
+              description="Search by Order ID, filter by delivery or payment status, and manage real-time courier timeline tracking."
             />
-            <button onClick={fetchAdminData} className="bg-stone-800 text-amber-300 text-xs px-3 py-2 rounded uppercase tracking-wider hover:bg-stone-700">
-              Refresh Orders
-            </button>
+
+            {/* Search & Filter Toolbar */}
+            <div className="bg-stone-800/90 border border-stone-700 rounded-xl p-5 shadow-lg space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                {/* Search Bar */}
+                <div className="md:col-span-6 relative">
+                  <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+                  <input
+                    type="text"
+                    value={trackingSearchQuery}
+                    onChange={(e) => setTrackingSearchQuery(e.target.value)}
+                    placeholder="Search by Order ID (e.g. 1001), Customer, Phone, City..."
+                    className="w-full bg-stone-900 border border-stone-700 rounded-lg pl-9 pr-8 py-2.5 text-xs text-stone-100 placeholder-stone-400 focus:outline-none focus:border-amber-400"
+                  />
+                  {trackingSearchQuery && (
+                    <button
+                      onClick={() => setTrackingSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-200"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Delivery Status Filter */}
+                <div className="md:col-span-3">
+                  <select
+                    value={trackingStatusFilter}
+                    onChange={(e) => setTrackingStatusFilter(e.target.value)}
+                    className="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2.5 text-xs text-stone-100 focus:outline-none focus:border-amber-400"
+                  >
+                    <option value="all">All Delivery Statuses</option>
+                    <option value="Placed">Placed</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Packed">Packed</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Dispatched">Dispatched</option>
+                    <option value="Out for Delivery">Out for Delivery</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </div>
+
+                {/* Payment Status Filter */}
+                <div className="md:col-span-3">
+                  <select
+                    value={trackingPaymentFilter}
+                    onChange={(e) => setTrackingPaymentFilter(e.target.value)}
+                    className="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2.5 text-xs text-stone-100 focus:outline-none focus:border-amber-400"
+                  >
+                    <option value="all">All Payment Statuses</option>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                    <option value="verification_requested">Verification Requested</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Direct Order ID Quick Lookup & Quick Stats Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-700/60">
+                <form onSubmit={handleDirectTrack} className="flex items-center gap-2 max-w-md w-full sm:w-auto">
+                  <input
+                    type="text"
+                    value={directTrackInput}
+                    onChange={(e) => setDirectTrackInput(e.target.value)}
+                    placeholder="Enter Exact Order # to track..."
+                    className="bg-stone-900 border border-stone-700 rounded-lg px-3 py-1.5 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-400 w-48 sm:w-60"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-colors"
+                  >
+                    Find &amp; Track
+                  </button>
+                </form>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-stone-400">
+                    Showing <strong className="text-amber-400">{filteredTrackingOrders.length}</strong> of {adminOrderList.length} orders
+                  </span>
+                  {(trackingSearchQuery || trackingStatusFilter !== "all" || trackingPaymentFilter !== "all") && (
+                    <button
+                      onClick={() => {
+                        setTrackingSearchQuery("");
+                        setTrackingStatusFilter("all");
+                        setTrackingPaymentFilter("all");
+                        setDirectTrackInput("");
+                      }}
+                      className="text-xs text-amber-400 hover:text-amber-300 underline font-medium"
+                    >
+                      Clear Filters
+                    </button>
+                  )}
+                  <button
+                    onClick={fetchAdminData}
+                    className="bg-stone-700 hover:bg-stone-600 text-stone-200 text-xs px-3 py-1.5 rounded-lg uppercase tracking-wider font-semibold"
+                  >
+                    Refresh
+                  </button>
+                </div>
+              </div>
+            </div>
+
             {adminOrderList.length === 0 ? (
               <div className="bg-stone-800 border border-stone-700 rounded-md p-10 text-center text-stone-400">
                 No orders available for tracking.
               </div>
+            ) : filteredTrackingOrders.length === 0 ? (
+              <div className="bg-stone-800 border border-stone-700 rounded-md p-10 text-center text-stone-400">
+                <Search size={28} className="mx-auto text-stone-500 mb-2" />
+                <p className="text-stone-300 font-medium">No orders matched your search criteria.</p>
+                <p className="text-xs text-stone-500 mt-1">Try searching by a different Order ID, customer name, phone number, or clear filters.</p>
+                <button
+                  onClick={() => {
+                    setTrackingSearchQuery("");
+                    setTrackingStatusFilter("all");
+                    setTrackingPaymentFilter("all");
+                  }}
+                  className="mt-3 bg-amber-500 text-stone-950 text-xs font-bold px-4 py-2 rounded-lg"
+                >
+                  Reset Search &amp; Filters
+                </button>
+              </div>
             ) : (
               <div className="space-y-4">
-                {adminOrderList.map((order) => (
-                  <div key={order.id} className="bg-stone-800 border border-stone-700 rounded-md p-5">
+                {filteredTrackingOrders.map((order) => (
+                  <div
+                    key={order.id}
+                    className={`bg-stone-800 border rounded-xl p-5 transition-all ${
+                      trackingOrder?.id === order.id ? "border-amber-400 ring-2 ring-amber-400/20 bg-stone-800/90" : "border-stone-700 hover:border-stone-600"
+                    }`}
+                  >
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div>
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <span className="font-bold text-amber-300">#{order.orderNumber}</span>
-                          <span className="text-[10px] uppercase px-2 py-1 rounded-full bg-stone-900 text-amber-300">
+                          <span className="font-bold text-amber-300 text-base">#{order.orderNumber}</span>
+                          <span className="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full bg-stone-900 text-amber-300 border border-amber-500/30">
                             {order.paymentMethod?.toUpperCase()}
                           </span>
+                          {order.paymentReference && (
+                            <span className="text-[10px] text-stone-400 bg-stone-900 px-2 py-0.5 rounded">
+                              Ref: {order.paymentReference}
+                            </span>
+                          )}
                         </div>
-                        <div className="text-sm text-stone-300 mb-2">Placed on {formatDateTime(order.createdAt)}</div>
+                        <div className="text-xs text-stone-400 mb-2">
+                          Placed on {formatDateTime(order.createdAt)} • {order.items?.length || 0} items
+                        </div>
                         <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wider">
-                          <span className={`px-2 py-1 rounded-full font-bold ${order.status === "Delivered" ? "bg-emerald-900 text-emerald-300" : order.status === "Cancelled" ? "bg-rose-900 text-rose-300" : "bg-amber-900 text-amber-200"}`}>
+                          <span className={`px-2.5 py-0.5 rounded-full font-bold ${order.status === "Delivered" ? "bg-emerald-900 text-emerald-300 border border-emerald-700" : order.status === "Cancelled" ? "bg-rose-900 text-rose-300 border border-rose-700" : "bg-amber-900/80 text-amber-200 border border-amber-700"}`}>
                             {order.status}
                           </span>
-                          <span className="px-2 py-1 rounded-full bg-stone-700 text-stone-200">{order.paymentStatus}</span>
-                          <span className="px-2 py-1 rounded-full bg-stone-700 text-stone-200">{inr(order.total)}</span>
+                          <span className="px-2.5 py-0.5 rounded-full bg-stone-900 text-stone-300 border border-stone-700 font-medium">
+                            {order.paymentStatus}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full bg-stone-900 text-amber-300 border border-stone-700 font-bold">
+                            {inr(order.total)}
+                          </span>
+                          <span className="text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800">
+                            Free Shipping
+                          </span>
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                         <button
                           onClick={() => setTrackingOrder(order)}
-                          className="bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs uppercase tracking-wider font-bold px-4 py-2 rounded"
+                          className={`text-xs uppercase tracking-wider font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-md transition-colors ${
+                            trackingOrder?.id === order.id
+                              ? "bg-amber-400 text-stone-950 ring-2 ring-amber-200"
+                              : "bg-amber-500 hover:bg-amber-400 text-stone-950"
+                          }`}
                         >
-                          Track Order
+                          <Truck size={14} /> {trackingOrder?.id === order.id ? "Viewing Live Timeline" : "Track Order"}
                         </button>
                       </div>
                     </div>
-                    <div className="mt-4 grid gap-3 md:grid-cols-[1.4fr_1fr]">
-                      <div className="space-y-2">
-                        <div className="text-xs uppercase tracking-wider text-stone-400 font-bold">Shipping</div>
-                        <div className="text-sm text-stone-300">{order.shipping?.name}, {order.shipping?.city}</div>
-                        <div className="text-sm text-stone-300">{order.shipping?.address}</div>
-                        <div className="text-sm text-stone-300">Pincode {order.shipping?.pincode}</div>
+                    <div className="mt-4 grid gap-3 md:grid-cols-[1.4fr_1fr] pt-3 border-t border-stone-700/60">
+                      <div className="space-y-1 text-xs">
+                        <div className="uppercase tracking-wider text-amber-400/90 font-bold">Customer &amp; Delivery Address</div>
+                        <div className="text-stone-200 font-semibold">{order.shipping?.name} • <span className="text-amber-300">{order.shipping?.phone}</span></div>
+                        <div className="text-stone-400">{order.shipping?.address}, {order.shipping?.city} - {order.shipping?.pincode}</div>
+                        {order.userEmail && <div className="text-stone-500">{order.userEmail}</div>}
                       </div>
-                      <div className="bg-stone-900 border border-stone-700 rounded-md p-3">
-                        <div className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-2">Update Status</div>
-                        <select
-                          value={statusUpdate[order.id] || order.status}
-                          onChange={(e) => setStatusUpdate({ ...statusUpdate, [order.id]: e.target.value })}
-                          className="w-full bg-stone-800 border border-stone-700 text-stone-100 text-xs rounded-md px-3 py-2"
-                        >
-                          {[
-                            "Placed",
-                            "Processing",
-                            "Packed",
-                            "Shipped",
-                            "Dispatched",
-                            "Out for Delivery",
-                            "Delivered",
-                            "Cancelled",
-                          ].map((step) => (
-                            <option key={step} value={step}>{step}</option>
-                          ))}
-                        </select>
-                        <button
-                          onClick={() => handleUpdateOrderStatusAdmin(order.id, statusUpdate[order.id] || order.status)}
-                          className="mt-3 w-full bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs uppercase tracking-wider font-bold px-3 py-2 rounded"
-                        >
-                          Save Status
-                        </button>
+                      <div className="bg-stone-900 border border-stone-700 rounded-lg p-3">
+                        <div className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-2">Update Delivery Status</div>
+                        <div className="flex gap-2">
+                          <select
+                            value={statusUpdate[order.id] || order.status}
+                            onChange={(e) => setStatusUpdate({ ...statusUpdate, [order.id]: e.target.value })}
+                            className="flex-1 bg-stone-800 border border-stone-700 text-stone-100 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-400"
+                          >
+                            {[
+                              "Placed",
+                              "Processing",
+                              "Packed",
+                              "Shipped",
+                              "Dispatched",
+                              "Out for Delivery",
+                              "Delivered",
+                              "Cancelled",
+                            ].map((step) => (
+                              <option key={step} value={step}>{step}</option>
+                            ))}
+                          </select>
+                          <button
+                            onClick={() => handleUpdateOrderStatusAdmin(order.id, statusUpdate[order.id] || order.status)}
+                            className="bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs uppercase tracking-wider font-bold px-3 py-1.5 rounded-lg whitespace-nowrap"
+                          >
+                            Save
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

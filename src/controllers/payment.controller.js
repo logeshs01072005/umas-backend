@@ -90,7 +90,7 @@ function generateInvoiceHtml(order) {
       </table>
       <table class="summary">
         <tr><td>Subtotal</td><td class="right">₹${Number(order.subtotal).toFixed(2)}</td></tr>
-        <tr><td>Shipping</td><td class="right">₹${Number(order.shipping_fee).toFixed(2)}</td></tr>
+        <tr><td>Shipping</td><td class="right">${Number(order.shipping_fee) > 0 ? `₹${Number(order.shipping_fee).toFixed(2)}` : 'FREE (₹0.00)'}</td></tr>
         <tr class="total"><td>Total</td><td class="right">₹${Number(order.total).toFixed(2)}</td></tr>
       </table>
     </div>
@@ -221,7 +221,7 @@ async function verifyPayment(req, res, next) {
     </tbody>
   </table>
   <h3 style="text-align:right">Subtotal: ₹${Number(order.subtotal).toFixed(2)}</h3>
-  <h3 style="text-align:right">Shipping: ₹${Number(order.shipping_fee).toFixed(2)}</h3>
+  <h3 style="text-align:right">Shipping: ${Number(order.shipping_fee) > 0 ? `₹${Number(order.shipping_fee).toFixed(2)}` : 'FREE (₹0.00)'}</h3>
   <h2 style="text-align:right">Total: ₹${Number(order.total).toFixed(2)}</h2>
   <p>Thank you for shopping with Uma's Fashion & Boutique.</p>
 </body>
@@ -410,7 +410,7 @@ async function manualConfirm(req, res, next) {
     </tbody>
   </table>
   <h3 style="text-align:right">Subtotal: ₹${Number(order.subtotal).toFixed(2)}</h3>
-  <h3 style="text-align:right">Shipping: ₹${Number(order.shipping_fee).toFixed(2)}</h3>
+  <h3 style="text-align:right">Shipping: ${Number(order.shipping_fee) > 0 ? `₹${Number(order.shipping_fee).toFixed(2)}` : 'FREE (₹0.00)'}</h3>
   <h2 style="text-align:right">Total: ₹${Number(order.total).toFixed(2)}</h2>
   <p>Thank you for shopping with Uma's Fashion & Boutique.</p>
 </body>

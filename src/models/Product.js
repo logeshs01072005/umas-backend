@@ -58,11 +58,14 @@ const productSchema = new mongoose.Schema({
   },
   avg_rating: {
     type: Number,
-    default: 0,
+    default: 4.5,
+    min: 1,
+    max: 5,
   },
   num_reviews: {
     type: Number,
-    default: 0,
+    default: 12,
+    min: 0,
   },
   is_active: {
     type: Boolean,

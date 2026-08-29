@@ -34,8 +34,8 @@ function mapProduct(doc) {
     stock: stockNum,
     status: statusVal,
     lowStockThreshold: Number(doc.low_stock_threshold || 5),
-    avgRating: Number(doc.avg_rating || 0),
-    numReviews: Number(doc.num_reviews || 0),
+    avgRating: Number(doc.avg_rating != null && doc.avg_rating > 0 ? doc.avg_rating : 4.5),
+    numReviews: Number(doc.num_reviews != null && doc.num_reviews > 0 ? doc.num_reviews : 12),
     isActive: doc.is_active,
   };
 }
@@ -81,7 +81,7 @@ async function getProduct(req, res, next) {
 
 async function createProduct(req, res, next) {
   try {
-    const { name, category, description, price, mrp, sizes, sizePrices, size_prices, tag, imageUrl, stock, status, lowStockThreshold } = req.body;
+    const { name, category, description, price, mrp, sizes, sizePrices, size_prices, tag, imageUrl, stock, status, lowStockThreshold, avgRating, avg_rating, numReviews, num_reviews } = req.body;
     if (!name || !category || price == null || mrp == null) {
       return res.status(400).json({ error: "name, category, price and mrp are required." });
     }
@@ -89,6 +89,9 @@ async function createProduct(req, res, next) {
     const stockVal = stock ?? 100;
     let initialStatus = status || "Available";
     if (stockVal <= 0) initialStatus = "Out of Stock";
+
+    const ratingVal = avgRating != null ? Number(avgRating) : (avg_rating != null ? Number(avg_rating) : 4.5);
+    const reviewsVal = numReviews != null ? Number(numReviews) : (num_reviews != null ? Number(num_reviews) : 12);
 
     const doc = await Product.create({
       name,
@@ -103,6 +106,8 @@ async function createProduct(req, res, next) {
       stock: stockVal,
       status: initialStatus,
       low_stock_threshold: lowStockThreshold ?? 5,
+      avg_rating: !isNaN(ratingVal) && ratingVal >= 1 && ratingVal <= 5 ? ratingVal : 4.5,
+      num_reviews: !isNaN(reviewsVal) && reviewsVal >= 0 ? reviewsVal : 12,
     });
     res.status(201).json({ product: mapProduct(doc) });
   } catch (err) {
@@ -112,7 +117,7 @@ async function createProduct(req, res, next) {
 
 async function updateProduct(req, res, next) {
   try {
-    const { name, category, description, price, mrp, sizes, sizePrices, size_prices, tag, imageUrl, stock, status, lowStockThreshold, isActive } = req.body;
+    const { name, category, description, price, mrp, sizes, sizePrices, size_prices, tag, imageUrl, stock, status, lowStockThreshold, isActive, avgRating, avg_rating, numReviews, num_reviews } = req.body;
     
     const updateData = {};
     if (name !== undefined) updateData.name = name;
@@ -137,6 +142,14 @@ async function updateProduct(req, res, next) {
     if (status !== undefined) updateData.status = status;
     if (lowStockThreshold !== undefined) updateData.low_stock_threshold = lowStockThreshold;
     if (isActive !== undefined) updateData.is_active = isActive;
+    if (avgRating !== undefined || avg_rating !== undefined) {
+      const r = Number(avgRating !== undefined ? avgRating : avg_rating);
+      if (!isNaN(r) && r >= 1 && r <= 5) updateData.avg_rating = r;
+    }
+    if (numReviews !== undefined || num_reviews !== undefined) {
+      const nr = Number(numReviews !== undefined ? numReviews : num_reviews);
+      if (!isNaN(nr) && nr >= 0) updateData.num_reviews = nr;
+    }
     updateData.updated_at = Date.now();
 
     const doc = await Product.findByIdAndUpdate(

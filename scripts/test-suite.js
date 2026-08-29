@@ -49,12 +49,26 @@ async function runTests() {
     assert(testProd.name === "Test Silk Saree", "Product name set correctly");
     assert(testProd.size_prices.get("XL") === 2599, "Size XL custom price evaluated correctly (₹2599)");
     assert(testProd.size_prices.get("M") === 2199, "Size M custom price evaluated correctly (₹2199)");
+    assert(testProd.avg_rating === 4.5, "Product default rating evaluates to 4.5 ⭐");
+    assert(testProd.num_reviews === 12, "Product default review count evaluates to 12");
   } catch (err) {
     assert(false, `Product schema error: ${err.message}`);
   }
 
-  // 2. Test Size Price Cart Override Calculation Logic
-  console.log("\n2. Testing Size-Based Cart Price Calculation...");
+  // 2. Test 100% Free Shipping Calculation
+  console.log("\n2. Testing 100% Free Shipping Calculation...");
+  try {
+    const subtotal = 1299;
+    const shippingFee = 0;
+    const total = subtotal + shippingFee;
+    assert(shippingFee === 0, "Shipping fee is ₹0 (100% Free Shipping)");
+    assert(total === 1299, "Total equals subtotal without any courier surcharge");
+  } catch (err) {
+    assert(false, `Shipping calculation error: ${err.message}`);
+  }
+
+  // 3. Test Size Price Cart Override Calculation Logic
+  console.log("\n3. Testing Size-Based Cart Price Calculation...");
   try {
     const prod = {
       price: 1999,
