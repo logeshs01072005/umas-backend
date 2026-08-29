@@ -59,7 +59,7 @@ const productSchema = new mongoose.Schema({
   avg_rating: {
     type: Number,
     default: 4.5,
-    min: 1,
+    min: 0,
     max: 5,
   },
   num_reviews: {

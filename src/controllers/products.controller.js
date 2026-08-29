@@ -106,7 +106,7 @@ async function createProduct(req, res, next) {
       stock: stockVal,
       status: initialStatus,
       low_stock_threshold: lowStockThreshold ?? 5,
-      avg_rating: !isNaN(ratingVal) && ratingVal >= 1 && ratingVal <= 5 ? ratingVal : 4.5,
+      avg_rating: !isNaN(ratingVal) && ratingVal >= 0 && ratingVal <= 5 ? (ratingVal > 0 ? ratingVal : 4.5) : 4.5,
       num_reviews: !isNaN(reviewsVal) && reviewsVal >= 0 ? reviewsVal : 12,
     });
     res.status(201).json({ product: mapProduct(doc) });
@@ -144,7 +144,7 @@ async function updateProduct(req, res, next) {
     if (isActive !== undefined) updateData.is_active = isActive;
     if (avgRating !== undefined || avg_rating !== undefined) {
       const r = Number(avgRating !== undefined ? avgRating : avg_rating);
-      if (!isNaN(r) && r >= 1 && r <= 5) updateData.avg_rating = r;
+      if (!isNaN(r) && r >= 0 && r <= 5) updateData.avg_rating = r;
     }
     if (numReviews !== undefined || num_reviews !== undefined) {
       const nr = Number(numReviews !== undefined ? numReviews : num_reviews);
