@@ -5364,17 +5364,8 @@ export default function App() {
       }
 
       const order = data.order;
-      if (order.paymentStatus === "paid") {
-        setLastOrder(order);
-        setView("confirmation");
-        persistLastOrder(order);
-      } else if (upiOrderId) {
-        setUpiOrder(order);
-        setView("upi");
-      } else {
-        setLastOrder(order);
-        setView("confirmation");
-      }
+      setLastOrder(order);
+      setView("confirmation");
     } catch (e) {
       console.error("Failed to restore pending order state:", e);
     } finally {
@@ -5653,18 +5644,31 @@ export default function App() {
               description: `Order #${order.orderNumber}`,
               order_id: rpData.razorpayOrderId,
               handler: async function (response) {
-                // Payment completed on Razorpay: navigate to next page where submitting Transaction ID / UTR is must required
                 const paymentRef = response.razorpay_payment_id || "";
-                const orderWithRef = {
-                  ...order,
-                  paymentReference: paymentRef,
-                  paymentMethod: "online",
-                  paymentStatus: "verification_requested"
-                };
-                setUpiOrder(orderWithRef);
-                persistUpiOrder(orderWithRef);
-                setView("upi");
-                showToast("Payment captured! Please submit your Transaction ID / UTR to complete verification.");
+                try {
+                  await fetch(`${API_BASE}/payments/razorpay/verify-payment`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                      orderId: order.id,
+                      razorpay_order_id: response.razorpay_order_id || rpData.razorpayOrderId,
+                      razorpay_payment_id: paymentRef,
+                      razorpay_signature: response.razorpay_signature || "",
+                    }),
+                  });
+                } catch (e) {
+                  console.error("Payment verification API call error:", e);
+                }
+                const paidOrder = { ...order, paymentReference: paymentRef, paymentStatus: "paid", status: "Processing" };
+                setLastOrder(paidOrder);
+                clearStoredOrderState();
+                setCart([]);
+                setView("confirmation");
+                await fetchMyOrders(token);
+                showToast("Payment successful! Your order has been placed.");
               },
               prefill: {
                 name: address.name,
@@ -5675,7 +5679,6 @@ export default function App() {
               },
               modal: {
                 ondismiss: function () {
-                  // Payment failed or cancelled: keep customer's products in cart!
                   showToast("Payment was not completed. Your products remain saved in your cart.");
                 },
               },
@@ -5687,14 +5690,6 @@ export default function App() {
         } catch (e) {
           console.error("Razorpay trigger error:", e);
         }
-      }
-
-      if (paymentMethod === "upi") {
-        setUpiOrder(order);
-        persistUpiOrder(order);
-        setView("upi");
-        showToast("Order initiated! Please complete payment and submit your Transaction ID / UTR.");
-        return;
       }
 
       setLastOrder(order);
@@ -5840,7 +5835,6 @@ export default function App() {
         {view === "product" && activeProduct && <ProductDetailView product={activeProduct} addToCart={addToCart} setView={setView} currentUser={currentUser} />}
         {view === "cart" && <CartView cart={cart} updateQty={updateQty} removeItem={removeItem} setView={setView} subtotal={subtotal} />}
         {view === "checkout" && <CheckoutView cart={cart} subtotal={subtotal} currentUser={currentUser} onOpenAuth={() => setAuthOpen(true)} placeOrder={placeOrder} setView={setView} />}
-        {view === "upi" && <UpiView order={upiOrder} onConfirmPayment={confirmUpiPayment} onBack={() => setView("checkout")} onCancel={cancelPendingUpiOrder} />}
         {view === "confirmation" && <ConfirmationView order={lastOrder} setView={handleSetView} orders={orders} />}
         {view === "account" && <CustomerProfileView currentUser={currentUser} orders={orders} setView={handleSetView} onProfileUpdated={(u) => setCurrentUser(u)} onRefreshProfile={() => fetchMe(localStorage.getItem("umas:token"))} showToast={showToast} onOpenAuth={() => setAuthOpen(true)} />}
 
