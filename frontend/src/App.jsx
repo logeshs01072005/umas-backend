@@ -4200,7 +4200,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
           <form onSubmit={handleSavePaymentSettings} className="space-y-5 max-w-xl">
             <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4">
               <h2 className="font-serif text-xl text-stone-900 font-bold">Payment Methods Settings</h2>
-              <p className="text-stone-500 text-xs">Enable or disable payment methods and configure UPI phone-to-pay details for customers.</p>
+              <p className="text-stone-500 text-xs">Enable or disable payment methods for storefront checkout.</p>
               {[
                 { key: "cod", label: "Cash on Delivery (COD)" },
                 { key: "online", label: "Razorpay (Online Payment)" },
@@ -4229,113 +4229,6 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                   />
                 </div>
               ))}
-            </div>
-
-            {/* UPI / Direct Phone Pay Settings */}
-            <div className="bg-white p-6 rounded-xl border border-amber-200 shadow-sm space-y-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Phone size={16} className="text-amber-700" />
-                <h3 className="font-bold text-stone-900 text-base">Direct UPI / Phone-to-Pay Settings</h3>
-              </div>
-              <p className="text-stone-500 text-xs">Set the UPI phone number and ID shown to customers on the payment page. Upload a custom QR code image for customers to scan.</p>
-
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-stone-700 mb-1">UPI Phone Number</label>
-                  <input
-                    type="tel"
-                    placeholder="e.g. 9876543210"
-                    value={paymentSettings.upi?.phoneNumber || ""}
-                    onChange={(e) => setPaymentSettings({
-                      ...paymentSettings,
-                      upi: { ...paymentSettings.upi, phoneNumber: e.target.value }
-                    })}
-                    className="w-full bg-white border border-stone-300 p-2.5 text-sm rounded-lg text-stone-900 focus:outline-none focus:border-amber-500"
-                  />
-                  <p className="text-[11px] text-stone-400 mt-1">Customers will see a "Pay via Phone" button using this number</p>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase text-stone-700 mb-1">UPI ID (VPA)</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. yourname@okhdfcbank"
-                    value={paymentSettings.upi?.upiId || ""}
-                    onChange={(e) => setPaymentSettings({
-                      ...paymentSettings,
-                      upi: { ...paymentSettings.upi, upiId: e.target.value }
-                    })}
-                    className="w-full bg-white border border-stone-300 p-2.5 text-sm rounded-lg text-stone-900 focus:outline-none focus:border-amber-500 font-mono"
-                  />
-                </div>
-
-                {/* QR Code Upload */}
-                <div>
-                  <label className="block text-xs font-bold uppercase text-stone-700 mb-1">UPI QR Code Image</label>
-                  {paymentSettings.upi?.qrImageUrl ? (
-                    <div className="flex items-start gap-4">
-                      <img
-                        src={getImageUrl(paymentSettings.upi.qrImageUrl)}
-                        alt="UPI QR Code"
-                        className="w-28 h-28 object-contain border-2 border-amber-300 rounded-xl bg-white p-1"
-                      />
-                      <div className="flex flex-col gap-2 pt-1">
-                        <span className="text-xs text-emerald-700 font-bold">✓ QR Code uploaded</span>
-                        <button
-                          type="button"
-                          onClick={() => setPaymentSettings({
-                            ...paymentSettings,
-                            upi: { ...paymentSettings.upi, qrImageUrl: "" }
-                          })}
-                          className="text-xs text-rose-600 font-bold hover:text-rose-800 flex items-center gap-1 border border-rose-200 px-3 py-1.5 rounded-lg hover:bg-rose-50 transition-colors"
-                        >
-                          <X size={12} /> Remove QR Code
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <label htmlFor="upi-qr-upload" className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-100 hover:bg-amber-50 border border-stone-300 hover:border-amber-400 text-stone-800 text-xs font-bold cursor-pointer transition-colors ${upiQrUploading ? "opacity-60 pointer-events-none" : ""}`}>
-                        <Upload size={13} /> {upiQrUploading ? "Uploading…" : "Upload QR Code Image"}
-                      </label>
-                      <input
-                        id="upi-qr-upload"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          setUpiQrUploading(true);
-                          const formData = new FormData();
-                          formData.append("image", file);
-                          const token = localStorage.getItem("umas:token");
-                          try {
-                            const res = await fetch(`${API_BASE}/upload/image`, {
-                              method: "POST",
-                              headers: { Authorization: `Bearer ${token}` },
-                              body: formData,
-                            });
-                            const data = await res.json();
-                            if (res.ok && data.imageUrl) {
-                              setPaymentSettings(prev => ({
-                                ...prev,
-                                upi: { ...prev.upi, qrImageUrl: data.imageUrl }
-                              }));
-                            } else {
-                              alert("QR image upload failed.");
-                            }
-                          } catch (err) {
-                            alert("Upload error.");
-                          } finally {
-                            setUpiQrUploading(false);
-                          }
-                        }}
-                      />
-                      <p className="text-[11px] text-stone-400 mt-1">Upload your PhonePe / GPay QR code image for customers to scan</p>
-                    </div>
-                  )}
-                </div>
-              </div>
             </div>
 
             <button type="submit" className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-6 py-2.5 rounded-full text-xs shadow-sm transition-colors">Save All Payment Settings</button>
