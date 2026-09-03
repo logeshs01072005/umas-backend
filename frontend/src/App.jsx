@@ -508,7 +508,7 @@ const SEASONAL_THEMES = {
 
 /* ----------------------------------- Home view ---------------------------------- */
 
-function HomeView({ products, banners, promoSettings, setView, setCategoryFilter, openProduct, seasonalTheme }) {
+function HomeView({ products, banners, promoSettings, setView, setCategoryFilter, openProduct, seasonalTheme, categories }) {
   const featured = useMemo(() => {
     // Show available products, prioritizing tagged products while including all available items
     const available = products.filter((p) => p.status !== "Out of Stock" && p.status !== "Unavailable" && p.stock > 0);
@@ -5835,7 +5835,7 @@ export default function App() {
           />
         )}
 
-        {view === "home" && <HomeView products={products} banners={banners} promoSettings={promoSettings} setView={setView} setCategoryFilter={setCategoryFilter} openProduct={openProduct} seasonalTheme={seasonalTheme} />}
+        {view === "home" && <HomeView products={products} banners={banners} promoSettings={promoSettings} setView={setView} setCategoryFilter={setCategoryFilter} openProduct={openProduct} seasonalTheme={seasonalTheme} categories={categories} />}
         {view === "shop" && <ShopView products={products} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} search={search} openProduct={openProduct} categories={categories} />}
         {view === "product" && activeProduct && <ProductDetailView product={activeProduct} addToCart={addToCart} setView={setView} currentUser={currentUser} />}
         {view === "cart" && <CartView cart={cart} updateQty={updateQty} removeItem={removeItem} setView={setView} subtotal={subtotal} />}
