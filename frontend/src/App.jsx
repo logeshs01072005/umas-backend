@@ -5000,6 +5000,13 @@ export default function App() {
   const [view, setViewRaw] = useState(() => {
     // Clear any persistent view from previous browser sessions
     if (typeof window !== "undefined") {
+      localStorage.removeItem("umas:upiOrderId");
+      if (sessionStorage.getItem("umas:view") === "upi") {
+        sessionStorage.removeItem("umas:view");
+      }
+      if (window.location.hash === "#upi") {
+        window.location.hash = "";
+      }
       const isNewSession = !sessionStorage.getItem("umas:session_active");
       if (isNewSession) {
         sessionStorage.setItem("umas:session_active", "true");
@@ -5011,7 +5018,7 @@ export default function App() {
     const hash = window.location.hash.replace("#", "");
     if (["home", "shop", "cart", "checkout", "account", "admin", "product"].includes(hash)) return hash;
     const saved = sessionStorage.getItem("umas:view");
-    if (saved && !TRANSIENT_VIEWS.has(saved)) return saved;
+    if (saved && !TRANSIENT_VIEWS.has(saved) && saved !== "upi") return saved;
     return "home";
   });
   const [fullZoomImage, setFullZoomImage] = useState(null);
