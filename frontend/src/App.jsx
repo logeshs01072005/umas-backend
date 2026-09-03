@@ -1623,7 +1623,7 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
   const handleSubmit = async () => {
     if (submitting) return;
     if (!paymentReference || !paymentReference.trim()) {
-      alert("Transaction ID or UTR ID is must required! Please enter your payment reference ID to proceed.");
+      alert("Bank RRN no or Payment ID is must required! Please enter your payment reference ID to proceed.");
       return;
     }
     setSubmitting(true);
@@ -1655,7 +1655,7 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
             <span>Important Verification &amp; E-Bill Notice</span>
           </div>
           <p className="text-stone-700 leading-relaxed text-xs">
-            Submitting your <strong>Transaction ID or UTR ID is must required</strong> to verify your order. <strong>After admin verification, your official tax invoice will be issued.</strong> You can see and get your <strong>E-Bill</strong> anytime directly from your <strong>Profile page</strong>.
+            Submitting your <strong>Bank RRN no or Payment ID is must required</strong> to verify your order. <strong>After admin verification, your official tax invoice will be issued.</strong> You can see and get your <strong>E-Bill</strong> anytime directly from your <strong>Profile page</strong>.
           </p>
         </div>
 
@@ -1720,20 +1720,20 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
           </div>
         </div>
 
-        {/* Transaction ID / UTR Submission Form */}
+        {/* Bank RRN / Payment ID Submission Form */}
         <div className="space-y-4 text-left mb-6">
           <div>
             <label className="block text-xs uppercase tracking-wider text-stone-800 font-bold mb-1.5">
-              Transaction ID or UTR ID <span className="text-rose-600 font-extrabold">* (MUST REQUIRED)</span>
+              Bank RRN no or Payment ID <span className="text-rose-600 font-extrabold">* (MUST REQUIRED)</span>
             </label>
             <input
               value={paymentReference}
               onChange={(e) => setPaymentReference(e.target.value)}
-              placeholder="e.g. 12-digit UTR (e.g. 423456789012) or Transaction ID"
+              placeholder="e.g. Bank RRN (e.g. 423456789012) or Payment ID"
               className="w-full border-2 border-stone-300 focus:border-amber-500 rounded-lg px-4 py-3 text-sm text-stone-900 bg-white shadow-xs focus:outline-none font-mono"
               required
             />
-            <p className="text-[11px] text-stone-500 mt-1">Please enter the exact Transaction ID or 12-digit UTR from your banking or payment app.</p>
+            <p className="text-[11px] text-stone-500 mt-1">Please enter the exact Bank RRN no or Payment ID from your banking or payment app.</p>
           </div>
 
           <div>
@@ -1778,7 +1778,7 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
             disabled={submitting}
             className="px-6 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {submitting ? "Submitting UTR…" : "Submit Transaction ID / UTR"}
+            {submitting ? "Submitting..." : "Submit Bank RRN / Payment ID"}
           </button>
         </div>
       </div>
@@ -2211,7 +2211,7 @@ function ConfirmationView({ order, setView, orders = [] }) {
               <span>Payment Status: {order.paymentStatus === "verification_requested" ? "Verification In Progress" : order.paymentStatus?.toUpperCase()}</span>
             </div>
             {order.paymentReference && (
-              <div>Submitted Transaction ID / UTR: <strong className="text-stone-900 font-mono">{order.paymentReference}</strong></div>
+              <div>Submitted Bank RRN / Payment ID: <strong className="text-stone-900 font-mono">{order.paymentReference}</strong></div>
             )}
             <p className="text-stone-500 text-[11px] pt-1">
               Admin will review your transaction reference shortly. Upon verification, status will update to &quot;Paid&quot; and your E-bill will be activated.
@@ -4287,7 +4287,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                       <div className="text-right">
                         <div className="text-amber-700 font-bold text-lg">{inr(order.total)}</div>
                         {order.paymentReference && (
-                          <div className="text-xs text-stone-500 mt-0.5">Ref / UTR: <span className="text-stone-900 font-semibold">{order.paymentReference}</span></div>
+                          <div className="text-xs text-stone-500 mt-0.5">Bank RRN / Payment ID: <span className="text-stone-900 font-semibold">{order.paymentReference}</span></div>
                         )}
                         {order.paymentProofUrl && (
                           <div className="text-xs text-stone-500 mt-0.5">Proof: <a href={order.paymentProofUrl} target="_blank" rel="noreferrer" className="text-amber-700 font-bold hover:underline">View Screenshot</a></div>
@@ -5636,7 +5636,7 @@ export default function App() {
         await fetchCart(token); // refresh server cart
         await fetchMyOrders(token);
         setView("confirmation");
-        showToast("Transaction ID / UTR submitted! Order placed under admin verification.");
+        showToast("Bank RRN no / Payment ID submitted! Order placed under admin verification.");
         return data.order;
       }
       return null;
