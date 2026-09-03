@@ -5258,7 +5258,6 @@ export default function App() {
 
       const order = data.order;
       setLastOrder(order);
-      setView("confirmation");
     } catch (e) {
       console.error("Failed to restore pending order state:", e);
     } finally {
