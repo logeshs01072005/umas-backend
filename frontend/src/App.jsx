@@ -1528,7 +1528,6 @@ function CheckoutView({ cart, subtotal, currentUser, onOpenAuth, placeOrder, set
               <div className="text-xs tracking-widest uppercase text-stone-500 font-bold mb-4">Select Payment Method</div>
               <div className="flex flex-col gap-3">
                 {renderPaymentOption("card", "Razorpay Online Payment (UPI, Credit/Debit Cards, Net Banking)", "online")}
-                {renderPaymentOption("upi", "Direct UPI / Scan QR Code (PhonePe, GPay, Paytm)", "upi")}
                 {renderPaymentOption("cod", "Cash on Delivery (COD)", "cod")}
               </div>
             </div>
