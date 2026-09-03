@@ -35,6 +35,17 @@ const CATEGORY_META = {
   Footwear: { icon: ShoppingBag, from: "from-orange-100", to: "to-amber-100" },
 };
 
+const CATEGORY_EMOJI = {
+  Sarees: "🥻",
+  Lehengas: "👗",
+  Kurtis: "👘",
+  Tops: "👚",
+  "Western Wear": "👖",
+  Accessories: "💍",
+  Footwear: "👟",
+};
+
+
 const CHART_COLORS = ["#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#8b5cf6", "#ec4899"];
 
 const inr = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
@@ -338,24 +349,32 @@ function Nav({ view, setView, cartCount, currentUser, onOpenAuth, onLogout, sear
 
 /* --------------------------------- Swatch strip -------------------------------- */
 
-function SwatchStrip({ onPick }) {
+function SwatchStrip({ onPick, categories = DEFAULT_CATEGORIES, activeCategory = null }) {
+  const catList = Array.isArray(categories) && categories.length > 0 ? categories : DEFAULT_CATEGORIES;
   return (
-    <div className="flex gap-6 md:gap-10 overflow-x-auto pb-2 px-1 justify-center">
-      {CATEGORIES.map((cat) => {
-        const meta = CATEGORY_META[cat] || { icon: ShoppingBag, from: "from-rose-100", to: "to-orange-100" };
-        const Icon = meta.icon;
+    <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2 pt-1 px-4 justify-start md:justify-center scrollbar-hide">
+      {catList.map((cat) => {
+        const emoji = CATEGORY_EMOJI[cat] || "🛍️";
+        const isActive = activeCategory === cat;
         return (
-          <button key={cat} onClick={() => onPick(cat)} className="flex flex-col items-center gap-2 shrink-0 group">
-            <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br ${meta.from} ${meta.to} flex items-center justify-center border border-amber-500/30 group-hover:border-amber-400 transition-all group-hover:-translate-y-1`}>
-              <Icon size={26} strokeWidth={1.3} className="text-stone-700" />
-            </div>
-            <span className="text-[11px] tracking-widest uppercase text-stone-300 group-hover:text-amber-300">{cat}</span>
+          <button
+            key={cat}
+            onClick={() => onPick(cat)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-semibold tracking-wider uppercase transition-all duration-200 shrink-0 shadow-sm group ${isActive
+              ? "bg-gradient-to-r from-amber-400 to-amber-500 text-stone-950 border-amber-300 font-bold shadow-amber-500/20 scale-105"
+              : "bg-stone-900/90 hover:bg-amber-400 hover:text-stone-950 text-stone-200 border-stone-800 hover:border-amber-400 hover:shadow-md"
+              }`}
+          >
+            <span className="text-base leading-none transition-transform group-hover:scale-110">{emoji}</span>
+            <span className="whitespace-nowrap group-hover:text-stone-950">{cat}</span>
           </button>
         );
       })}
     </div>
   );
 }
+
+
 
 /* --------------------------------- Product card -------------------------------- */
 
@@ -541,7 +560,7 @@ function HomeView({ products, banners, promoSettings, setView, setCategoryFilter
 
       {/* Category Swatch Bar */}
       <section className="bg-stone-950 py-6 border-b border-stone-800">
-        <SwatchStrip onPick={(cat) => { setCategoryFilter(cat); setView("shop"); }} />
+        <SwatchStrip categories={categories} onPick={(cat) => { setCategoryFilter(cat); setView("shop"); }} />
       </section>
 
       {/* Ajio Category Spotlight Cards */}
@@ -1555,6 +1574,19 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
   const [message, setMessage] = useState(order?.paymentStatus === "verification_requested" ? "Verification requested. Await admin approval." : "");
 
   const [qrDataUrl, setQrDataUrl] = useState("");
+  const [upiSettings, setUpiSettings] = useState({ phoneNumber: "", qrImageUrl: "", upiId: UPI_ID });
+  const [copiedText, setCopiedText] = useState("");
+
+  useEffect(() => {
+    fetch(`${API_BASE}/settings/payment-methods`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.paymentMethods?.upi) {
+          setUpiSettings(prev => ({ ...prev, ...data.paymentMethods.upi }));
+        }
+      })
+      .catch((e) => console.error("Error fetching UPI settings in UpiView:", e));
+  }, []);
 
   useEffect(() => {
     if (!order) return;
@@ -1562,13 +1594,24 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
     setPaymentReference(order.paymentReference || "");
     setMessage(order.paymentStatus === "verification_requested" ? "Verification requested. Await admin approval." : "");
     const amount = Number(order.total || 0).toFixed(2);
-    const upiLink = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
-    // Use Google Charts API to generate QR code image — no library needed
+    const targetUpiId = upiSettings.upiId || upiSettings.phoneNumber ? `${upiSettings.phoneNumber}@upi` : UPI_ID;
+    const upiLink = `upi://pay?pa=${encodeURIComponent(targetUpiId)}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
     const googleQrUrl = `https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=${encodeURIComponent(upiLink)}&choe=UTF-8`;
     setQrDataUrl(googleQrUrl);
-  }, [order]);
+  }, [order, upiSettings]);
 
   if (!order) return null;
+
+  const amountStr = Number(order.total || 0).toFixed(2);
+  const activeUpiId = upiSettings.upiId || UPI_ID;
+  const activePhone = upiSettings.phoneNumber || "";
+  const deeplinkUrl = `upi://pay?pa=${encodeURIComponent(activeUpiId)}&pn=${encodeURIComponent(UPI_NAME)}&am=${amountStr}&cu=INR`;
+
+  const copyToClipboard = (text, label) => {
+    navigator.clipboard.writeText(text);
+    setCopiedText(label);
+    setTimeout(() => setCopiedText(""), 2000);
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -1617,18 +1660,64 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
           </p>
         </div>
 
+        {/* Phone-to-Pay & Deep Link Buttons */}
+        <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-xl p-5 mb-6 text-left space-y-3">
+          <div className="text-xs uppercase font-bold tracking-wider text-amber-900 flex items-center gap-1.5">
+            <Phone size={16} className="text-amber-700" /> Instant Phone-to-Pay &amp; App Deep Links
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <a
+              href={deeplinkUrl}
+              className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all"
+            >
+              <CreditCard size={15} /> Pay via Any UPI App
+            </a>
+
+            {activePhone && (
+              <a
+                href={`tel:${activePhone}`}
+                className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 bg-stone-900 hover:bg-stone-800 text-amber-300 font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all"
+              >
+                <Phone size={15} /> Pay via Phone ({activePhone})
+              </a>
+            )}
+          </div>
+        </div>
+
         {/* QR Code section for direct UPI scan */}
         <div className="bg-stone-50 border border-stone-200 rounded-xl p-5 mb-6">
           <p className="text-xs uppercase font-bold tracking-wider text-stone-500 mb-3">Scan QR Code via PhonePe / GPay / Paytm</p>
           <div className="flex justify-center mb-3">
-            {qrDataUrl ? (
+            {upiSettings.qrImageUrl ? (
+              <img src={getImageUrl(upiSettings.qrImageUrl)} alt="Admin UPI QR Code" width={220} height={220} className="rounded-xl border-2 border-amber-400 shadow-md bg-white p-2 object-contain" />
+            ) : qrDataUrl ? (
               <img src={qrDataUrl} alt="UPI QR Code" width={200} height={200} className="rounded-xl border-2 border-stone-200 shadow-sm bg-white p-2" />
             ) : (
               <div className="w-48 h-48 flex items-center justify-center bg-stone-100 rounded-xl text-stone-400 text-xs">Loading QR...</div>
             )}
           </div>
-          <div className="inline-block bg-white border border-stone-300 px-3 py-1.5 rounded-lg text-xs text-stone-700">
-            UPI ID: <strong className="text-stone-900 select-all">{UPI_ID}</strong>
+
+          <div className="flex flex-wrap justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => copyToClipboard(activeUpiId, "UPI ID")}
+              className="inline-flex items-center gap-1.5 bg-white border border-stone-300 hover:border-amber-500 px-3 py-1.5 rounded-lg text-xs text-stone-700 font-medium transition-colors"
+            >
+              UPI ID: <strong className="text-stone-900 font-mono">{activeUpiId}</strong>
+              <span className="text-[10px] text-amber-600 font-bold">{copiedText === "UPI ID" ? "✓ Copied!" : "📋 Copy"}</span>
+            </button>
+
+            {activePhone && (
+              <button
+                type="button"
+                onClick={() => copyToClipboard(activePhone, "Phone Number")}
+                className="inline-flex items-center gap-1.5 bg-white border border-stone-300 hover:border-amber-500 px-3 py-1.5 rounded-lg text-xs text-stone-700 font-medium transition-colors"
+              >
+                Phone: <strong className="text-stone-900">{activePhone}</strong>
+                <span className="text-[10px] text-amber-600 font-bold">{copiedText === "Phone Number" ? "✓ Copied!" : "📋 Copy"}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -2155,7 +2244,7 @@ function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdat
     name: currentUser?.name || "",
     phone: currentUser?.phone || "",
     address: currentUser?.address || "",
-          pincode: currentUser?.pincode || "",
+    pincode: currentUser?.pincode || "",
     avatarUrl: currentUser?.avatarUrl || "",
   });
   const [passForm, setPassForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
@@ -3421,7 +3510,9 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
   const [paymentSettings, setPaymentSettings] = useState({
     cod: { enabled: true, customMessage: "" },
     online: { enabled: true, customMessage: "" },
+    upi: { enabled: true, phoneNumber: "", upiId: UPI_ID, qrImageUrl: "" },
   });
+  const [upiQrUploading, setUpiQrUploading] = useState(false);
 
   const [productModalOpen, setProductModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -3792,7 +3883,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
               className={`flex items-center gap-1.5 px-3.5 sm:px-4 py-3.5 text-[10px] sm:text-xs uppercase tracking-wider font-bold border-b-2 shrink-0 transition-all whitespace-nowrap ${adminTab === tabKey
                 ? "border-amber-600 text-amber-900 bg-amber-50/70"
                 : "border-transparent text-stone-600 hover:text-stone-900 hover:border-stone-300"
-              } ${tabKey === "payverify" && pendingPayments.length > 0 ? "text-amber-700 border-amber-500" : ""}`}
+                } ${tabKey === "payverify" && pendingPayments.length > 0 ? "text-amber-700 border-amber-500" : ""}`}
             >
               <Icon size={14} /> {label}
             </button>
@@ -4107,40 +4198,151 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
 
         {/* 5. Payment Methods Settings Tab */}
         {adminTab === "payments" && (
-          <form onSubmit={handleSavePaymentSettings} className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm max-w-xl space-y-4">
-            <h2 className="font-serif text-xl text-stone-900 font-bold">Payment Methods Settings</h2>
-            <p className="text-stone-500 text-xs">Enable or disable the payment methods available to customers at checkout.</p>
-            {[
-              { key: "cod", label: "Cash on Delivery (COD)" },
-              { key: "online", label: "Razorpay (Online Payment)" },
-            ].map(({ key, label }) => (
-              <div key={key} className="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2">
-                <label className="flex items-center justify-between text-sm font-bold uppercase text-stone-900 cursor-pointer">
-                  <span>{label}</span>
+          <form onSubmit={handleSavePaymentSettings} className="space-y-5 max-w-xl">
+            <div className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm space-y-4">
+              <h2 className="font-serif text-xl text-stone-900 font-bold">Payment Methods Settings</h2>
+              <p className="text-stone-500 text-xs">Enable or disable payment methods and configure UPI phone-to-pay details for customers.</p>
+              {[
+                { key: "cod", label: "Cash on Delivery (COD)" },
+                { key: "online", label: "Razorpay (Online Payment)" },
+              ].map(({ key, label }) => (
+                <div key={key} className="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2">
+                  <label className="flex items-center justify-between text-sm font-bold uppercase text-stone-900 cursor-pointer">
+                    <span>{label}</span>
+                    <input
+                      type="checkbox"
+                      className="accent-amber-600"
+                      checked={paymentSettings[key]?.enabled !== false}
+                      onChange={(e) => setPaymentSettings({
+                        ...paymentSettings,
+                        [key]: { ...paymentSettings[key], enabled: e.target.checked }
+                      })}
+                    />
+                  </label>
                   <input
-                    type="checkbox"
-                    className="accent-amber-600"
-                    checked={paymentSettings[key]?.enabled !== false}
+                    placeholder="Custom disabled message (e.g. Temporarily Unavailable)"
+                    value={paymentSettings[key]?.customMessage || ""}
                     onChange={(e) => setPaymentSettings({
                       ...paymentSettings,
-                      [key]: { ...paymentSettings[key], enabled: e.target.checked }
+                      [key]: { ...paymentSettings[key], customMessage: e.target.value }
                     })}
+                    className="w-full bg-white border border-stone-300 p-2 text-xs rounded-lg text-stone-900 focus:outline-none focus:border-amber-500"
                   />
-                </label>
-                <input
-                  placeholder="Custom disabled message (e.g. Temporarily Unavailable)"
-                  value={paymentSettings[key]?.customMessage || ""}
-                  onChange={(e) => setPaymentSettings({
-                    ...paymentSettings,
-                    [key]: { ...paymentSettings[key], customMessage: e.target.value }
-                  })}
-                  className="w-full bg-white border border-stone-300 p-2 text-xs rounded-lg text-stone-900 focus:outline-none focus:border-amber-500"
-                />
+                </div>
+              ))}
+            </div>
+
+            {/* UPI / Direct Phone Pay Settings */}
+            <div className="bg-white p-6 rounded-xl border border-amber-200 shadow-sm space-y-4">
+              <div className="flex items-center gap-2 mb-1">
+                <Phone size={16} className="text-amber-700" />
+                <h3 className="font-bold text-stone-900 text-base">Direct UPI / Phone-to-Pay Settings</h3>
               </div>
-            ))}
-            <button type="submit" className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-6 py-2.5 rounded-full text-xs shadow-sm transition-colors">Save Payment Settings</button>
+              <p className="text-stone-500 text-xs">Set the UPI phone number and ID shown to customers on the payment page. Upload a custom QR code image for customers to scan.</p>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-bold uppercase text-stone-700 mb-1">UPI Phone Number</label>
+                  <input
+                    type="tel"
+                    placeholder="e.g. 9876543210"
+                    value={paymentSettings.upi?.phoneNumber || ""}
+                    onChange={(e) => setPaymentSettings({
+                      ...paymentSettings,
+                      upi: { ...paymentSettings.upi, phoneNumber: e.target.value }
+                    })}
+                    className="w-full bg-white border border-stone-300 p-2.5 text-sm rounded-lg text-stone-900 focus:outline-none focus:border-amber-500"
+                  />
+                  <p className="text-[11px] text-stone-400 mt-1">Customers will see a "Pay via Phone" button using this number</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase text-stone-700 mb-1">UPI ID (VPA)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. yourname@okhdfcbank"
+                    value={paymentSettings.upi?.upiId || ""}
+                    onChange={(e) => setPaymentSettings({
+                      ...paymentSettings,
+                      upi: { ...paymentSettings.upi, upiId: e.target.value }
+                    })}
+                    className="w-full bg-white border border-stone-300 p-2.5 text-sm rounded-lg text-stone-900 focus:outline-none focus:border-amber-500 font-mono"
+                  />
+                </div>
+
+                {/* QR Code Upload */}
+                <div>
+                  <label className="block text-xs font-bold uppercase text-stone-700 mb-1">UPI QR Code Image</label>
+                  {paymentSettings.upi?.qrImageUrl ? (
+                    <div className="flex items-start gap-4">
+                      <img
+                        src={getImageUrl(paymentSettings.upi.qrImageUrl)}
+                        alt="UPI QR Code"
+                        className="w-28 h-28 object-contain border-2 border-amber-300 rounded-xl bg-white p-1"
+                      />
+                      <div className="flex flex-col gap-2 pt-1">
+                        <span className="text-xs text-emerald-700 font-bold">✓ QR Code uploaded</span>
+                        <button
+                          type="button"
+                          onClick={() => setPaymentSettings({
+                            ...paymentSettings,
+                            upi: { ...paymentSettings.upi, qrImageUrl: "" }
+                          })}
+                          className="text-xs text-rose-600 font-bold hover:text-rose-800 flex items-center gap-1 border border-rose-200 px-3 py-1.5 rounded-lg hover:bg-rose-50 transition-colors"
+                        >
+                          <X size={12} /> Remove QR Code
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <label htmlFor="upi-qr-upload" className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-100 hover:bg-amber-50 border border-stone-300 hover:border-amber-400 text-stone-800 text-xs font-bold cursor-pointer transition-colors ${upiQrUploading ? "opacity-60 pointer-events-none" : ""}`}>
+                        <Upload size={13} /> {upiQrUploading ? "Uploading…" : "Upload QR Code Image"}
+                      </label>
+                      <input
+                        id="upi-qr-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setUpiQrUploading(true);
+                          const formData = new FormData();
+                          formData.append("image", file);
+                          const token = localStorage.getItem("umas:token");
+                          try {
+                            const res = await fetch(`${API_BASE}/upload/image`, {
+                              method: "POST",
+                              headers: { Authorization: `Bearer ${token}` },
+                              body: formData,
+                            });
+                            const data = await res.json();
+                            if (res.ok && data.imageUrl) {
+                              setPaymentSettings(prev => ({
+                                ...prev,
+                                upi: { ...prev.upi, qrImageUrl: data.imageUrl }
+                              }));
+                            } else {
+                              alert("QR image upload failed.");
+                            }
+                          } catch (err) {
+                            alert("Upload error.");
+                          } finally {
+                            setUpiQrUploading(false);
+                          }
+                        }}
+                      />
+                      <p className="text-[11px] text-stone-400 mt-1">Upload your PhonePe / GPay QR code image for customers to scan</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-6 py-2.5 rounded-full text-xs shadow-sm transition-colors">Save All Payment Settings</button>
           </form>
         )}
+
 
         {/* 5b. Payment Verification Tab */}
         {adminTab === "payverify" && (
@@ -4395,9 +4597,8 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                 {filteredTrackingOrders.map((order) => (
                   <div
                     key={order.id}
-                    className={`bg-white border rounded-xl p-5 shadow-sm transition-all ${
-                      trackingOrder?.id === order.id ? "border-amber-500 ring-2 ring-amber-500/20" : "border-stone-200 hover:border-stone-300"
-                    }`}
+                    className={`bg-white border rounded-xl p-5 shadow-sm transition-all ${trackingOrder?.id === order.id ? "border-amber-500 ring-2 ring-amber-500/20" : "border-stone-200 hover:border-stone-300"
+                      }`}
                   >
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div>
@@ -4433,11 +4634,10 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                         <button
                           onClick={() => setTrackingOrder(order)}
-                          className={`text-xs uppercase tracking-wider font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors ${
-                            trackingOrder?.id === order.id
-                              ? "bg-amber-500 text-stone-950 ring-2 ring-amber-300"
-                              : "bg-amber-500 hover:bg-amber-400 text-stone-950"
-                          }`}
+                          className={`text-xs uppercase tracking-wider font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors ${trackingOrder?.id === order.id
+                            ? "bg-amber-500 text-stone-950 ring-2 ring-amber-300"
+                            : "bg-amber-500 hover:bg-amber-400 text-stone-950"
+                            }`}
                         >
                           <Truck size={14} /> {trackingOrder?.id === order.id ? "Viewing Live Timeline" : "Track Order"}
                         </button>
@@ -5016,6 +5216,24 @@ export default function App() {
     };
     window.addEventListener("storage", handleStorageTheme);
     return () => window.removeEventListener("storage", handleStorageTheme);
+  }, []);
+
+  // Cross-Device Cart Sync: Re-fetch cart when tab or window comes into focus
+  useEffect(() => {
+    const handleSyncOnFocus = () => {
+      if (document.visibilityState === "visible") {
+        const token = localStorage.getItem("umas:token");
+        if (token) {
+          fetchCart(token);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleSyncOnFocus);
+    window.addEventListener("focus", handleSyncOnFocus);
+    return () => {
+      document.removeEventListener("visibilitychange", handleSyncOnFocus);
+      window.removeEventListener("focus", handleSyncOnFocus);
+    };
   }, []);
 
   useEffect(() => { initApp(); }, []);

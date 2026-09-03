@@ -5,7 +5,7 @@ const DEFAULT_CATEGORIES = ["Sarees", "Lehengas", "Kurtis", "Tops", "Western Wea
 const DEFAULT_PAYMENT_SETTINGS = {
   cod: { enabled: true, customMessage: "Cash on Delivery available" },
   online: { enabled: true, customMessage: "Pay securely via Razorpay (UPI, Cards, Net Banking)" },
-  upi: { enabled: true, customMessage: "Pay using Google Pay / PhonePe / Paytm" },
+  upi: { enabled: true, customMessage: "Pay using Google Pay / PhonePe / Paytm", phoneNumber: "", qrImageUrl: "" },
   net_banking: { enabled: true, customMessage: "Pay via Net Banking" },
   card: { enabled: true, customMessage: "Credit / Debit Cards accepted" },
 };
@@ -16,7 +16,15 @@ async function getPaymentSettings(req, res, next) {
     if (!settingDoc) {
       settingDoc = await Setting.create({ key: "payment_methods", value: DEFAULT_PAYMENT_SETTINGS });
     }
-    res.json({ paymentMethods: settingDoc.value });
+    const paymentMethods = {
+      ...DEFAULT_PAYMENT_SETTINGS,
+      ...settingDoc.value,
+      upi: {
+        ...DEFAULT_PAYMENT_SETTINGS.upi,
+        ...(settingDoc.value?.upi || {}),
+      },
+    };
+    res.json({ paymentMethods });
   } catch (err) {
     next(err);
   }
