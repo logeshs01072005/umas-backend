@@ -18,6 +18,7 @@ const returnsRoutes = require("./routes/returns.routes");
 const reviewsRoutes = require("./routes/reviews.routes");
 const notificationsRoutes = require("./routes/notifications.routes");
 
+const compression = require("compression");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 const { connectDB } = require("./config/db");
 const path = require("path");
@@ -27,6 +28,7 @@ connectDB();
 
 const app = express();
 
+app.use(compression());
 app.use(helmet({
   crossOriginResourcePolicy: false,
   contentSecurityPolicy: {
@@ -92,11 +94,17 @@ app.use(cors({
 app.use(express.json());
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
-// Serve static uploads
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+// Serve static uploads with caching
+app.use("/uploads", express.static(path.join(__dirname, "../uploads"), {
+  maxAge: "7d",
+  etag: true,
+}));
 
-// Serve static frontend build
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// Serve static frontend build with caching
+app.use(express.static(path.join(__dirname, "../frontend/dist"), {
+  maxAge: "1d",
+  etag: true,
+}));
 
 // General API rate limit (only in production to avoid blocking local development reloads)
 if (process.env.NODE_ENV === "production") {
@@ -135,6 +143,10 @@ app.use(notFound);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🛍️  Uma's Fashion & Boutique API running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`🛍️  Uma's Fashion & Boutique API running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

@@ -290,11 +290,13 @@ async function confirmUpiPayment(req, res, next) {
       return res.status(404).json({ error: "Order not found." });
     }
 
-    if (order.payment_method !== "upi") {
-      return res.status(400).json({ error: "This order is not set up for UPI payment confirmation." });
+    if (order.payment_method !== "upi" && order.payment_method !== "online" && order.payment_method !== "card") {
+      return res.status(400).json({ error: "This order is not set up for payment confirmation." });
     }
 
     if (order.payment_status === "paid") {
+      // Clear user's cart if still present
+      await CartItem.deleteMany({ user_id: req.user.id });
       return res.json({
         success: true, paymentStatus: order.payment_status, invoiceUrl: order.invoice_url, order: {
           id: order._id,
@@ -310,10 +312,12 @@ async function confirmUpiPayment(req, res, next) {
     }
 
     if (order.payment_status === "verification_requested") {
+      // Clear user's cart if still present
+      await CartItem.deleteMany({ user_id: req.user.id });
       return res.json({
         success: true,
         paymentStatus: order.payment_status,
-        message: "UPI payment verification is already pending. Please wait for confirmation.",
+        message: "Payment verification is already pending. Please wait for admin approval.",
         order: {
           id: order._id,
           orderNumber: order.order_number,
@@ -329,7 +333,7 @@ async function confirmUpiPayment(req, res, next) {
 
     order.payment_status = "verification_requested";
     order.status = "Placed";
-    order.razorpay_payment_id = `UPI-REQ-${Date.now()}`;
+    order.razorpay_payment_id = order.razorpay_payment_id || `REQ-${Date.now()}`;
     if (paymentReference) {
       order.payment_reference = String(paymentReference).trim();
     }
@@ -340,6 +344,9 @@ async function confirmUpiPayment(req, res, next) {
       order.payment_channel = String(paymentChannel).trim();
     }
     await order.save();
+
+    // Clear user's cart once transaction ID / UTR is submitted
+    await CartItem.deleteMany({ user_id: req.user.id });
 
     return res.json({
       success: true,

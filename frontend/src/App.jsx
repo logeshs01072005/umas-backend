@@ -1133,30 +1133,30 @@ function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEG
           title="Crop & Resize Product Image"
         />
       )}
-      <div className="bg-stone-900 border border-amber-500/30 text-stone-100 rounded-2xl max-w-2xl w-full p-6 relative shadow-2xl my-8">
-        <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-200"><X size={20} /></button>
-        <h2 className="font-serif text-2xl text-amber-300 mb-1">{form.id ? "Edit Product" : "Add New Product"}</h2>
-        <p className="text-stone-400 text-xs mb-6">Fill in the product details to publish to the boutique store catalog.</p>
+      <div className="bg-white border border-stone-200 text-stone-900 rounded-2xl max-w-2xl w-full p-6 relative shadow-2xl my-8">
+        <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700"><X size={20} /></button>
+        <h2 className="font-serif text-2xl text-stone-900 font-bold mb-1">{form.id ? "Edit Product" : "Add New Product"}</h2>
+        <p className="text-stone-500 text-xs mb-6">Fill in the product details to publish to the boutique store catalog.</p>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Product Name *</label>
+              <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Product Name *</label>
               <input
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 placeholder="e.g. Kanjeevaram Soft Silk Saree"
-                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-sm text-stone-900 focus:outline-none focus:border-amber-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Category *</label>
+              <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Category *</label>
               <select
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-sm text-stone-900 focus:outline-none focus:border-amber-500"
               >
                 {(categories && categories.length > 0 ? categories : DEFAULT_CATEGORIES).map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -1165,11 +1165,11 @@ function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEG
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Product Tag</label>
+              <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Product Tag</label>
               <select
                 value={form.tag}
                 onChange={(e) => setForm({ ...form, tag: e.target.value })}
-                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-sm text-stone-900 focus:outline-none focus:border-amber-500"
               >
                 <option value="">None</option>
                 <option value="Bestseller">Bestseller</option>
@@ -1181,43 +1181,43 @@ function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEG
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Base Selling Price (₹) *</label>
+              <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Base Selling Price (₹) *</label>
               <input
                 type="number"
                 value={form.price}
                 onChange={(e) => setForm({ ...form, price: parseFloat(e.target.value) || 0 })}
-                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-sm text-stone-900 focus:outline-none focus:border-amber-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">MRP Original (₹) *</label>
+              <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">MRP Original (₹) *</label>
               <input
                 type="number"
                 value={form.mrp}
                 onChange={(e) => setForm({ ...form, mrp: parseFloat(e.target.value) || 0 })}
-                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-sm text-stone-900 focus:outline-none focus:border-amber-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Stock Quantity</label>
+              <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Stock Quantity</label>
               <input
                 type="number"
                 value={form.stock}
                 onChange={(e) => setForm({ ...form, stock: parseInt(e.target.value) || 0 })}
-                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-sm text-stone-900 focus:outline-none focus:border-amber-500"
               />
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Status</label>
+              <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Status</label>
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-sm text-stone-900 focus:outline-none focus:border-amber-500"
               >
                 <option value="Available">Available</option>
                 <option value="Coming Soon">Coming Soon</option>
@@ -1227,7 +1227,7 @@ function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEG
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Rating (1.0 to 5.0 Stars) ⭐</label>
+              <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Rating (1.0 to 5.0 Stars) ⭐</label>
               <input
                 type="number"
                 step="0.1"
@@ -1236,32 +1236,32 @@ function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEG
                 value={form.avgRating}
                 onChange={(e) => setForm({ ...form, avgRating: parseFloat(e.target.value) || 4.5 })}
                 placeholder="e.g. 4.5"
-                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-sm text-stone-900 focus:outline-none focus:border-amber-500"
               />
             </div>
 
             <div>
-              <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Total Reviews Count</label>
+              <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Total Reviews Count</label>
               <input
                 type="number"
                 min="0"
                 value={form.numReviews}
                 onChange={(e) => setForm({ ...form, numReviews: parseInt(e.target.value) || 0 })}
                 placeholder="e.g. 12"
-                className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm text-stone-100 focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-sm text-stone-900 focus:outline-none focus:border-amber-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Available Sizes</label>
-            <div className="flex gap-2 flex-wrap bg-stone-800/60 p-3 rounded-lg border border-stone-700/60">
+            <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Available Sizes</label>
+            <div className="flex gap-2 flex-wrap bg-stone-50 p-3 rounded-lg border border-stone-200">
               {ALL_SIZES.map((sz) => (
                 <button
                   key={sz}
                   type="button"
                   onClick={() => handleSizeToggle(sz)}
-                  className={`px-3 py-1.5 rounded-md font-medium text-xs border transition-all ${form.sizes.includes(sz) ? "bg-amber-500 text-stone-950 border-amber-400 font-bold" : "bg-stone-800 text-stone-300 border-stone-700 hover:border-stone-500"}`}
+                  className={`px-3 py-1.5 rounded-md font-medium text-xs border transition-all ${form.sizes.includes(sz) ? "bg-amber-500 text-stone-950 border-amber-500 font-bold" : "bg-white text-stone-700 border-stone-300 hover:border-stone-400"}`}
                 >
                   {sz}
                 </button>
@@ -1271,23 +1271,23 @@ function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEG
 
           {/* Size-Based Custom Pricing Matrix */}
           {form.sizes && form.sizes.length > 0 && (
-            <div className="bg-stone-950/70 p-4 rounded-xl border border-amber-500/30">
-              <label className="block uppercase tracking-wider text-amber-300 mb-2 font-bold flex items-center justify-between">
+            <div className="bg-stone-50 p-4 rounded-xl border border-stone-200">
+              <label className="block uppercase tracking-wider text-amber-900 mb-2 font-bold flex items-center justify-between">
                 <span>Custom Price Rate per Size (M, L, XL, etc.)</span>
-                <span className="text-[10px] text-stone-400 font-normal">Optional: Set specific rates per size</span>
+                <span className="text-[10px] text-stone-500 font-normal">Optional: Set specific rates per size</span>
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {form.sizes.map((sz) => (
-                  <div key={sz} className="bg-stone-900 p-2.5 rounded-lg border border-stone-800">
-                    <span className="text-amber-400 font-bold block mb-1">Size {sz}</span>
+                  <div key={sz} className="bg-white p-2.5 rounded-lg border border-stone-200 shadow-xs">
+                    <span className="text-amber-800 font-bold block mb-1">Size {sz}</span>
                     <div className="flex items-center gap-1">
-                      <span className="text-stone-400 text-xs">₹</span>
+                      <span className="text-stone-500 text-xs">₹</span>
                       <input
                         type="number"
                         value={form.sizePrices?.[sz] !== undefined ? form.sizePrices[sz] : form.price}
                         onChange={(e) => handleSizePriceChange(sz, e.target.value)}
                         placeholder={form.price}
-                        className="w-full bg-stone-800 border border-stone-700 rounded px-2 py-1 text-xs text-stone-100 focus:outline-none focus:border-amber-400"
+                        className="w-full bg-white border border-stone-300 rounded px-2 py-1 text-xs text-stone-900 focus:outline-none focus:border-amber-500"
                       />
                     </div>
                   </div>
@@ -1297,25 +1297,25 @@ function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEG
           )}
 
           <div>
-            <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Description</label>
+            <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Description</label>
             <textarea
               rows={3}
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder="Detailed product fabric, weave, care instructions..."
-              className="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-xs text-stone-100 focus:outline-none focus:border-amber-400"
+              className="w-full bg-white border border-stone-300 rounded-lg p-2.5 text-xs text-stone-900 focus:outline-none focus:border-amber-500"
             />
           </div>
 
           <div>
-            <label className="block uppercase tracking-wider text-stone-400 mb-1 font-bold">Product Image (Crop & Upload)</label>
+            <label className="block uppercase tracking-wider text-stone-700 mb-1 font-bold">Product Image (Crop & Upload)</label>
             <div className="flex gap-3 items-center">
               {form.imageUrl ? (
-                <div className="relative w-16 h-20 rounded-lg overflow-hidden border border-amber-500/40 bg-stone-950 flex-shrink-0">
+                <div className="relative w-16 h-20 rounded-lg overflow-hidden border border-stone-300 bg-stone-100 flex-shrink-0">
                   <img src={getImageUrl(form.imageUrl)} alt="Preview" className="w-full h-full object-cover" />
                 </div>
               ) : null}
-              <label className="cursor-pointer bg-stone-800 hover:bg-stone-700 text-amber-300 font-medium px-4 py-2.5 rounded-lg border border-stone-700 transition-colors inline-flex items-center gap-2">
+              <label className="cursor-pointer bg-stone-100 hover:bg-stone-200 text-stone-800 font-medium px-4 py-2.5 rounded-lg border border-stone-300 transition-colors inline-flex items-center gap-2">
                 <Upload size={16} />
                 <span>{uploading ? "Uploading..." : form.imageUrl ? "Crop & Change Image" : "Choose & Crop Image"}</span>
                 <input type="file" accept="image/*" onChange={handleFileSelect} className="hidden" disabled={uploading} />
@@ -1323,9 +1323,9 @@ function ProductFormModal({ product, onClose, onSave, categories = DEFAULT_CATEG
             </div>
           </div>
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-stone-800">
-            <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg text-stone-400 hover:bg-stone-800 transition-colors">Cancel</button>
-            <button type="submit" disabled={saving || uploading} className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-6 py-2.5 rounded-lg transition-colors shadow-lg shadow-amber-500/20">
+          <div className="pt-4 flex justify-end gap-3 border-t border-stone-200">
+            <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg text-stone-600 hover:bg-stone-100 transition-colors">Cancel</button>
+            <button type="submit" disabled={saving || uploading} className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-6 py-2.5 rounded-lg transition-colors shadow-sm">
               {saving ? "Saving Product..." : form.id ? "Update Product" : "Publish Product"}
             </button>
           </div>
@@ -1509,6 +1509,7 @@ function CheckoutView({ cart, subtotal, currentUser, onOpenAuth, placeOrder, set
               <div className="text-xs tracking-widest uppercase text-stone-500 font-bold mb-4">Select Payment Method</div>
               <div className="flex flex-col gap-3">
                 {renderPaymentOption("card", "Razorpay Online Payment (UPI, Credit/Debit Cards, Net Banking)", "online")}
+                {renderPaymentOption("upi", "Direct UPI / Scan QR Code (PhonePe, GPay, Paytm)", "upi")}
                 {renderPaymentOption("cod", "Cash on Delivery (COD)", "cod")}
               </div>
             </div>
@@ -1563,7 +1564,7 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
     const amount = Number(order.total || 0).toFixed(2);
     const upiLink = `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
     // Use Google Charts API to generate QR code image — no library needed
-    const googleQrUrl = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(upiLink)}&choe=UTF-8`;
+    const googleQrUrl = `https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=${encodeURIComponent(upiLink)}&choe=UTF-8`;
     setQrDataUrl(googleQrUrl);
   }, [order]);
 
@@ -1579,82 +1580,117 @@ function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
 
   const handleSubmit = async () => {
     if (submitting) return;
-    if (!paymentReference?.trim()) {
-      alert("Please enter the UPI transaction ID or UTR.");
-      return;
-    }
-    if (!proofFile && !proofUrl) {
-      alert("Please upload payment proof to proceed.");
+    if (!paymentReference || !paymentReference.trim()) {
+      alert("Transaction ID or UTR ID is must required! Please enter your payment reference ID to proceed.");
       return;
     }
     setSubmitting(true);
     let uploadedUrl = proofUrl;
     if (proofFile) {
-      uploadedUrl = await onConfirmPayment({ orderId: order.id, paymentReference, paymentProofFile: proofFile, paymentProofUrl: proofUrl });
+      uploadedUrl = await onConfirmPayment({ orderId: order.id, paymentReference: paymentReference.trim(), paymentProofFile: proofFile, paymentProofUrl: proofUrl });
       setSubmitting(false);
-      if (uploadedUrl) {
-        setMessage("Your payment verification request has been submitted. Please wait for admin approval.");
-      }
       return;
     }
-    const updatedOrder = await onConfirmPayment({ orderId: order.id, paymentReference, paymentProofUrl: uploadedUrl });
+    await onConfirmPayment({ orderId: order.id, paymentReference: paymentReference.trim(), paymentProofUrl: uploadedUrl });
     setSubmitting(false);
-    if (updatedOrder) {
-      setMessage("Your payment verification request has been submitted. Please wait for admin approval.");
-    }
   };
 
   return (
-    <div className="bg-stone-50 min-h-[70vh] py-12 px-6">
-      <div className="max-w-xl mx-auto bg-white border border-stone-200 rounded-md p-8 text-center shadow-lg">
-        <h1 className="font-serif text-2xl text-stone-900 mb-2">Scan &amp; Pay via UPI</h1>
-        <p className="text-stone-500 text-sm mb-4">Order #{order.orderNumber} • Total Amount: <b>{inr(order.total)}</b></p>
-        <div className="flex justify-center my-6">
-          {qrDataUrl ? (
-            <img src={qrDataUrl} alt="UPI QR Code" width={200} height={200} style={{ borderRadius: 8, border: "2px solid #e7e5e4" }} />
-          ) : (
-            <div style={{ width: 200, height: 200, display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f5f4", borderRadius: 8 }}>Loading QR...</div>
-          )}
+    <div className="bg-stone-50 min-h-[75vh] py-12 px-4 sm:px-6">
+      <div className="max-w-xl mx-auto bg-white border border-stone-200 rounded-2xl p-6 sm:p-8 text-center shadow-lg">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 text-amber-800 mb-3 border border-amber-200">
+          <ShieldCheck size={26} />
         </div>
-        <div className="bg-stone-100 p-3 rounded-md text-xs text-stone-600 mb-6">
-          UPI ID: <b className="text-stone-900">{UPI_ID}</b>
+        <h1 className="font-serif text-2xl sm:text-3xl text-stone-900 font-bold mb-1.5">Payment Verification</h1>
+        <p className="text-stone-600 text-xs sm:text-sm mb-4">
+          Order <strong>#{order.orderNumber}</strong> • Payable Total: <strong className="text-amber-800 font-bold">{inr(order.total)}</strong>
+        </p>
+
+        {/* Prominent Admin Verification & Profile E-Bill Notice */}
+        <div className="p-4 bg-amber-50 border border-amber-300 rounded-xl text-left text-xs sm:text-sm space-y-1.5 mb-6 shadow-xs">
+          <div className="font-bold text-amber-950 flex items-center gap-1.5">
+            <Clock size={16} className="text-amber-700" />
+            <span>Important Verification &amp; E-Bill Notice</span>
+          </div>
+          <p className="text-stone-700 leading-relaxed text-xs">
+            Submitting your <strong>Transaction ID or UTR ID is must required</strong> to verify your order. <strong>After admin verification, your official tax invoice will be issued.</strong> You can see and get your <strong>E-Bill</strong> anytime directly from your <strong>Profile page</strong>.
+          </p>
         </div>
+
+        {/* QR Code section for direct UPI scan */}
+        <div className="bg-stone-50 border border-stone-200 rounded-xl p-5 mb-6">
+          <p className="text-xs uppercase font-bold tracking-wider text-stone-500 mb-3">Scan QR Code via PhonePe / GPay / Paytm</p>
+          <div className="flex justify-center mb-3">
+            {qrDataUrl ? (
+              <img src={qrDataUrl} alt="UPI QR Code" width={200} height={200} className="rounded-xl border-2 border-stone-200 shadow-sm bg-white p-2" />
+            ) : (
+              <div className="w-48 h-48 flex items-center justify-center bg-stone-100 rounded-xl text-stone-400 text-xs">Loading QR...</div>
+            )}
+          </div>
+          <div className="inline-block bg-white border border-stone-300 px-3 py-1.5 rounded-lg text-xs text-stone-700">
+            UPI ID: <strong className="text-stone-900 select-all">{UPI_ID}</strong>
+          </div>
+        </div>
+
+        {/* Transaction ID / UTR Submission Form */}
         <div className="space-y-4 text-left mb-6">
           <div>
-            <label className="block text-xs uppercase tracking-wider text-stone-500 mb-2">UPI Transaction ID / UTR <span className="text-rose-500">(required)</span></label>
+            <label className="block text-xs uppercase tracking-wider text-stone-800 font-bold mb-1.5">
+              Transaction ID or UTR ID <span className="text-rose-600 font-extrabold">* (MUST REQUIRED)</span>
+            </label>
             <input
               value={paymentReference}
               onChange={(e) => setPaymentReference(e.target.value)}
-              placeholder="Enter UPI transaction ID or UTR"
-              className="w-full border border-stone-300 rounded-md px-4 py-3 text-sm focus:outline-none focus:border-amber-500"
+              placeholder="e.g. 12-digit UTR (e.g. 423456789012) or Transaction ID"
+              className="w-full border-2 border-stone-300 focus:border-amber-500 rounded-lg px-4 py-3 text-sm text-stone-900 bg-white shadow-xs focus:outline-none font-mono"
+              required
             />
+            <p className="text-[11px] text-stone-500 mt-1">Please enter the exact Transaction ID or 12-digit UTR from your banking or payment app.</p>
           </div>
+
           <div>
-            <label className="block text-xs uppercase tracking-wider text-stone-500 mb-2">Payment Proof <span className="text-rose-500">(required)</span></label>
+            <label className="block text-xs uppercase tracking-wider text-stone-700 font-bold mb-1.5">
+              Payment Screenshot / Receipt <span className="text-stone-400 font-normal">(Optional, recommended)</span>
+            </label>
             <div className="flex items-center gap-3">
-              <label htmlFor="proof-upload" className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-stone-900 text-stone-100 text-sm font-medium cursor-pointer hover:bg-stone-800 border border-stone-700">
-                Upload Proof
+              <label htmlFor="proof-upload" className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer border border-stone-300 transition-colors">
+                <Upload size={14} className="mr-1.5" /> Choose Screenshot
               </label>
-              <span className="text-xs text-stone-500">{proofFile ? proofFile.name : proofUrl ? "Existing proof link provided" : "No file selected"}</span>
+              <span className="text-xs text-stone-500 truncate max-w-xs">{proofFile ? proofFile.name : proofUrl ? "Proof uploaded" : "No file chosen"}</span>
             </div>
             <input id="proof-upload" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-            {proofUrl && !proofFile && (
-              <div className="mt-2 text-xs text-stone-500">Proof URL: <span className="text-amber-600 break-all">{proofUrl}</span></div>
-            )}
           </div>
-          <div className="text-xs text-stone-500">
-            Tip: Capture a screenshot or photo of the UPI payment success screen and upload it here for faster verification.
-          </div>
-          {message && <div className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md p-3">{message}</div>}
-          <div className="text-xs text-stone-500 mt-2">
-            After admin verification, reload this page to see the confirmation and access your e-bill.
-          </div>
+
+          {message && (
+            <div className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-lg p-3 font-medium">
+              {message}
+            </div>
+          )}
         </div>
+
+        {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row justify-center gap-3">
-          <button onClick={onBack} className="px-5 py-2.5 rounded-full border border-stone-300 text-stone-700 text-sm">Back to checkout</button>
-          <button onClick={onCancel} className="px-5 py-2.5 rounded-full border border-stone-300 text-stone-700 text-sm">Cancel payment</button>
-          <button onClick={handleSubmit} className="px-6 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled={submitting}>
-            {submitting ? "Submitting…" : "I Have Completed Payment"}
+          <button
+            type="button"
+            onClick={onBack}
+            className="px-5 py-2.5 rounded-full border border-stone-300 hover:bg-stone-100 text-stone-700 text-xs font-semibold transition-colors"
+          >
+            ← Back to checkout
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-5 py-2.5 rounded-full border border-rose-200 text-rose-700 hover:bg-rose-50 text-xs font-semibold transition-colors"
+          >
+            Cancel payment &amp; keep cart
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="px-6 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? "Submitting UTR…" : "Submit Transaction ID / UTR"}
           </button>
         </div>
       </div>
@@ -2045,15 +2081,35 @@ function ConfirmationView({ order, setView, orders = [] }) {
 
   return (
     <div className="bg-stone-50 min-h-[70vh] py-16 px-6 text-center">
-      <div className="max-w-2xl mx-auto bg-white border border-stone-200 rounded-md p-8 shadow-lg">
+      <div className="max-w-2xl mx-auto bg-white border border-stone-200 rounded-2xl p-8 shadow-lg">
         <CheckCircle size={48} className="text-emerald-600 mx-auto mb-4" />
         <h1 className="font-serif text-3xl text-stone-900 mb-2">Order Confirmed!</h1>
-        <p className="text-stone-500 text-sm mb-4">Thank you for shopping with Uma's. Your order number is <b>#{order.orderNumber}</b>.</p>
+        <p className="text-stone-500 text-sm mb-4">Thank you for shopping with Uma's. Your order number is <strong className="text-stone-900 font-bold">#{order.orderNumber}</strong>.</p>
+
+        {/* User Request Notice: Admin verification & Profile page for E-Bill */}
+        <div className="my-6 p-5 bg-amber-50/90 border-2 border-amber-300 rounded-xl text-left shadow-sm">
+          <div className="flex items-center gap-2 text-amber-950 font-bold text-sm mb-2">
+            <ShieldCheck size={20} className="text-amber-700 shrink-0" />
+            <span>Important Note on Admin Verification &amp; E-Bill Invoice:</span>
+          </div>
+          <p className="text-stone-700 text-sm leading-relaxed mb-3">
+            Your payment details have been submitted. <strong>After admin verification, your official invoice will be issued.</strong> You can see and get your <strong>E-Bill</strong> anytime from your <strong>Profile page</strong>.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setView("account")}
+              className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-bold px-4 py-2 rounded-full transition-colors shadow-xs"
+            >
+              <FileText size={14} /> Go to Profile Page for E-Bill
+            </button>
+            <span className="text-xs text-stone-500">Invoice will be downloadable once verified.</span>
+          </div>
+        </div>
 
         {paid ? (
           <>
-            <div className="text-emerald-700 bg-emerald-50 border border-emerald-200 text-sm p-3 rounded-md mb-4">
-              ✓ Payment has been verified and confirmed. Your official printable E-Bill Invoice is displayed below:
+            <div className="text-emerald-800 bg-emerald-50 border border-emerald-200 text-sm p-3 rounded-xl mb-4 font-medium">
+              ✓ Payment verified and confirmed! Your official printable E-Bill Invoice is displayed below:
             </div>
             {/* Render E-Bill Invoice Component right below payment confirmation */}
             <div className="my-6">
@@ -2061,21 +2117,16 @@ function ConfirmationView({ order, setView, orders = [] }) {
             </div>
           </>
         ) : (
-          <div className="my-6 p-5 bg-amber-50 border border-amber-200 rounded-xl text-left">
-            <div className="font-bold text-amber-900 text-sm mb-1 flex items-center gap-2">
-              <ShieldCheck size={18} className="text-amber-700" />
-              {order.paymentStatus === "verification_requested"
-                ? "Payment Verification Under Review"
-                : order.paymentMethod === "cod"
-                  ? "Cash on Delivery Order Placed"
-                  : "Payment Status: Pending"}
+          <div className="my-6 p-4 bg-stone-50 border border-stone-200 rounded-xl text-left text-xs text-stone-600 space-y-1">
+            <div className="font-bold text-stone-900 text-sm flex items-center gap-2">
+              <Clock size={16} className="text-amber-600" />
+              <span>Payment Status: {order.paymentStatus === "verification_requested" ? "Verification In Progress" : order.paymentStatus?.toUpperCase()}</span>
             </div>
-            <p className="text-stone-600 text-xs leading-relaxed">
-              {order.paymentStatus === "verification_requested"
-                ? `Your payment reference ID (${order.paymentReference || "Submitted"}) has been submitted for admin verification. Once verified, your official E-Bill Invoice will be available in your Account Profile.`
-                : order.paymentMethod === "cod"
-                  ? "Your order has been placed with Cash on Delivery. Physical invoice will be provided upon delivery."
-                  : "Your order is placed. The official E-Bill invoice will be accessible after payment completion."}
+            {order.paymentReference && (
+              <div>Submitted Transaction ID / UTR: <strong className="text-stone-900 font-mono">{order.paymentReference}</strong></div>
+            )}
+            <p className="text-stone-500 text-[11px] pt-1">
+              Admin will review your transaction reference shortly. Upon verification, status will update to &quot;Paid&quot; and your E-bill will be activated.
             </p>
           </div>
         )}
@@ -2083,8 +2134,12 @@ function ConfirmationView({ order, setView, orders = [] }) {
         <EBillLookupSection orders={orders.length > 0 ? orders : [order]} />
 
         <div className="flex flex-col sm:flex-row justify-center gap-3 mt-6">
-          <button onClick={() => setView("account")} className="bg-stone-900 text-amber-300 px-6 py-3 rounded-full text-sm font-medium">View My Orders &amp; Track</button>
-          <button onClick={() => setView("shop")} className="border border-stone-300 text-stone-700 hover:bg-stone-100 px-6 py-3 rounded-full text-sm">Continue Shopping</button>
+          <button onClick={() => setView("account")} className="bg-stone-900 hover:bg-stone-800 text-amber-300 px-6 py-3 rounded-full text-sm font-medium transition-colors">
+            View My Orders &amp; Profile E-Bill
+          </button>
+          <button onClick={() => setView("shop")} className="border border-stone-300 text-stone-700 hover:bg-stone-100 px-6 py-3 rounded-full text-sm transition-colors">
+            Continue Shopping
+          </button>
         </div>
       </div>
     </div>
@@ -3294,15 +3349,15 @@ function AdminThemeManager({ activeTheme, onThemeUpdated, showToast }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="font-serif text-xl text-amber-300 mb-1">🎨 Global Seasonal Theme Control</h2>
-        <p className="text-stone-400 text-sm">Select the active storefront theme. When changed here, the new seasonal theme updates globally across all customer mobile phones, tablets, and desktop browsers in real time.</p>
+        <h2 className="font-serif text-xl text-stone-900 font-bold mb-1">🎨 Global Seasonal Theme Control</h2>
+        <p className="text-stone-500 text-sm">Select the active storefront theme. When changed here, the new seasonal theme updates globally across all customer mobile phones, tablets, and desktop browsers in real time.</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-5">
         {themes.map((t) => (
           <div
             key={t.key}
-            className={`rounded-xl border-2 p-5 transition-all cursor-pointer ${selectedTheme === t.key ? "border-amber-400 bg-stone-800/80 shadow-lg shadow-amber-500/10" : "border-stone-700 bg-stone-800/40 hover:border-stone-500"}`}
+            className={`rounded-xl border-2 p-5 transition-all cursor-pointer ${selectedTheme === t.key ? "border-amber-500 bg-amber-50/60 shadow-md" : "border-stone-200 bg-white hover:border-amber-300"}`}
             onClick={() => handleApply(t.key)}
           >
             <div className="flex items-center gap-3 mb-3">
@@ -3311,18 +3366,18 @@ function AdminThemeManager({ activeTheme, onThemeUpdated, showToast }) {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-stone-100 text-sm">{t.name}</span>
+                  <span className="font-bold text-stone-900 text-sm">{t.name}</span>
                   {selectedTheme === t.key && (
-                    <span className="bg-amber-400 text-stone-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">✓ Active Everywhere</span>
+                    <span className="bg-amber-500 text-stone-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">✓ Active Everywhere</span>
                   )}
                 </div>
-                <p className="text-stone-400 text-xs mt-0.5">{t.desc}</p>
+                <p className="text-stone-500 text-xs mt-0.5">{t.desc}</p>
               </div>
             </div>
             <button
               onClick={(e) => { e.stopPropagation(); handleApply(t.key); }}
               disabled={saving}
-              className={`w-full py-2 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${selectedTheme === t.key ? "bg-amber-500 text-stone-950 shadow-md font-extrabold" : "bg-stone-700 text-stone-300 hover:bg-stone-600"}`}
+              className={`w-full py-2 rounded-lg text-xs font-bold tracking-wide uppercase transition-all ${selectedTheme === t.key ? "bg-amber-500 text-stone-950 shadow-sm font-extrabold" : "bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200"}`}
             >
               {saving && selectedTheme === t.key ? "Publishing Globally…" : selectedTheme === t.key ? "✓ Currently Active (All Devices)" : `Apply ${t.name} to All Visitors`}
             </button>
@@ -3330,8 +3385,8 @@ function AdminThemeManager({ activeTheme, onThemeUpdated, showToast }) {
         ))}
       </div>
 
-      <div className="bg-stone-800/60 border border-stone-700 rounded-lg p-4 text-xs text-stone-400">
-        <span className="text-amber-400 font-semibold">ℹ️ Global Cloud Sync: </span>
+      <div className="bg-amber-50/50 border border-amber-200 rounded-lg p-4 text-xs text-stone-600">
+        <span className="text-amber-800 font-semibold">ℹ️ Global Cloud Sync: </span>
         Changes are saved directly to the database. Whenever any customer opens the site on mobile or PC, they automatically receive this chosen seasonal theme.
       </div>
     </div>
@@ -3695,30 +3750,30 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
   };
 
   return (
-    <div className="min-h-screen text-slate-100 p-3 sm:p-6" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #0f172a 100%)" }}>
+    <div className="min-h-screen bg-stone-50 text-stone-900 p-3 sm:p-6 font-sans">
       <div className="max-w-7xl mx-auto">
         {/* Admin Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 border-b border-indigo-500/30 pb-5 mb-6 sm:mb-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 bg-white border border-stone-200 rounded-xl p-5 sm:p-6 mb-6 sm:mb-8 shadow-sm">
           <div>
-            <span className="text-indigo-400 text-[10px] sm:text-xs tracking-widest uppercase font-semibold">⚙ Admin Control Panel</span>
-            <h1 className="font-serif text-2xl sm:text-3xl text-white font-bold mt-0.5">Boutique Control Center</h1>
-            <p className="text-slate-400 text-xs mt-0.5 hidden sm:block">Uma's Fashion & Boutique — Admin Management</p>
+            <span className="text-amber-700 text-[10px] sm:text-xs tracking-widest uppercase font-bold">⚙ Admin Control Panel</span>
+            <h1 className="font-serif text-2xl sm:text-3xl text-stone-900 font-bold mt-0.5">Boutique Control Center</h1>
+            <p className="text-stone-500 text-xs mt-0.5 hidden sm:block">Uma's Fashion & Boutique — Storefront & Inventory Management</p>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button
               onClick={() => { setEditingProduct(null); setProductModalOpen(true); }}
-              className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs uppercase tracking-wider px-4 py-2 sm:px-5 sm:py-2.5 rounded-full flex items-center gap-1.5 shadow-lg transition-colors"
+              className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs uppercase tracking-wider px-4 py-2 sm:px-5 sm:py-2.5 rounded-full flex items-center gap-1.5 shadow-sm transition-colors"
             >
               <Plus size={14} /> Add Product
             </button>
-            <button onClick={() => setView("home")} className="bg-slate-800/80 border border-slate-700 text-indigo-300 text-xs uppercase tracking-wider px-3 py-2 sm:px-4 sm:py-2.5 rounded-full hover:bg-slate-700 transition-colors">
-              ← Exit
+            <button onClick={() => setView("home")} className="bg-white border border-stone-300 text-stone-700 text-xs uppercase tracking-wider px-3 py-2 sm:px-4 sm:py-2.5 rounded-full hover:bg-stone-100 transition-colors">
+              ← Exit Store
             </button>
           </div>
         </div>
 
         {/* Navigation Tabs — horizontally scrollable on mobile */}
-        <div className="flex border-b border-slate-700/60 overflow-x-auto mb-6 sm:mb-8 gap-1 pb-0 -mx-3 px-3 sm:mx-0 sm:px-0" style={{ WebkitOverflowScrolling: "touch" }}>
+        <div className="flex border-b border-stone-200 bg-white rounded-t-xl px-3 sm:px-4 overflow-x-auto mb-6 gap-1 shadow-sm" style={{ WebkitOverflowScrolling: "touch" }}>
           {[
             ["analytics", "Analytics", BarChart3],
             ["customers", "Customers", Users],
@@ -3734,10 +3789,10 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             <button
               key={tabKey}
               onClick={() => setAdminTab(tabKey)}
-              className={`flex items-center gap-1.5 px-3 sm:px-4 py-3 text-[10px] sm:text-xs uppercase tracking-wider font-bold border-b-2 shrink-0 transition-all whitespace-nowrap ${adminTab === tabKey
-                ? "border-amber-400 text-amber-300 bg-indigo-900/40"
-                : "border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-600"
-              } ${tabKey === "payverify" && pendingPayments.length > 0 ? "text-amber-400 border-amber-500/50" : ""}`}
+              className={`flex items-center gap-1.5 px-3.5 sm:px-4 py-3.5 text-[10px] sm:text-xs uppercase tracking-wider font-bold border-b-2 shrink-0 transition-all whitespace-nowrap ${adminTab === tabKey
+                ? "border-amber-600 text-amber-900 bg-amber-50/70"
+                : "border-transparent text-stone-600 hover:text-stone-900 hover:border-stone-300"
+              } ${tabKey === "payverify" && pendingPayments.length > 0 ? "text-amber-700 border-amber-500" : ""}`}
             >
               <Icon size={14} /> {label}
             </button>
@@ -3756,11 +3811,11 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
 
         {/* 1. Analytics Tab */}
         {adminTab === "analytics" && (
-          <div className="space-y-8">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-6">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
               <div>
-                <h2 className="font-serif text-xl text-amber-300">Business Analytics &amp; Reports</h2>
-                <p className="text-stone-400 text-sm mt-1">Use the filter buttons to refresh analytics quickly.</p>
+                <h2 className="font-serif text-xl text-stone-900 font-bold">Business Analytics &amp; Reports</h2>
+                <p className="text-stone-500 text-sm mt-0.5">Use the filter buttons to refresh boutique analytics quickly.</p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex gap-2 flex-wrap">
@@ -3768,7 +3823,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                     <button
                       key={f}
                       onClick={() => setAnalyticsFilter(f)}
-                      className={`px-3 py-1 rounded text-xs uppercase tracking-wider font-bold ${analyticsFilter === f ? "bg-amber-500 text-stone-950" : "bg-stone-800 text-stone-400"}`}
+                      className={`px-3 py-1.5 rounded-lg text-xs uppercase tracking-wider font-bold transition-colors ${analyticsFilter === f ? "bg-amber-500 text-stone-950 font-extrabold shadow-sm" : "bg-stone-100 text-stone-600 hover:bg-stone-200 border border-stone-200"}`}
                     >
                       {f}
                     </button>
@@ -3776,7 +3831,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                 </div>
                 <button
                   onClick={downloadAnalyticsReport}
-                  className="bg-amber-500 hover:bg-amber-400 text-stone-950 px-4 py-2 rounded-full text-xs font-bold"
+                  className="bg-stone-900 hover:bg-stone-800 text-amber-300 px-4 py-2 rounded-lg text-xs font-bold transition-colors"
                 >
                   Download Report
                 </button>
@@ -3784,35 +3839,35 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              <div className="bg-slate-800/70 border border-indigo-500/20 p-4 sm:p-5 rounded-xl shadow-lg">
-                <div className="text-slate-400 text-xs uppercase tracking-wider">Total Revenue</div>
-                <div className="text-xl sm:text-2xl font-serif text-amber-400 font-bold mt-1">{inr(stats?.revenue || 0)}</div>
+              <div className="bg-white border border-stone-200 p-4 sm:p-5 rounded-xl shadow-sm">
+                <div className="text-stone-500 text-xs uppercase tracking-wider font-semibold">Total Revenue</div>
+                <div className="text-xl sm:text-2xl font-serif text-amber-700 font-bold mt-1">{inr(stats?.revenue || 0)}</div>
               </div>
-              <div className="bg-slate-800/70 border border-indigo-500/20 p-4 sm:p-5 rounded-xl shadow-lg">
-                <div className="text-slate-400 text-xs uppercase tracking-wider">Total Orders</div>
-                <div className="text-xl sm:text-2xl font-serif text-slate-100 font-bold mt-1">{stats?.totalOrders || 0}</div>
+              <div className="bg-white border border-stone-200 p-4 sm:p-5 rounded-xl shadow-sm">
+                <div className="text-stone-500 text-xs uppercase tracking-wider font-semibold">Total Orders</div>
+                <div className="text-xl sm:text-2xl font-serif text-stone-900 font-bold mt-1">{stats?.totalOrders || 0}</div>
               </div>
-              <div className="bg-slate-800/70 border border-indigo-500/20 p-4 sm:p-5 rounded-xl shadow-lg">
-                <div className="text-slate-400 text-xs uppercase tracking-wider">Total Customers</div>
-                <div className="text-xl sm:text-2xl font-serif text-slate-100 font-bold mt-1">{stats?.totalCustomers || customers.length}</div>
+              <div className="bg-white border border-stone-200 p-4 sm:p-5 rounded-xl shadow-sm">
+                <div className="text-stone-500 text-xs uppercase tracking-wider font-semibold">Total Customers</div>
+                <div className="text-xl sm:text-2xl font-serif text-stone-900 font-bold mt-1">{stats?.totalCustomers || customers.length}</div>
               </div>
-              <div className="bg-slate-800/70 border border-indigo-500/20 p-4 sm:p-5 rounded-xl shadow-lg">
-                <div className="text-slate-400 text-xs uppercase tracking-wider">Pending Orders</div>
-                <div className="text-xl sm:text-2xl font-serif text-amber-500 font-bold mt-1">{stats?.pendingOrders || 0}</div>
+              <div className="bg-white border border-stone-200 p-4 sm:p-5 rounded-xl shadow-sm">
+                <div className="text-stone-500 text-xs uppercase tracking-wider font-semibold">Pending Orders</div>
+                <div className="text-xl sm:text-2xl font-serif text-amber-700 font-bold mt-1">{stats?.pendingOrders || 0}</div>
               </div>
             </div>
 
             {/* Low Stock Warning Section */}
             {stats?.lowStockProducts && stats.lowStockProducts.length > 0 && (
-              <div className="bg-rose-950/40 border border-rose-800/60 p-4 rounded-md">
-                <div className="flex items-center gap-2 text-rose-400 text-xs font-bold uppercase tracking-wider mb-2">
+              <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl shadow-sm">
+                <div className="flex items-center gap-2 text-rose-800 text-xs font-bold uppercase tracking-wider mb-2">
                   <AlertCircle size={16} /> Low Stock Warning
                 </div>
                 <div className="grid sm:grid-cols-3 gap-3">
                   {stats.lowStockProducts.map((lp) => (
-                    <div key={lp._id} className="bg-rose-900/30 p-2.5 rounded text-xs border border-rose-800/40 flex justify-between items-center">
-                      <span>{lp.name}</span>
-                      <span className="font-bold text-rose-300">Only {lp.stock} left</span>
+                    <div key={lp._id} className="bg-white p-2.5 rounded-lg text-xs border border-rose-200 flex justify-between items-center shadow-sm">
+                      <span className="text-stone-800 font-medium">{lp.name}</span>
+                      <span className="font-bold text-rose-700">Only {lp.stock} left</span>
                     </div>
                   ))}
                 </div>
@@ -3824,12 +3879,12 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
         {/* 2. Customers Tab */}
         {adminTab === "customers" && (
           <div className="space-y-6">
-            <h2 className="font-serif text-xl text-amber-300">Customer Management</h2>
+            <h2 className="font-serif text-xl text-stone-900 font-bold">Customer Management</h2>
             {/* Scrollable table on mobile */}
-            <div className="bg-slate-800/70 border border-indigo-500/20 rounded-xl overflow-hidden shadow-lg">
+            <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
               <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
-                <table className="w-full text-left text-xs text-slate-300 min-w-[640px]">
-                  <thead className="bg-slate-950/80 text-amber-300 uppercase tracking-wider">
+                <table className="w-full text-left text-xs text-stone-700 min-w-[640px]">
+                  <thead className="bg-stone-100 text-stone-800 uppercase tracking-wider font-bold border-b border-stone-200">
                     <tr>
                       <th className="p-3">Full Name</th>
                       <th className="p-3">Email Address</th>
@@ -3839,28 +3894,28 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                       <th className="p-3">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-700/50">
+                  <tbody className="divide-y divide-stone-200">
                     {customers.map((c) => (
-                      <tr key={c.id} className="hover:bg-indigo-900/20 transition-colors">
-                        <td className="p-3 font-medium text-slate-100">{c.name}</td>
-                        <td className="p-3">{c.email}</td>
-                        <td className="p-3">{c.phone}</td>
-                        <td className="p-3 text-slate-400">{formatDateTime(c.registrationDate)}</td>
+                      <tr key={c.id} className="hover:bg-stone-50 transition-colors">
+                        <td className="p-3 font-semibold text-stone-900">{c.name}</td>
+                        <td className="p-3 text-stone-600">{c.email}</td>
+                        <td className="p-3 text-stone-600">{c.phone}</td>
+                        <td className="p-3 text-stone-500">{formatDateTime(c.registrationDate)}</td>
                         <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${c.status === "Active" ? "bg-emerald-900/60 text-emerald-300 border border-emerald-700" : "bg-rose-900/60 text-rose-300 border border-rose-700"}`}>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold ${c.status === "Active" ? "bg-emerald-50 text-emerald-800 border border-emerald-300" : "bg-rose-50 text-rose-800 border border-rose-300"}`}>
                             {c.status}
                           </span>
                         </td>
                         <td className="p-3 flex gap-2">
                           <button
                             onClick={() => handleViewCustomerDetail(c)}
-                            className="bg-slate-700 hover:bg-slate-600 text-amber-300 px-2.5 py-1 rounded text-xs flex items-center gap-1"
+                            className="bg-stone-100 hover:bg-stone-200 text-stone-900 border border-stone-300 px-2.5 py-1 rounded text-xs flex items-center gap-1 font-medium transition-colors"
                           >
                             <ShoppingBag size={11} /> Cart & Orders
                           </button>
                           <button
                             onClick={() => handleToggleCustomerStatus(c.id, c.status)}
-                            className={`px-3 py-1 rounded text-xs font-medium ${c.status === "Active" ? "bg-rose-800/70 text-rose-100 hover:bg-rose-700" : "bg-emerald-800/70 text-slate-100 hover:bg-emerald-700"}`}
+                            className={`px-3 py-1 rounded text-xs font-semibold transition-colors ${c.status === "Active" ? "bg-rose-100 text-rose-800 hover:bg-rose-200 border border-rose-200" : "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-200"}`}
                           >
                             {c.status === "Active" ? "Block" : "Unblock"}
                           </button>
@@ -3877,24 +3932,27 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
         {/* 3. Inventory Tab */}
         {adminTab === "inventory" && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="font-serif text-xl text-amber-300">Inventory &amp; Product Stock Management</h2>
+            <div className="flex justify-between items-center bg-white border border-stone-200 rounded-xl p-5 shadow-sm">
+              <div>
+                <h2 className="font-serif text-xl text-stone-900 font-bold">Inventory &amp; Product Stock Management</h2>
+                <p className="text-stone-500 text-xs mt-0.5">Manage live product listings, stock levels, and store categories.</p>
+              </div>
               <button
                 onClick={() => { setEditingProduct(null); setProductModalOpen(true); }}
-                className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs uppercase tracking-wider px-4 py-2 rounded flex items-center gap-1"
+                className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-full flex items-center gap-1.5 shadow-sm transition-colors"
               >
                 <Plus size={14} /> Add Product
               </button>
             </div>
 
             {/* Category Management Control */}
-            <div className="bg-stone-800 border border-stone-700 rounded-md p-5 space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-700 pb-3">
+            <div className="bg-white border border-stone-200 rounded-xl p-5 space-y-4 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-stone-200 pb-3">
                 <div>
-                  <h3 className="font-serif text-base text-amber-300 flex items-center gap-2 font-bold">
-                    <Tag size={16} /> Product Category Options Manager
+                  <h3 className="font-serif text-base text-stone-900 flex items-center gap-2 font-bold">
+                    <Tag size={16} className="text-amber-600" /> Product Category Options Manager
                   </h3>
-                  <p className="text-xs text-stone-400">Add new categories or manage existing choices for storefront filtering and product creation.</p>
+                  <p className="text-xs text-stone-500">Add new categories or manage existing choices for storefront filtering and product creation.</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
                   <input
@@ -3909,7 +3967,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                         setNewCategoryInput("");
                       }
                     }}
-                    className="bg-stone-900 border border-stone-700 text-stone-100 px-3 py-1.5 rounded text-xs focus:outline-none focus:border-amber-400 flex-1 sm:w-56"
+                    className="bg-white border border-stone-300 text-stone-900 px-3 py-1.5 rounded-lg text-xs focus:outline-none focus:border-amber-500 flex-1 sm:w-56"
                   />
                   <button
                     type="button"
@@ -3917,7 +3975,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                       if (onAddCategory) onAddCategory(newCategoryInput);
                       setNewCategoryInput("");
                     }}
-                    className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs px-4 py-1.5 rounded flex items-center gap-1 shrink-0"
+                    className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs px-4 py-1.5 rounded-lg flex items-center gap-1 shrink-0 transition-colors"
                   >
                     <Plus size={14} /> Add Option
                   </button>
@@ -3928,14 +3986,14 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                 {categories.map((cat) => (
                   <span
                     key={cat}
-                    className="inline-flex items-center gap-1.5 bg-stone-900 border border-stone-700 text-amber-300 text-xs px-3 py-1 rounded-full font-medium shadow-sm"
+                    className="inline-flex items-center gap-1.5 bg-stone-100 border border-stone-300 text-stone-800 text-xs px-3 py-1 rounded-full font-medium shadow-xs"
                   >
                     <span>{cat}</span>
                     {categories.length > 1 && (
                       <button
                         type="button"
                         onClick={() => { if (onDeleteCategory) onDeleteCategory(cat); }}
-                        className="text-stone-400 hover:text-rose-400 p-0.5 rounded-full transition-colors"
+                        className="text-stone-400 hover:text-rose-600 p-0.5 rounded-full transition-colors"
                         title={`Remove ${cat} category`}
                       >
                         <X size={12} />
@@ -3946,10 +4004,10 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
               </div>
             </div>
 
-            <div className="bg-slate-800/70 border border-indigo-500/20 rounded-xl overflow-hidden shadow-lg">
+            <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
               <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
-                <table className="w-full text-left text-xs text-slate-300 min-w-[640px]">
-                  <thead className="bg-slate-950/80 text-amber-300 uppercase tracking-wider">
+                <table className="w-full text-left text-xs text-stone-700 min-w-[640px]">
+                  <thead className="bg-stone-100 text-stone-800 uppercase tracking-wider font-bold border-b border-stone-200">
                     <tr>
                       <th className="p-3">Product Name</th>
                       <th className="p-3">Category</th>
@@ -3959,15 +4017,15 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                       <th className="p-3">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-700/50">
+                  <tbody className="divide-y divide-stone-200">
                     {products.map((p) => (
-                      <tr key={p.id} className="hover:bg-indigo-900/20 transition-colors">
-                        <td className="p-3 font-medium text-slate-100 flex items-center gap-2">
-                          {p.imageUrl && <img src={getImageUrl(p.imageUrl)} alt="" className="w-8 h-8 object-cover rounded-lg border border-slate-600" />}
+                      <tr key={p.id} className="hover:bg-stone-50 transition-colors">
+                        <td className="p-3 font-medium text-stone-900 flex items-center gap-2">
+                          {p.imageUrl && <img src={getImageUrl(p.imageUrl)} alt="" className="w-8 h-8 object-cover rounded-lg border border-stone-200" />}
                           <span>{p.name}</span>
                         </td>
-                        <td className="p-3">{p.category}</td>
-                        <td className="p-3 font-semibold text-amber-400">{inr(p.price)}</td>
+                        <td className="p-3 text-stone-600">{p.category}</td>
+                        <td className="p-3 font-semibold text-amber-700">{inr(p.price)}</td>
                         <td className="p-3">
                           {stockEditId === p.id ? (
                             <div className="flex items-center gap-1">
@@ -3976,36 +4034,36 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                                 min="0"
                                 value={stockEditVal}
                                 onChange={(e) => setStockEditVal(e.target.value)}
-                                className="w-20 bg-slate-900 border border-amber-500 text-amber-300 px-2 py-1 rounded text-xs"
+                                className="w-20 bg-white border border-amber-500 text-stone-900 px-2 py-1 rounded text-xs"
                                 autoFocus
                               />
-                              <button onClick={() => handleSaveStock(p.id)} className="bg-emerald-700 hover:bg-emerald-600 text-white px-2 py-1 rounded text-xs">
+                              <button onClick={() => handleSaveStock(p.id)} className="bg-emerald-600 hover:bg-emerald-500 text-white px-2 py-1 rounded text-xs font-bold">
                                 <Check size={11} />
                               </button>
-                              <button onClick={() => { setStockEditId(null); setStockEditVal(""); }} className="bg-slate-700 text-slate-300 px-2 py-1 rounded text-xs">
+                              <button onClick={() => { setStockEditId(null); setStockEditVal(""); }} className="bg-stone-200 text-stone-700 px-2 py-1 rounded text-xs">
                                 <X size={11} />
                               </button>
                             </div>
                           ) : (
                             <div className="flex items-center gap-2">
-                              <span className={`font-bold ${p.stock <= (p.lowStockThreshold || 5) ? "text-rose-400" : "text-emerald-400"}`}>{p.stock}</span>
-                              <button onClick={() => { setStockEditId(p.id); setStockEditVal(String(p.stock)); }} className="text-slate-500 hover:text-amber-300" title="Edit stock">
+                              <span className={`font-bold ${p.stock <= (p.lowStockThreshold || 5) ? "text-rose-600" : "text-emerald-700"}`}>{p.stock}</span>
+                              <button onClick={() => { setStockEditId(p.id); setStockEditVal(String(p.stock)); }} className="text-stone-400 hover:text-amber-700" title="Edit stock">
                                 <Edit2 size={11} />
                               </button>
                             </div>
                           )}
                         </td>
                         <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${p.status === "Available" ? "bg-emerald-900/50 text-emerald-300 border-emerald-700" : p.status === "Coming Soon" ? "bg-blue-900/50 text-blue-300 border-blue-700" : "bg-rose-900/50 text-rose-300 border-rose-700"}`}>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold border ${p.status === "Available" ? "bg-emerald-50 text-emerald-700 border-emerald-300" : p.status === "Coming Soon" ? "bg-blue-50 text-blue-700 border-blue-300" : "bg-rose-50 text-rose-700 border-rose-300"}`}>
                             {p.status || "Available"}
                           </span>
                         </td>
                         <td className="p-3 flex gap-2 flex-wrap">
-                          <button onClick={() => { setEditingProduct(p); setProductModalOpen(true); }} className="bg-slate-700 hover:bg-slate-600 text-amber-300 px-2.5 py-1 rounded text-xs flex items-center gap-1">
+                          <button onClick={() => { setEditingProduct(p); setProductModalOpen(true); }} className="bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-300 px-2.5 py-1 rounded text-xs flex items-center gap-1 font-medium transition-colors">
                             <Edit2 size={12} /> Edit
                           </button>
-                          <button onClick={() => saveProduct({ ...p, stock: p.stock + 10 })} className="bg-amber-500 text-slate-950 px-2 py-1 rounded text-xs font-bold">+10 Stock</button>
-                          <button onClick={() => deleteProduct(p.id)} className="bg-rose-900/70 text-rose-200 px-2 py-1 rounded text-xs border border-rose-800">Delete</button>
+                          <button onClick={() => saveProduct({ ...p, stock: p.stock + 10 })} className="bg-amber-500 hover:bg-amber-400 text-stone-950 px-2.5 py-1 rounded text-xs font-bold transition-colors">+10 Stock</button>
+                          <button onClick={() => deleteProduct(p.id)} className="bg-rose-50 text-rose-700 hover:bg-rose-100 px-2.5 py-1 rounded text-xs border border-rose-200 font-medium transition-colors">Delete</button>
                         </td>
                       </tr>
                     ))}
@@ -4019,28 +4077,28 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
         {/* 4. Promotional Banners Tab */}
         {adminTab === "banners" && (
           <div className="space-y-6">
-            <h2 className="font-serif text-xl text-amber-300">Promotional Banners Management</h2>
-            <form onSubmit={handleSaveBanner} className="bg-stone-800 p-4 rounded-md border border-stone-700 space-y-3 max-w-xl">
-              <input placeholder="Banner Title" value={newBanner.title} onChange={(e) => setNewBanner({ ...newBanner, title: e.target.value })} className="w-full bg-stone-900 border border-stone-700 p-2 text-xs rounded text-stone-100 placeholder:text-stone-500" required />
-              <input placeholder="Description" value={newBanner.description} onChange={(e) => setNewBanner({ ...newBanner, description: e.target.value })} className="w-full bg-stone-900 border border-stone-700 p-2 text-xs rounded text-stone-100 placeholder:text-stone-500" />
-              <select value={newBanner.category} onChange={(e) => setNewBanner({ ...newBanner, category: e.target.value })} className="w-full bg-stone-900 border border-stone-700 p-2 text-xs rounded text-stone-100">
+            <h2 className="font-serif text-xl text-stone-900 font-bold">Promotional Banners Management</h2>
+            <form onSubmit={handleSaveBanner} className="bg-white p-5 rounded-xl border border-stone-200 shadow-sm space-y-3 max-w-xl">
+              <input placeholder="Banner Title" value={newBanner.title} onChange={(e) => setNewBanner({ ...newBanner, title: e.target.value })} className="w-full bg-white border border-stone-300 p-2.5 text-xs rounded-lg text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-amber-500" required />
+              <input placeholder="Description" value={newBanner.description} onChange={(e) => setNewBanner({ ...newBanner, description: e.target.value })} className="w-full bg-white border border-stone-300 p-2.5 text-xs rounded-lg text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-amber-500" />
+              <select value={newBanner.category} onChange={(e) => setNewBanner({ ...newBanner, category: e.target.value })} className="w-full bg-white border border-stone-300 p-2.5 text-xs rounded-lg text-stone-900 focus:outline-none focus:border-amber-500">
                 <option value="Summer Season">Summer Season</option>
                 <option value="Winter Season">Winter Season</option>
                 <option value="Festival Offers">Festival Offers</option>
                 <option value="Custom">Custom</option>
               </select>
-              <button type="submit" className="bg-amber-500 text-stone-950 font-bold px-4 py-2 rounded text-xs">Create Banner</button>
+              <button type="submit" className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-5 py-2.5 rounded-full text-xs transition-colors">Create Banner</button>
             </form>
 
             <div className="grid md:grid-cols-2 gap-4">
               {banners.map((b) => (
-                <div key={b._id} className="bg-stone-800 p-4 rounded border border-stone-700 flex justify-between items-center">
+                <div key={b._id} className="bg-white p-5 rounded-xl border border-stone-200 shadow-sm flex justify-between items-center">
                   <div>
-                    <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded uppercase font-bold">{b.category}</span>
-                    <h3 className="font-serif text-lg text-amber-300 mt-1">{b.title}</h3>
-                    <p className="text-xs text-stone-400">{b.description}</p>
+                    <span className="text-[10px] bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full uppercase font-bold border border-amber-200">{b.category}</span>
+                    <h3 className="font-serif text-lg text-stone-900 font-bold mt-1.5">{b.title}</h3>
+                    <p className="text-xs text-stone-500 mt-0.5">{b.description}</p>
                   </div>
-                  <button onClick={() => handleDeleteBanner(b._id)} className="bg-rose-900 text-rose-200 p-2 rounded text-xs"><Trash2 size={16} /></button>
+                  <button onClick={() => handleDeleteBanner(b._id)} className="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 p-2 rounded-lg text-xs transition-colors"><Trash2 size={16} /></button>
                 </div>
               ))}
             </div>
@@ -4049,18 +4107,19 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
 
         {/* 5. Payment Methods Settings Tab */}
         {adminTab === "payments" && (
-          <form onSubmit={handleSavePaymentSettings} className="bg-stone-800 p-6 rounded-md border border-stone-700 max-w-xl space-y-4">
-            <h2 className="font-serif text-xl text-amber-300">Payment Methods Settings</h2>
-            <p className="text-stone-400 text-xs">Enable or disable the payment methods available to customers at checkout.</p>
+          <form onSubmit={handleSavePaymentSettings} className="bg-white p-6 rounded-xl border border-stone-200 shadow-sm max-w-xl space-y-4">
+            <h2 className="font-serif text-xl text-stone-900 font-bold">Payment Methods Settings</h2>
+            <p className="text-stone-500 text-xs">Enable or disable the payment methods available to customers at checkout.</p>
             {[
               { key: "cod", label: "Cash on Delivery (COD)" },
               { key: "online", label: "Razorpay (Online Payment)" },
             ].map(({ key, label }) => (
-              <div key={key} className="bg-stone-900 p-4 rounded border border-stone-700 space-y-2">
-                <label className="flex items-center justify-between text-sm font-bold uppercase text-stone-200">
+              <div key={key} className="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2">
+                <label className="flex items-center justify-between text-sm font-bold uppercase text-stone-900 cursor-pointer">
                   <span>{label}</span>
                   <input
                     type="checkbox"
+                    className="accent-amber-600"
                     checked={paymentSettings[key]?.enabled !== false}
                     onChange={(e) => setPaymentSettings({
                       ...paymentSettings,
@@ -4075,11 +4134,11 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                     ...paymentSettings,
                     [key]: { ...paymentSettings[key], customMessage: e.target.value }
                   })}
-                  className="w-full bg-stone-800 border border-stone-700 p-2 text-xs rounded text-stone-200"
+                  className="w-full bg-white border border-stone-300 p-2 text-xs rounded-lg text-stone-900 focus:outline-none focus:border-amber-500"
                 />
               </div>
             ))}
-            <button type="submit" className="bg-amber-500 text-stone-950 font-bold px-6 py-2 rounded text-xs">Save Payment Settings</button>
+            <button type="submit" className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-6 py-2.5 rounded-full text-xs shadow-sm transition-colors">Save Payment Settings</button>
           </form>
         )}
 
@@ -4094,21 +4153,22 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
               <select
                 value={paymentVerificationMethod}
                 onChange={(e) => setPaymentVerificationMethod(e.target.value)}
-                className="bg-stone-800 border border-stone-700 rounded-md px-3 py-2 text-xs text-stone-200"
+                className="bg-white border border-stone-300 rounded-lg px-3 py-2 text-xs text-stone-900 focus:outline-none focus:border-amber-500 shadow-sm"
               >
                 <option value="all">All Methods</option>
                 <option value="online">Razorpay (Online)</option>
                 <option value="cod">Cash on Delivery</option>
               </select>
-              <button onClick={fetchAdminData} className="bg-stone-800 text-amber-300 text-xs px-3 py-1.5 rounded flex items-center gap-1 hover:bg-stone-700">
+              <button onClick={fetchAdminData} className="bg-stone-100 border border-stone-300 text-stone-800 text-xs px-3.5 py-2 rounded-lg flex items-center gap-1.5 hover:bg-stone-200 transition-colors">
                 <RefreshCw size={13} /> Refresh
               </button>
             </div>
 
             {pendingPayments.length === 0 ? (
-              <div className="bg-stone-800 border border-stone-700 rounded-md p-10 text-center text-stone-400">
-                <ShieldCheck size={36} className="mx-auto mb-3 text-emerald-500" />
-                <p className="text-sm">No pending payment verifications. All payments are up to date.</p>
+              <div className="bg-white border border-stone-200 rounded-xl p-10 text-center text-stone-500 shadow-sm">
+                <ShieldCheck size={36} className="mx-auto mb-3 text-emerald-600" />
+                <p className="text-sm font-semibold text-stone-800">No pending payment verifications.</p>
+                <p className="text-xs text-stone-500 mt-1">All customer payments are up to date and approved.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -4116,56 +4176,56 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                   ? pendingPayments
                   : pendingPayments.filter((order) => order.paymentMethod === paymentVerificationMethod)
                 ).map((order) => (
-                  <div key={order.id} className="bg-stone-800 border border-amber-500/30 rounded-lg p-5 space-y-4">
+                  <div key={order.id} className="bg-white border-2 border-amber-300 rounded-xl p-5 space-y-4 shadow-sm">
                     <div className="flex flex-wrap justify-between items-start gap-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-bold text-amber-300 text-sm">#{order.orderNumber}</span>
-                          <span className="bg-amber-900/60 text-amber-300 text-[10px] px-2 py-0.5 rounded uppercase font-bold">
+                          <span className="font-bold text-amber-800 text-base">#{order.orderNumber}</span>
+                          <span className="bg-amber-100 text-amber-900 text-[10px] px-2.5 py-0.5 rounded-full uppercase font-bold border border-amber-200">
                             {order.paymentMethod?.toUpperCase()}
                           </span>
-                          <span className="bg-orange-900 text-orange-300 text-[10px] px-2 py-0.5 rounded uppercase font-bold">
+                          <span className="bg-orange-100 text-orange-800 text-[10px] px-2.5 py-0.5 rounded-full uppercase font-bold border border-orange-200">
                             {order.paymentStatus === "verification_requested" ? "Verification Requested" : order.paymentStatus}
                           </span>
                         </div>
-                        <div className="text-stone-400 text-xs">{formatDateTime(order.createdAt)}</div>
+                        <div className="text-stone-500 text-xs">{formatDateTime(order.createdAt)}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-amber-300 font-bold text-lg">{inr(order.total)}</div>
+                        <div className="text-amber-700 font-bold text-lg">{inr(order.total)}</div>
                         {order.paymentReference && (
-                          <div className="text-xs text-stone-400 mt-0.5">Ref: <span className="text-stone-200">{order.paymentReference}</span></div>
+                          <div className="text-xs text-stone-500 mt-0.5">Ref / UTR: <span className="text-stone-900 font-semibold">{order.paymentReference}</span></div>
                         )}
                         {order.paymentProofUrl && (
-                          <div className="text-xs text-stone-400 mt-0.5">Proof: <a href={order.paymentProofUrl} target="_blank" rel="noreferrer" className="text-amber-300 hover:underline">View</a></div>
+                          <div className="text-xs text-stone-500 mt-0.5">Proof: <a href={order.paymentProofUrl} target="_blank" rel="noreferrer" className="text-amber-700 font-bold hover:underline">View Screenshot</a></div>
                         )}
                       </div>
                     </div>
 
                     <div className="grid sm:grid-cols-2 gap-4">
                       {/* Customer Info */}
-                      <div className="bg-stone-900 rounded p-3.5 border border-stone-800">
-                        <div className="text-[10px] uppercase text-amber-400/90 font-bold mb-2 tracking-wider">Customer Information</div>
-                        <div className="text-xs text-stone-100 font-semibold">{order.customer.name}</div>
-                        <div className="text-xs text-stone-300 mt-0.5">{order.customer.email}</div>
-                        <div className="text-xs text-stone-300 mt-0.5">{order.customer.phone}</div>
+                      <div className="bg-stone-50 rounded-lg p-3.5 border border-stone-200">
+                        <div className="text-[10px] uppercase text-amber-800 font-bold mb-2 tracking-wider">Customer Information</div>
+                        <div className="text-xs text-stone-900 font-semibold">{order.customer.name}</div>
+                        <div className="text-xs text-stone-600 mt-0.5">{order.customer.email}</div>
+                        <div className="text-xs text-stone-600 mt-0.5">{order.customer.phone}</div>
                       </div>
                       {/* Shipping Info */}
-                      <div className="bg-stone-900 rounded p-3.5 border border-stone-800">
-                        <div className="text-[10px] uppercase text-amber-400/90 font-bold mb-2 tracking-wider">Shipping Address</div>
-                        <div className="text-xs text-stone-100 font-semibold">{order.shipping.name}</div>
-                        <div className="text-xs text-stone-300 mt-0.5">{order.shipping.address}, {order.shipping.city} - {order.shipping.pincode}</div>
-                        <div className="text-xs text-stone-300 mt-0.5">{order.shipping.phone}</div>
+                      <div className="bg-stone-50 rounded-lg p-3.5 border border-stone-200">
+                        <div className="text-[10px] uppercase text-amber-800 font-bold mb-2 tracking-wider">Shipping Address</div>
+                        <div className="text-xs text-stone-900 font-semibold">{order.shipping.name}</div>
+                        <div className="text-xs text-stone-600 mt-0.5">{order.shipping.address}, {order.shipping.city} - {order.shipping.pincode}</div>
+                        <div className="text-xs text-stone-600 mt-0.5">{order.shipping.phone}</div>
                       </div>
                     </div>
 
                     {/* Order Items */}
-                    <div className="bg-stone-900 rounded p-3.5 border border-stone-800">
-                      <div className="text-[10px] uppercase text-amber-400/90 font-bold mb-2 tracking-wider">Order Items</div>
+                    <div className="bg-stone-50 rounded-lg p-3.5 border border-stone-200">
+                      <div className="text-[10px] uppercase text-amber-800 font-bold mb-2 tracking-wider">Order Items</div>
                       <div className="space-y-1.5">
                         {order.items.map((item, idx) => (
                           <div key={idx} className="flex justify-between text-xs">
-                            <span className="text-stone-200 font-medium">{item.name} <span className="text-stone-400">({item.size})</span> × {item.qty}</span>
-                            <span className="text-amber-300 font-bold">{inr(item.price * item.qty)}</span>
+                            <span className="text-stone-800 font-medium">{item.name} <span className="text-stone-500">({item.size})</span> × {item.qty}</span>
+                            <span className="text-amber-800 font-bold">{inr(item.price * item.qty)}</span>
                           </div>
                         ))}
                       </div>
@@ -4178,7 +4238,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                           const notes = window.prompt("Add verification notes (optional):", "") || "";
                           handleVerifyPayment(order.id, notes);
                         }}
-                        className="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-4 py-2.5 rounded text-xs uppercase tracking-wider flex items-center justify-center gap-2"
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded-lg text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-colors"
                       >
                         <CheckCircle size={14} /> Verify & Approve Payment
                       </button>
@@ -4188,7 +4248,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                             handleRejectPayment(order.id);
                           }
                         }}
-                        className="flex-1 bg-rose-800 hover:bg-rose-700 text-white font-bold px-4 py-2.5 rounded text-xs uppercase tracking-wider flex items-center justify-center gap-2"
+                        className="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 py-2.5 rounded-lg text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm transition-colors"
                       >
                         <XCircle size={14} /> Reject Payment
                       </button>
@@ -4209,7 +4269,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             />
 
             {/* Search & Filter Toolbar */}
-            <div className="bg-stone-800/90 border border-stone-700 rounded-xl p-5 shadow-lg space-y-4">
+            <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-sm space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
                 {/* Search Bar */}
                 <div className="md:col-span-6 relative">
@@ -4219,12 +4279,12 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                     value={trackingSearchQuery}
                     onChange={(e) => setTrackingSearchQuery(e.target.value)}
                     placeholder="Search by Order ID (e.g. 1001), Customer, Phone, City..."
-                    className="w-full bg-stone-900 border border-stone-700 rounded-lg pl-9 pr-8 py-2.5 text-xs text-stone-100 placeholder-stone-400 focus:outline-none focus:border-amber-400"
+                    className="w-full bg-white border border-stone-300 rounded-lg pl-9 pr-8 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-500 shadow-xs"
                   />
                   {trackingSearchQuery && (
                     <button
                       onClick={() => setTrackingSearchQuery("")}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-200"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
                     >
                       <X size={14} />
                     </button>
@@ -4236,7 +4296,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                   <select
                     value={trackingStatusFilter}
                     onChange={(e) => setTrackingStatusFilter(e.target.value)}
-                    className="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2.5 text-xs text-stone-100 focus:outline-none focus:border-amber-400"
+                    className="w-full bg-white border border-stone-300 rounded-lg px-3 py-2.5 text-xs text-stone-900 focus:outline-none focus:border-amber-500 shadow-xs"
                   >
                     <option value="all">All Delivery Statuses</option>
                     <option value="Placed">Placed</option>
@@ -4255,7 +4315,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                   <select
                     value={trackingPaymentFilter}
                     onChange={(e) => setTrackingPaymentFilter(e.target.value)}
-                    className="w-full bg-stone-900 border border-stone-700 rounded-lg px-3 py-2.5 text-xs text-stone-100 focus:outline-none focus:border-amber-400"
+                    className="w-full bg-white border border-stone-300 rounded-lg px-3 py-2.5 text-xs text-stone-900 focus:outline-none focus:border-amber-500 shadow-xs"
                   >
                     <option value="all">All Payment Statuses</option>
                     <option value="paid">Paid</option>
@@ -4266,26 +4326,26 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
               </div>
 
               {/* Direct Order ID Quick Lookup & Quick Stats Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-700/60">
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-200">
                 <form onSubmit={handleDirectTrack} className="flex items-center gap-2 max-w-md w-full sm:w-auto">
                   <input
                     type="text"
                     value={directTrackInput}
                     onChange={(e) => setDirectTrackInput(e.target.value)}
                     placeholder="Enter Exact Order # to track..."
-                    className="bg-stone-900 border border-stone-700 rounded-lg px-3 py-1.5 text-xs text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-400 w-48 sm:w-60"
+                    className="bg-white border border-stone-300 rounded-lg px-3 py-1.5 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-amber-500 w-48 sm:w-60 shadow-xs"
                   />
                   <button
                     type="submit"
-                    className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-colors"
+                    className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs px-3.5 py-1.5 rounded-lg whitespace-nowrap shadow-xs transition-colors"
                   >
                     Find &amp; Track
                   </button>
                 </form>
 
                 <div className="flex items-center gap-3">
-                  <span className="text-xs text-stone-400">
-                    Showing <strong className="text-amber-400">{filteredTrackingOrders.length}</strong> of {adminOrderList.length} orders
+                  <span className="text-xs text-stone-500">
+                    Showing <strong className="text-stone-900 font-bold">{filteredTrackingOrders.length}</strong> of {adminOrderList.length} orders
                   </span>
                   {(trackingSearchQuery || trackingStatusFilter !== "all" || trackingPaymentFilter !== "all") && (
                     <button
@@ -4295,14 +4355,14 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                         setTrackingPaymentFilter("all");
                         setDirectTrackInput("");
                       }}
-                      className="text-xs text-amber-400 hover:text-amber-300 underline font-medium"
+                      className="text-xs text-amber-700 hover:text-amber-800 underline font-medium"
                     >
                       Clear Filters
                     </button>
                   )}
                   <button
                     onClick={fetchAdminData}
-                    className="bg-stone-700 hover:bg-stone-600 text-stone-200 text-xs px-3 py-1.5 rounded-lg uppercase tracking-wider font-semibold"
+                    className="bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-800 text-xs px-3 py-1.5 rounded-lg uppercase tracking-wider font-semibold transition-colors"
                   >
                     Refresh
                   </button>
@@ -4311,13 +4371,13 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             </div>
 
             {adminOrderList.length === 0 ? (
-              <div className="bg-stone-800 border border-stone-700 rounded-md p-10 text-center text-stone-400">
+              <div className="bg-white border border-stone-200 rounded-xl p-10 text-center text-stone-500 shadow-sm">
                 No orders available for tracking.
               </div>
             ) : filteredTrackingOrders.length === 0 ? (
-              <div className="bg-stone-800 border border-stone-700 rounded-md p-10 text-center text-stone-400">
-                <Search size={28} className="mx-auto text-stone-500 mb-2" />
-                <p className="text-stone-300 font-medium">No orders matched your search criteria.</p>
+              <div className="bg-white border border-stone-200 rounded-xl p-10 text-center text-stone-500 shadow-sm">
+                <Search size={28} className="mx-auto text-stone-400 mb-2" />
+                <p className="text-stone-800 font-semibold">No orders matched your search criteria.</p>
                 <p className="text-xs text-stone-500 mt-1">Try searching by a different Order ID, customer name, phone number, or clear filters.</p>
                 <button
                   onClick={() => {
@@ -4325,7 +4385,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                     setTrackingStatusFilter("all");
                     setTrackingPaymentFilter("all");
                   }}
-                  className="mt-3 bg-amber-500 text-stone-950 text-xs font-bold px-4 py-2 rounded-lg"
+                  className="mt-3 bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-bold px-4 py-2 rounded-lg transition-colors"
                 >
                   Reset Search &amp; Filters
                 </button>
@@ -4335,37 +4395,37 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                 {filteredTrackingOrders.map((order) => (
                   <div
                     key={order.id}
-                    className={`bg-stone-800 border rounded-xl p-5 transition-all ${
-                      trackingOrder?.id === order.id ? "border-amber-400 ring-2 ring-amber-400/20 bg-stone-800/90" : "border-stone-700 hover:border-stone-600"
+                    className={`bg-white border rounded-xl p-5 shadow-sm transition-all ${
+                      trackingOrder?.id === order.id ? "border-amber-500 ring-2 ring-amber-500/20" : "border-stone-200 hover:border-stone-300"
                     }`}
                   >
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div>
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <span className="font-bold text-amber-300 text-base">#{order.orderNumber}</span>
-                          <span className="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full bg-stone-900 text-amber-300 border border-amber-500/30">
+                          <span className="font-bold text-stone-900 text-base">#{order.orderNumber}</span>
+                          <span className="text-[10px] uppercase font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
                             {order.paymentMethod?.toUpperCase()}
                           </span>
                           {order.paymentReference && (
-                            <span className="text-[10px] text-stone-400 bg-stone-900 px-2 py-0.5 rounded">
+                            <span className="text-[10px] text-stone-600 bg-stone-100 border border-stone-200 px-2 py-0.5 rounded">
                               Ref: {order.paymentReference}
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-stone-400 mb-2">
+                        <div className="text-xs text-stone-500 mb-2">
                           Placed on {formatDateTime(order.createdAt)} • {order.items?.length || 0} items
                         </div>
                         <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wider">
-                          <span className={`px-2.5 py-0.5 rounded-full font-bold ${order.status === "Delivered" ? "bg-emerald-900 text-emerald-300 border border-emerald-700" : order.status === "Cancelled" ? "bg-rose-900 text-rose-300 border border-rose-700" : "bg-amber-900/80 text-amber-200 border border-amber-700"}`}>
+                          <span className={`px-2.5 py-0.5 rounded-full font-bold ${order.status === "Delivered" ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : order.status === "Cancelled" ? "bg-rose-100 text-rose-800 border border-rose-300" : "bg-amber-100 text-amber-800 border border-amber-300"}`}>
                             {order.status}
                           </span>
-                          <span className="px-2.5 py-0.5 rounded-full bg-stone-900 text-stone-300 border border-stone-700 font-medium">
+                          <span className="px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-200 font-medium">
                             {order.paymentStatus}
                           </span>
-                          <span className="px-2.5 py-0.5 rounded-full bg-stone-900 text-amber-300 border border-stone-700 font-bold">
+                          <span className="px-2.5 py-0.5 rounded-full bg-stone-100 text-amber-800 border border-stone-200 font-bold">
                             {inr(order.total)}
                           </span>
-                          <span className="text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800">
+                          <span className="text-[10px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 font-semibold">
                             Free Shipping
                           </span>
                         </div>
@@ -4373,9 +4433,9 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                         <button
                           onClick={() => setTrackingOrder(order)}
-                          className={`text-xs uppercase tracking-wider font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-md transition-colors ${
+                          className={`text-xs uppercase tracking-wider font-bold px-4 py-2 rounded-lg flex items-center gap-1.5 shadow-sm transition-colors ${
                             trackingOrder?.id === order.id
-                              ? "bg-amber-400 text-stone-950 ring-2 ring-amber-200"
+                              ? "bg-amber-500 text-stone-950 ring-2 ring-amber-300"
                               : "bg-amber-500 hover:bg-amber-400 text-stone-950"
                           }`}
                         >
@@ -4383,20 +4443,20 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                         </button>
                       </div>
                     </div>
-                    <div className="mt-4 grid gap-3 md:grid-cols-[1.4fr_1fr] pt-3 border-t border-stone-700/60">
+                    <div className="mt-4 grid gap-3 md:grid-cols-[1.4fr_1fr] pt-3 border-t border-stone-200">
                       <div className="space-y-1 text-xs">
-                        <div className="uppercase tracking-wider text-amber-400/90 font-bold">Customer &amp; Delivery Address</div>
-                        <div className="text-stone-200 font-semibold">{order.shipping?.name} • <span className="text-amber-300">{order.shipping?.phone}</span></div>
-                        <div className="text-stone-400">{order.shipping?.address}, {order.shipping?.city} - {order.shipping?.pincode}</div>
+                        <div className="uppercase tracking-wider text-amber-800 font-bold">Customer &amp; Delivery Address</div>
+                        <div className="text-stone-900 font-semibold">{order.shipping?.name} • <span className="text-amber-700">{order.shipping?.phone}</span></div>
+                        <div className="text-stone-600">{order.shipping?.address}, {order.shipping?.city} - {order.shipping?.pincode}</div>
                         {order.userEmail && <div className="text-stone-500">{order.userEmail}</div>}
                       </div>
-                      <div className="bg-stone-900 border border-stone-700 rounded-lg p-3">
-                        <div className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-2">Update Delivery Status</div>
+                      <div className="bg-stone-50 border border-stone-200 rounded-lg p-3">
+                        <div className="text-xs uppercase tracking-wider text-stone-700 font-bold mb-2">Update Delivery Status</div>
                         <div className="flex gap-2">
                           <select
                             value={statusUpdate[order.id] || order.status}
                             onChange={(e) => setStatusUpdate({ ...statusUpdate, [order.id]: e.target.value })}
-                            className="flex-1 bg-stone-800 border border-stone-700 text-stone-100 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-400"
+                            className="flex-1 bg-white border border-stone-300 text-stone-900 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-500"
                           >
                             {[
                               "Placed",
@@ -4413,7 +4473,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                           </select>
                           <button
                             onClick={() => handleUpdateOrderStatusAdmin(order.id, statusUpdate[order.id] || order.status)}
-                            className="bg-emerald-600 hover:bg-emerald-500 text-stone-950 text-xs uppercase tracking-wider font-bold px-3 py-1.5 rounded-lg whitespace-nowrap"
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs uppercase tracking-wider font-bold px-3 py-1.5 rounded-lg whitespace-nowrap shadow-xs transition-colors"
                           >
                             Save
                           </button>
@@ -4426,24 +4486,24 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
             )}
 
             {trackingOrder && (
-              <div className="bg-stone-900 border border-stone-700 rounded-md p-5 mt-6">
+              <div className="bg-white border border-stone-200 rounded-xl p-5 mt-6 shadow-sm">
                 <div className="flex items-center justify-between gap-3 mb-4">
                   <div>
-                    <div className="text-sm uppercase tracking-wider text-stone-400 font-bold">Tracking Preview</div>
-                    <div className="text-amber-300 font-bold">Order #{trackingOrder.orderNumber}</div>
-                    <div className="text-xs text-stone-500">Current status: {trackingOrder.status}</div>
+                    <div className="text-sm uppercase tracking-wider text-stone-500 font-bold">Tracking Preview</div>
+                    <div className="text-stone-900 font-bold text-lg">Order #{trackingOrder.orderNumber}</div>
+                    <div className="text-xs text-stone-500">Current status: <span className="font-semibold text-amber-700">{trackingOrder.status}</span></div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={fetchTrackingDetails}
                       disabled={!trackingOrder}
-                      className="bg-stone-800 text-stone-200 hover:bg-stone-700 text-xs uppercase tracking-wider px-3 py-2 rounded"
+                      className="bg-stone-100 border border-stone-300 text-stone-700 hover:bg-stone-200 text-xs uppercase tracking-wider px-3 py-2 rounded-lg font-semibold transition-colors"
                     >
                       Refresh
                     </button>
                     <button
                       onClick={() => setTrackingOrder(null)}
-                      className="text-stone-400 hover:text-stone-200 text-xs uppercase tracking-wider"
+                      className="text-stone-500 hover:text-stone-800 text-xs uppercase tracking-wider font-semibold"
                     >
                       Clear
                     </button>
@@ -4451,7 +4511,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                 </div>
 
                 {trackingLoading ? (
-                  <div className="py-6 text-center text-stone-400">Loading tracking preview…</div>
+                  <div className="py-6 text-center text-stone-500">Loading tracking preview…</div>
                 ) : trackingDetails ? (
                   <div className="space-y-4">
                     <div className="grid gap-3 md:grid-cols-3">
@@ -4467,7 +4527,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                       ].map((step) => {
                         const completed = trackingDetails.timeline?.some((event) => event.status === step);
                         return (
-                          <div key={step} className={`rounded border p-3 text-xs uppercase tracking-wider ${completed ? "bg-emerald-950 border-emerald-700 text-emerald-300" : "bg-stone-950 border-stone-700 text-stone-400"}`}>
+                          <div key={step} className={`rounded-lg border p-3 text-xs uppercase tracking-wider font-bold ${completed ? "bg-emerald-50 border-emerald-300 text-emerald-800" : "bg-stone-50 border-stone-200 text-stone-400"}`}>
                             {step}
                           </div>
                         );
@@ -4475,15 +4535,15 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                     </div>
 
                     <div>
-                      <div className="text-xs uppercase tracking-wider text-stone-400 font-bold mb-3">Timeline</div>
+                      <div className="text-xs uppercase tracking-wider text-stone-700 font-bold mb-3">Timeline</div>
                       <div className="space-y-3">
                         {trackingDetails.timeline?.map((event, index) => (
-                          <div key={index} className="bg-stone-800 border border-stone-700 rounded-md p-3">
-                            <div className="flex items-center justify-between text-sm font-semibold text-stone-100 mb-1">
+                          <div key={index} className="bg-stone-50 border border-stone-200 rounded-lg p-3">
+                            <div className="flex items-center justify-between text-sm font-semibold text-stone-900 mb-1">
                               <span>{event.status}</span>
-                              <span className="text-stone-500">{formatDateTime(event.timestamp)}</span>
+                              <span className="text-stone-500 text-xs font-normal">{formatDateTime(event.timestamp)}</span>
                             </div>
-                            {event.description && <div className="text-stone-400 text-sm">{event.description}</div>}
+                            {event.description && <div className="text-stone-600 text-sm">{event.description}</div>}
                             {event.location && <div className="text-stone-500 text-xs mt-2">{event.location}</div>}
                           </div>
                         ))}
@@ -4491,7 +4551,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                     </div>
                   </div>
                 ) : (
-                  <div className="py-6 text-center text-stone-400">No tracking data available for this order.</div>
+                  <div className="py-6 text-center text-stone-500">No tracking data available for this order.</div>
                 )}
               </div>
             )}
@@ -4505,9 +4565,9 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
               title="Return Claims & Refund Management"
               description="Review return requests, inspect refund details, and approve or reject claims with ease."
             />
-            <div className="bg-stone-800 border border-stone-700 rounded-md overflow-hidden">
-              <table className="w-full text-left text-xs text-stone-300">
-                <thead className="bg-stone-950 text-amber-300 uppercase">
+            <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
+              <table className="w-full text-left text-xs text-stone-700">
+                <thead className="bg-stone-100 text-stone-800 uppercase tracking-wider font-bold border-b border-stone-200">
                   <tr>
                     <th className="p-3">Order #</th>
                     <th className="p-3">Product</th>
@@ -4517,23 +4577,25 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                     <th className="p-3">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-stone-700">
+                <tbody className="divide-y divide-stone-200">
                   {returnReqs.map((r) => (
-                    <tr key={r._id}>
-                      <td className="p-3 font-bold text-amber-400">{r.order_number}</td>
-                      <td className="p-3">{r.product_name}</td>
-                      <td className="p-3">{r.customer_phone}</td>
-                      <td className="p-3">{r.reason}{r.custom_reason ? ` (${r.custom_reason})` : ""}</td>
-                      <td className="p-3 font-bold">{r.status}</td>
+                    <tr key={r._id} className="hover:bg-stone-50">
+                      <td className="p-3 font-bold text-amber-800">{r.order_number}</td>
+                      <td className="p-3 text-stone-900 font-medium">{r.product_name}</td>
+                      <td className="p-3 text-stone-600">{r.customer_phone}</td>
+                      <td className="p-3 text-stone-600">{r.reason}{r.custom_reason ? ` (${r.custom_reason})` : ""}</td>
+                      <td className="p-3 font-bold">
+                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase ${r.status === "Approved" ? "bg-emerald-100 text-emerald-800" : r.status === "Rejected" ? "bg-rose-100 text-rose-800" : "bg-amber-100 text-amber-800"}`}>{r.status}</span>
+                      </td>
                       <td className="p-3">
                         {r.image_urls && r.image_urls.length > 0 && (
                           <div className="mb-2">
-                            <img src={getImageUrl(r.image_urls[0])} alt="Return proof" className="w-24 h-24 object-cover rounded-md border border-stone-700" />
+                            <img src={getImageUrl(r.image_urls[0])} alt="Return proof" className="w-24 h-24 object-cover rounded-md border border-stone-200" />
                           </div>
                         )}
                         <div className="space-y-2">
-                          <button onClick={() => handleUpdateReturnStatus(r._id, "Approved", "Verified and approved")} className="bg-emerald-800 text-emerald-100 px-2 py-1 rounded">Approve</button>
-                          <button onClick={() => handleUpdateReturnStatus(r._id, "Rejected", "Rejected after review")} className="bg-rose-900 text-rose-100 px-2 py-1 rounded">Reject</button>
+                          <button onClick={() => handleUpdateReturnStatus(r._id, "Approved", "Verified and approved")} className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-2.5 py-1 rounded text-xs transition-colors">Approve</button>
+                          <button onClick={() => handleUpdateReturnStatus(r._id, "Rejected", "Rejected after review")} className="bg-rose-600 hover:bg-rose-500 text-white font-semibold px-2.5 py-1 rounded text-xs transition-colors ml-2">Reject</button>
                         </div>
                       </td>
                     </tr>
@@ -4547,21 +4609,21 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
         {/* 7. Reviews Tab */}
         {adminTab === "reviews" && (
           <div className="space-y-6">
-            <h2 className="font-serif text-xl text-amber-300">Reviews &amp; Ratings Moderation</h2>
+            <h2 className="font-serif text-xl text-stone-900 font-bold">Reviews &amp; Ratings Moderation</h2>
             <div className="grid md:grid-cols-2 gap-4">
               {reviews.map((rev) => (
-                <div key={rev._id} className="bg-stone-800 p-4 rounded border border-stone-700">
+                <div key={rev._id} className="bg-white p-5 rounded-xl border border-stone-200 shadow-sm">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold text-amber-300">{rev.user_name}</span>
+                    <span className="font-bold text-stone-900">{rev.user_name}</span>
                     <RatingStars rating={rev.rating} size={14} />
                   </div>
-                  <p className="text-xs text-stone-300 mb-3">{rev.comment}</p>
+                  <p className="text-xs text-stone-600 mb-3">{rev.comment}</p>
                   <div className="flex gap-2 flex-wrap">
-                    <button onClick={() => handleUpdateReviewStatus(rev._id, "Approved")} className="bg-emerald-800 text-emerald-100 text-[10px] px-2 py-1 rounded">Approve</button>
-                    <button onClick={() => handleUpdateReviewStatus(rev._id, "Hidden")} className="bg-stone-700 text-stone-200 text-[10px] px-2 py-1 rounded">Hide</button>
+                    <button onClick={() => handleUpdateReviewStatus(rev._id, "Approved")} className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[10px] px-2.5 py-1 rounded transition-colors">Approve</button>
+                    <button onClick={() => handleUpdateReviewStatus(rev._id, "Hidden")} className="bg-stone-200 hover:bg-stone-300 text-stone-700 font-semibold text-[10px] px-2.5 py-1 rounded transition-colors">Hide</button>
                     <button
                       onClick={() => setEditingAdminReview(rev)}
-                      className="bg-amber-800 text-amber-100 text-[10px] px-2 py-1 rounded flex items-center gap-1"
+                      className="bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold text-[10px] px-2.5 py-1 rounded flex items-center gap-1 transition-colors border border-amber-300"
                     >
                       <Edit2 size={10} /> Edit Review
                     </button>
@@ -4597,54 +4659,54 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
 
       {/* Customer Cart & Orders Modal */}
       {customerDetailModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="bg-stone-900 border border-stone-700 rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+          <div className="bg-white border border-stone-200 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
             {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-stone-700">
+            <div className="flex items-center justify-between p-5 border-b border-stone-200">
               <div>
-                <h2 className="font-serif text-xl text-amber-300">{customerDetailModal.customer.name}</h2>
-                <p className="text-xs text-stone-400">{customerDetailModal.customer.email} • {customerDetailModal.customer.phone}</p>
+                <h2 className="font-serif text-xl text-stone-900 font-bold">{customerDetailModal.customer.name}</h2>
+                <p className="text-xs text-stone-500">{customerDetailModal.customer.email} • {customerDetailModal.customer.phone}</p>
               </div>
-              <button onClick={() => setCustomerDetailModal(null)} className="text-stone-400 hover:text-stone-100">
+              <button onClick={() => setCustomerDetailModal(null)} className="text-stone-400 hover:text-stone-700">
                 <X size={22} />
               </button>
             </div>
 
             {customerDetailLoading ? (
-              <div className="p-10 text-center text-stone-400 text-sm">Loading customer data…</div>
+              <div className="p-10 text-center text-stone-500 text-sm">Loading customer data…</div>
             ) : (
               <div className="p-5 space-y-6">
                 {/* Current Cart */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <ShoppingBag size={16} className="text-amber-400" />
-                    <h3 className="font-bold text-amber-300 text-sm uppercase tracking-wider">Current Cart</h3>
+                    <ShoppingBag size={16} className="text-amber-600" />
+                    <h3 className="font-bold text-stone-900 text-sm uppercase tracking-wider">Current Cart</h3>
                     {customerDetailModal.cartTotal > 0 && (
-                      <span className="ml-auto text-amber-300 font-bold text-sm">{inr(customerDetailModal.cartTotal)}</span>
+                      <span className="ml-auto text-amber-700 font-bold text-sm">{inr(customerDetailModal.cartTotal)}</span>
                     )}
                   </div>
                   {customerDetailModal.cart.length === 0 ? (
-                    <div className="bg-stone-800 rounded p-4 text-xs text-stone-500 text-center">Cart is empty</div>
+                    <div className="bg-stone-50 rounded-lg p-4 text-xs text-stone-500 text-center border border-stone-200">Cart is empty</div>
                   ) : (
-                    <div className="bg-stone-800 rounded overflow-hidden border border-stone-700">
-                      <table className="w-full text-xs text-stone-300">
-                        <thead className="bg-stone-950 text-amber-300 uppercase">
+                    <div className="bg-white rounded-lg overflow-hidden border border-stone-200">
+                      <table className="w-full text-xs text-stone-700">
+                        <thead className="bg-stone-100 text-stone-800 uppercase font-bold border-b border-stone-200">
                           <tr>
-                            <th className="p-2 text-left">Product</th>
-                            <th className="p-2 text-center">Size</th>
-                            <th className="p-2 text-center">Qty</th>
-                            <th className="p-2 text-right">Price</th>
-                            <th className="p-2 text-right">Total</th>
+                            <th className="p-2.5 text-left">Product</th>
+                            <th className="p-2.5 text-center">Size</th>
+                            <th className="p-2.5 text-center">Qty</th>
+                            <th className="p-2.5 text-right">Price</th>
+                            <th className="p-2.5 text-right">Total</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-stone-700">
+                        <tbody className="divide-y divide-stone-200">
                           {customerDetailModal.cart.map((item) => (
-                            <tr key={item.cartItemId}>
-                              <td className="p-2">{item.productName}</td>
-                              <td className="p-2 text-center">{item.size}</td>
-                              <td className="p-2 text-center">{item.quantity}</td>
-                              <td className="p-2 text-right">{inr(item.price)}</td>
-                              <td className="p-2 text-right font-bold text-amber-300">{inr(item.lineTotal)}</td>
+                            <tr key={item.cartItemId} className="hover:bg-stone-50">
+                              <td className="p-2.5 font-medium text-stone-900">{item.productName}</td>
+                              <td className="p-2.5 text-center">{item.size}</td>
+                              <td className="p-2.5 text-center">{item.quantity}</td>
+                              <td className="p-2.5 text-right">{inr(item.price)}</td>
+                              <td className="p-2.5 text-right font-bold text-amber-700">{inr(item.lineTotal)}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -4656,33 +4718,33 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                 {/* Order History */}
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <Package size={16} className="text-amber-400" />
-                    <h3 className="font-bold text-amber-300 text-sm uppercase tracking-wider">Order History</h3>
+                    <Package size={16} className="text-amber-600" />
+                    <h3 className="font-bold text-stone-900 text-sm uppercase tracking-wider">Order History</h3>
                   </div>
                   {customerDetailModal.orders.length === 0 ? (
-                    <div className="bg-stone-800 rounded p-4 text-xs text-stone-500 text-center">No orders yet</div>
+                    <div className="bg-stone-50 rounded-lg p-4 text-xs text-stone-500 text-center border border-stone-200">No orders yet</div>
                   ) : (
                     <div className="space-y-3">
                       {customerDetailModal.orders.map((order) => (
-                        <div key={order.id} className="bg-stone-800 border border-stone-700 rounded-lg p-4">
+                        <div key={order.id} className="bg-stone-50 border border-stone-200 rounded-xl p-4">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-amber-300 text-xs">#{order.orderNumber}</span>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${order.status === "Delivered" ? "bg-emerald-900 text-emerald-300" :
-                                order.status === "Cancelled" ? "bg-rose-900 text-rose-300" :
-                                  "bg-amber-900/60 text-amber-300"
+                              <span className="font-bold text-stone-900 text-xs">#{order.orderNumber}</span>
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold ${order.status === "Delivered" ? "bg-emerald-100 text-emerald-800" :
+                                order.status === "Cancelled" ? "bg-rose-100 text-rose-800" :
+                                  "bg-amber-100 text-amber-800"
                                 }`}>{order.status}</span>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${order.paymentStatus === "paid" ? "bg-emerald-900 text-emerald-300" :
-                                order.paymentStatus === "verification_requested" ? "bg-orange-900 text-orange-300" :
-                                  "bg-stone-700 text-stone-300"
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold ${order.paymentStatus === "paid" ? "bg-emerald-100 text-emerald-800" :
+                                order.paymentStatus === "verification_requested" ? "bg-orange-100 text-orange-800" :
+                                  "bg-stone-200 text-stone-700"
                                 }`}>{order.paymentStatus}</span>
                             </div>
-                            <span className="text-amber-300 font-bold text-sm">{inr(order.total)}</span>
+                            <span className="text-amber-700 font-bold text-sm">{inr(order.total)}</span>
                           </div>
-                          <div className="text-xs text-stone-400 mb-2">{formatDateTime(order.createdAt)} • {order.paymentMethod?.toUpperCase()}</div>
+                          <div className="text-xs text-stone-500 mb-2">{formatDateTime(order.createdAt)} • {order.paymentMethod?.toUpperCase()}</div>
                           <div className="space-y-0.5">
                             {order.items.map((item, i) => (
-                              <div key={i} className="text-xs text-stone-400">
+                              <div key={i} className="text-xs text-stone-600">
                                 {item.name} ({item.size}) × {item.qty} — {inr(item.price)}
                               </div>
                             ))}
@@ -4692,9 +4754,9 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                               href={order.invoiceUrl}
                               target="_blank"
                               rel="noreferrer"
-                              className="mt-2 inline-flex items-center gap-1 text-xs text-amber-400 underline"
+                              className="mt-2 inline-flex items-center gap-1 text-xs text-amber-700 font-semibold hover:underline"
                             >
-                              <FileText size={11} /> View Invoice
+                              <FileText size={12} /> View Invoice
                             </a>
                           )}
                         </div>
@@ -4707,31 +4769,31 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                 {customerDetailModal.transactions && customerDetailModal.transactions.length > 0 && (
                   <div>
                     <div className="flex items-center gap-2 mb-3">
-                      <CreditCard size={16} className="text-amber-400" />
-                      <h3 className="font-bold text-amber-300 text-sm uppercase tracking-wider">Payment History</h3>
+                      <CreditCard size={16} className="text-amber-600" />
+                      <h3 className="font-bold text-stone-900 text-sm uppercase tracking-wider">Payment History</h3>
                     </div>
-                    <div className="bg-stone-800 rounded overflow-hidden border border-stone-700">
-                      <table className="w-full text-xs text-stone-300">
-                        <thead className="bg-stone-950 text-amber-300 uppercase">
+                    <div className="bg-white rounded-lg overflow-hidden border border-stone-200">
+                      <table className="w-full text-xs text-stone-700">
+                        <thead className="bg-stone-100 text-stone-800 uppercase font-bold border-b border-stone-200">
                           <tr>
-                            <th className="p-2 text-left">Transaction ID</th>
-                            <th className="p-2 text-left">Method</th>
-                            <th className="p-2 text-left">Type</th>
-                            <th className="p-2 text-right">Amount</th>
-                            <th className="p-2 text-center">Status</th>
+                            <th className="p-2.5 text-left">Transaction ID</th>
+                            <th className="p-2.5 text-left">Method</th>
+                            <th className="p-2.5 text-left">Type</th>
+                            <th className="p-2.5 text-right">Amount</th>
+                            <th className="p-2.5 text-center">Status</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-stone-700">
+                        <tbody className="divide-y divide-stone-200">
                           {customerDetailModal.transactions.map((tx) => (
-                            <tr key={tx._id}>
-                              <td className="p-2 font-mono text-[10px] text-stone-400">{tx.transaction_id?.slice(0, 18)}…</td>
-                              <td className="p-2">{tx.payment_method}</td>
-                              <td className="p-2">{tx.type}</td>
-                              <td className="p-2 text-right font-bold text-amber-300">{inr(tx.amount)}</td>
-                              <td className="p-2 text-center">
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold ${tx.status === "Success" ? "bg-emerald-900 text-emerald-300" :
-                                  tx.status === "Failed" ? "bg-rose-900 text-rose-300" :
-                                    "bg-stone-700 text-stone-300"
+                            <tr key={tx._id} className="hover:bg-stone-50">
+                              <td className="p-2.5 font-mono text-[10px] text-stone-500">{tx.transaction_id?.slice(0, 18)}…</td>
+                              <td className="p-2.5">{tx.payment_method}</td>
+                              <td className="p-2.5">{tx.type}</td>
+                              <td className="p-2.5 text-right font-bold text-amber-700">{inr(tx.amount)}</td>
+                              <td className="p-2.5 text-center">
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold ${tx.status === "Success" ? "bg-emerald-100 text-emerald-800" :
+                                  tx.status === "Failed" ? "bg-rose-100 text-rose-800" :
+                                    "bg-stone-200 text-stone-700"
                                   }`}>{tx.status}</span>
                               </td>
                             </tr>
@@ -5042,7 +5104,8 @@ export default function App() {
   const cancelPendingUpiOrder = () => {
     clearStoredOrderState();
     setUpiOrder(null);
-    setView("shop");
+    showToast("Payment cancelled. Your products are safely saved in your cart.");
+    setView("cart");
   };
 
   const goToShop = () => {
@@ -5373,35 +5436,18 @@ export default function App() {
               description: `Order #${order.orderNumber}`,
               order_id: rpData.razorpayOrderId,
               handler: async function (response) {
-                try {
-                  const vRes = await fetch(`${API_BASE}/payments/razorpay/verify`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                      orderId: order.id,
-                      razorpay_order_id: response.razorpay_order_id,
-                      razorpay_payment_id: response.razorpay_payment_id,
-                      razorpay_signature: response.razorpay_signature,
-                    }),
-                  });
-                  const vData = await vRes.json();
-                  if (vRes.ok) {
-                    const confirmedOrder = { ...order, paymentStatus: "paid", invoiceUrl: vData.invoiceUrl };
-                    setLastOrder(confirmedOrder);
-                    clearStoredOrderState();
-                    setCart([]);
-                    setView("confirmation");
-                    await fetchMyOrders(token);
-                    showToast("Payment successful! Order confirmed.");
-                  } else {
-                    alert(vData.error || "Payment verification failed.");
-                  }
-                } catch (err) {
-                  alert("Error verifying payment.");
-                }
+                // Payment completed on Razorpay: navigate to next page where submitting Transaction ID / UTR is must required
+                const paymentRef = response.razorpay_payment_id || "";
+                const orderWithRef = {
+                  ...order,
+                  paymentReference: paymentRef,
+                  paymentMethod: "online",
+                  paymentStatus: "verification_requested"
+                };
+                setUpiOrder(orderWithRef);
+                persistUpiOrder(orderWithRef);
+                setView("upi");
+                showToast("Payment captured! Please submit your Transaction ID / UTR to complete verification.");
               },
               prefill: {
                 name: address.name,
@@ -5412,7 +5458,8 @@ export default function App() {
               },
               modal: {
                 ondismiss: function () {
-                  showToast("Payment cancelled.");
+                  // Payment failed or cancelled: keep customer's products in cart!
+                  showToast("Payment was not completed. Your products remain saved in your cart.");
                 },
               },
             };
@@ -5425,6 +5472,14 @@ export default function App() {
         }
       }
 
+      if (paymentMethod === "upi") {
+        setUpiOrder(order);
+        persistUpiOrder(order);
+        setView("upi");
+        showToast("Order initiated! Please complete payment and submit your Transaction ID / UTR.");
+        return;
+      }
+
       setLastOrder(order);
       clearStoredOrderState();
       setCart([]);
@@ -5432,7 +5487,7 @@ export default function App() {
       await fetchMyOrders(token);
       showToast("Order placed successfully!");
     } catch (e) {
-      alert("Error placing order.");
+      alert("Error placing order. Your cart items are preserved.");
     }
   };
 
@@ -5458,17 +5513,24 @@ export default function App() {
       });
       const data = await res.json();
       if (!res.ok) {
-        alert(data.error || "Failed to confirm UPI payment.");
+        alert(data.error || "Failed to confirm payment.");
         return null;
       }
       if (data.order) {
         setUpiOrder(data.order);
         persistUpiOrder(data.order);
+        setLastOrder(data.order);
+        clearStoredOrderState();
+        setCart([]); // Payment completed and verified -> remove ordered products from cart!
+        await fetchCart(token); // refresh server cart
+        await fetchMyOrders(token);
+        setView("confirmation");
+        showToast("Transaction ID / UTR submitted! Order placed under admin verification.");
         return data.order;
       }
       return null;
     } catch (e) {
-      alert("Error confirming UPI payment.");
+      alert("Error confirming payment.");
       return null;
     }
   };
