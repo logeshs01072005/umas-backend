@@ -3748,7 +3748,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
   const [paymentSettings, setPaymentSettings] = useState({
     cod: { enabled: true, customMessage: "" },
     online: { enabled: true, customMessage: "" },
-    upi: { enabled: true, phoneNumber: "", upiId: UPI_ID, qrImageUrl: "" },
+    upi: { enabled: true, phoneNumber: "", upiId: "", qrImageUrl: "" },
   });
   const [upiQrUploading, setUpiQrUploading] = useState(false);
 
