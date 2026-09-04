@@ -6,7 +6,8 @@ import {
   ArrowRight, Mail, Lock, Edit2, Upload, AlertCircle, Star,
   Clock, RotateCcw, Truck, ShieldCheck, Sliders, Calendar,
   Users, RefreshCw, FileText, Phone, MapPin, CreditCard, Tag,
-  TrendingUp, Bell, Image as ImageIcon, Sparkles, CheckCircle, XCircle, Printer, Download
+  TrendingUp, Bell, Image as ImageIcon, Sparkles, CheckCircle, XCircle, Printer, Download,
+  Ruler, MessageSquare, Bot, HelpCircle, Send
 } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -21,6 +22,17 @@ const API_BASE = "/api";
 const IMAGE_BASE = "";
 const UPI_ID = "logeshs01072005@okhdfcbank";
 const UPI_NAME = "Uma Fashion Boutique";
+const WHATSAPP_NUMBER = "8489943146";
+
+const SIZE_GUIDE_CM = {
+  "XS": { bust: "81-84 cm (32-33 in)", waist: "66-69 cm (26-27 in)", hip: "89-91 cm (35-36 in)", shoulder: "36 cm (14 in)", length: "135-140 cm" },
+  "S": { bust: "86-89 cm (34-35 in)", waist: "71-74 cm (28-29 in)", hip: "94-97 cm (37-38 in)", shoulder: "37 cm (14.5 in)", length: "138-142 cm" },
+  "M": { bust: "91-94 cm (36-37 in)", waist: "76-79 cm (30-31 in)", hip: "99-102 cm (39-40 in)", shoulder: "38 cm (15 in)", length: "140-144 cm" },
+  "L": { bust: "97-102 cm (38-40 in)", waist: "81-86 cm (32-34 in)", hip: "104-109 cm (41-43 in)", shoulder: "39.5 cm (15.5 in)", length: "142-146 cm" },
+  "XL": { bust: "104-109 cm (41-43 in)", waist: "89-94 cm (35-37 in)", hip: "112-117 cm (44-46 in)", shoulder: "41 cm (16 in)", length: "144-148 cm" },
+  "XXL": { bust: "112-117 cm (44-46 in)", waist: "97-102 cm (38-40 in)", hip: "119-124 cm (47-49 in)", shoulder: "42.5 cm (16.5 in)", length: "145-150 cm" },
+  "Free Size": { bust: "81-112 cm (32-44 in)", waist: "66-102 cm (26-40 in)", hip: "89-124 cm (35-49 in)", shoulder: "36-42 cm", length: "Adjustable Margins" }
+};
 
 const DEFAULT_CATEGORIES = ["Sarees", "Lehengas", "Kurtis", "Tops", "Western Wear", "Accessories", "Footwear"];
 const CATEGORIES = DEFAULT_CATEGORIES;
@@ -713,6 +725,263 @@ function ShopView({ products, categoryFilter, setCategoryFilter, search, openPro
   );
 }
 
+/* -------------------------- Size Guide Modal (CM / Inches) -------------------------- */
+
+function SizeGuideModal({ onClose, activeSize }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-stone-950/75 flex items-center justify-center p-4 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-white rounded-2xl max-w-2xl w-full p-6 relative border border-stone-200 shadow-2xl my-8">
+        <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 bg-stone-100 p-1.5 rounded-full"><X size={18} /></button>
+
+        <div className="flex items-center gap-2 mb-1">
+          <div className="bg-amber-100 p-2 rounded-lg text-amber-800"><Ruler size={20} /></div>
+          <div>
+            <h2 className="font-serif text-2xl text-stone-900 font-bold">Standard Size Guide &amp; CM Chart</h2>
+            <p className="text-stone-500 text-xs">All measurements in <b>Centimeters (cm)</b> and Inches (in) for perfect boutique fitting.</p>
+          </div>
+        </div>
+
+        {/* Size Chart Table */}
+        <div className="mt-5 overflow-x-auto border border-stone-200 rounded-xl">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-stone-900 text-amber-300 uppercase tracking-wider text-[11px]">
+              <tr>
+                <th className="p-3">Size</th>
+                <th className="p-3">Bust / Chest (cm)</th>
+                <th className="p-3">Waist (cm)</th>
+                <th className="p-3">Hip (cm)</th>
+                <th className="p-3">Shoulder</th>
+                <th className="p-3">Length</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-stone-200 text-stone-800">
+              {Object.entries(SIZE_GUIDE_CM).map(([sz, m]) => (
+                <tr key={sz} className={`hover:bg-amber-50/50 transition-colors ${activeSize === sz ? "bg-amber-100/60 font-bold text-amber-950" : ""}`}>
+                  <td className="p-3 font-bold flex items-center gap-1">
+                    <span className="px-2 py-0.5 rounded bg-stone-100 text-stone-900 border border-stone-300">{sz}</span>
+                    {activeSize === sz && <span className="text-[10px] bg-amber-500 text-stone-950 px-1.5 py-0.5 rounded font-bold">Selected</span>}
+                  </td>
+                  <td className="p-3 font-mono">{m.bust}</td>
+                  <td className="p-3 font-mono">{m.waist}</td>
+                  <td className="p-3 font-mono">{m.hip}</td>
+                  <td className="p-3 font-mono">{m.shoulder}</td>
+                  <td className="p-3 font-mono text-stone-600">{m.length}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* How to Measure Instructions */}
+        <div className="mt-6 bg-stone-50 border border-stone-200 rounded-xl p-4">
+          <h3 className="font-bold text-stone-900 text-xs uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <Sparkles size={14} className="text-amber-600" /> How to Measure in Centimeters (cm)
+          </h3>
+          <div className="grid sm:grid-cols-2 gap-3 text-xs text-stone-600">
+            <div>
+              <span className="font-bold text-stone-900">1. Bust / Chest:</span> Measure around the fullest part of your bust in cm, keeping tape comfortably loose.
+            </div>
+            <div>
+              <span className="font-bold text-stone-900">2. Natural Waist:</span> Measure around the narrowest part of your waistline above the navel in cm.
+            </div>
+            <div>
+              <span className="font-bold text-stone-900">3. Hips:</span> Measure around the fullest part of your hips/seat area in cm.
+            </div>
+            <div>
+              <span className="font-bold text-stone-900">4. Shoulders:</span> Measure horizontally across the back from shoulder point to shoulder point.
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5 text-center">
+          <button onClick={onClose} className="bg-stone-900 hover:bg-stone-800 text-amber-300 text-xs font-semibold uppercase tracking-wider px-6 py-2.5 rounded-full transition-colors">
+            Got it, Close Guide
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------- WhatsApp AI & Human Support Widget ---------------------- */
+
+function WhatsAppSupportWidget() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("ai"); // 'ai' or 'human'
+  const [chatMessages, setChatMessages] = useState([
+    { sender: "bot", text: "Hello! Welcome to Uma's Fashion Boutique. I am your AI assistant. How can I help you today?" }
+  ]);
+  const [inputMsg, setInputMsg] = useState("");
+
+  const FAQS = [
+    { q: "📏 Size Guide & CM Measurements", answer: "Our standard sizes in Centimeters (cm):\n- S: Bust 86-89 cm, Waist 71-74 cm\n- M: Bust 91-94 cm, Waist 76-79 cm\n- L: Bust 97-102 cm, Waist 81-86 cm\n- XL: Bust 104-109 cm, Waist 89-94 cm\nYou can click 'Size Guide (cm)' on any product page for a full breakdown!" },
+    { q: "🚚 Delivery Time & Express Shipping", answer: "All orders receive 100% FREE Express Shipping across India! Standard dispatch takes 1-2 business days, and delivery takes 3-5 business days." },
+    { q: "🔄 Return & Exchange Policy", answer: "We offer hassle-free returns within 7 days of delivery for unworn, tagged boutique items. Simply go to Account → My Orders → Request Return." },
+    { q: "💳 Payment Methods Accepted", answer: "We accept Razorpay (UPI, Credit/Debit Cards, NetBanking), Cash on Delivery (COD), and Bank Transfer." },
+  ];
+
+  const handleSendMessage = (textToSend) => {
+    const msg = textToSend || inputMsg.trim();
+    if (!msg) return;
+
+    const userMsg = { sender: "user", text: msg };
+    setChatMessages((prev) => [...prev, userMsg]);
+    if (!textToSend) setInputMsg("");
+
+    // Simulate AI response logic
+    setTimeout(() => {
+      let botResponse = "Thank you for reaching out! You can also chat directly with our human expert on WhatsApp at +91 8489943146 for personalized assistance.";
+      const lower = msg.toLowerCase();
+      if (lower.includes("size") || lower.includes("cm") || lower.includes("fit") || lower.includes("measurement")) {
+        botResponse = "📏 For Size Measurements in CM:\n• S = Bust 86-89cm, Waist 71-74cm\n• M = Bust 91-94cm, Waist 76-79cm\n• L = Bust 97-102cm, Waist 81-86cm\n• XL = Bust 104-109cm, Waist 89-94cm\nClick 'Size Guide (cm)' on any item to view full chart!";
+      } else if (lower.includes("ship") || lower.includes("deliver") || lower.includes("time") || lower.includes("track")) {
+        botResponse = "🚚 Free Express Shipping on all orders! Orders dispatch in 1-2 days and arrive in 3-5 business days. Track your order under My Orders!";
+      } else if (lower.includes("return") || lower.includes("refund") || lower.includes("exchange")) {
+        botResponse = "🔄 Easy 7-day returns! Request a return from your Account order panel within 7 days of delivery.";
+      } else if (lower.includes("contact") || lower.includes("call") || lower.includes("whatsapp") || lower.includes("human") || lower.includes("agent")) {
+        botResponse = "💬 You can speak directly to our human fashion consultant on WhatsApp at +91 8489943146!";
+      }
+
+      setChatMessages((prev) => [...prev, { sender: "bot", text: botResponse }]);
+    }, 600);
+  };
+
+  const openWhatsAppDirect = (customMsg) => {
+    const text = encodeURIComponent(customMsg || `Hi Uma's Fashion, I would like to inquire about products/customization.`);
+    window.open(`https://wa.me/91${WHATSAPP_NUMBER}?text=${text}`, "_blank");
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50">
+      {/* WhatsApp Chat Window */}
+      {isOpen && (
+        <div className="mb-4 bg-white border border-stone-200 rounded-2xl shadow-2xl w-80 sm:w-96 overflow-hidden flex flex-col h-[460px] animate-in fade-in slide-in-from-bottom-4 duration-200">
+          {/* Header */}
+          <div className="bg-emerald-600 text-white p-4 flex items-center justify-between shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <div className="w-10 h-10 rounded-full bg-white text-emerald-700 font-bold flex items-center justify-center text-sm shadow">
+                  🥻
+                </div>
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full"></span>
+              </div>
+              <div>
+                <h4 className="font-bold text-sm leading-tight">Uma's Fashion Boutique</h4>
+                <div className="text-[11px] text-emerald-100 flex items-center gap-1">
+                  <span>Online Support</span> • <span className="font-medium">+91 8489943146</span>
+                </div>
+              </div>
+            </div>
+            <button onClick={() => setIsOpen(false)} className="text-emerald-100 hover:text-white p-1 rounded-full"><X size={18} /></button>
+          </div>
+
+          {/* Assistant Selector Tabs */}
+          <div className="flex border-b border-stone-200 bg-stone-50 text-xs font-semibold">
+            <button
+              onClick={() => setActiveTab("ai")}
+              className={`flex-1 py-2.5 flex items-center justify-center gap-1.5 transition-colors ${activeTab === "ai" ? "bg-white text-emerald-700 border-b-2 border-emerald-600 font-bold" : "text-stone-600 hover:text-stone-900"}`}
+            >
+              <Bot size={15} /> AI Assistant
+            </button>
+            <button
+              onClick={() => setActiveTab("human")}
+              className={`flex-1 py-2.5 flex items-center justify-center gap-1.5 transition-colors ${activeTab === "human" ? "bg-white text-emerald-700 border-b-2 border-emerald-600 font-bold" : "text-stone-600 hover:text-stone-900"}`}
+            >
+              <Phone size={14} /> Human Assistant
+            </button>
+          </div>
+
+          {/* AI Assistant Mode */}
+          {activeTab === "ai" && (
+            <div className="flex-1 flex flex-col justify-between overflow-hidden bg-stone-50/50">
+              {/* Chat Message List */}
+              <div className="p-3 overflow-y-auto space-y-2.5 flex-1 text-xs">
+                {chatMessages.map((m, idx) => (
+                  <div key={idx} className={`flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
+                    <div className={`max-w-[82%] rounded-2xl px-3.5 py-2 whitespace-pre-line shadow-xs ${m.sender === "user" ? "bg-emerald-600 text-white rounded-br-none" : "bg-white border border-stone-200 text-stone-800 rounded-bl-none"}`}>
+                      {m.text}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Quick AI FAQ Buttons */}
+              <div className="p-2 border-t border-stone-200 bg-white space-y-1">
+                <div className="text-[10px] text-stone-500 font-semibold px-1 uppercase tracking-wider">Quick AI Inquiries:</div>
+                <div className="flex gap-1.5 overflow-x-auto pb-1 text-[11px] scrollbar-none">
+                  {FAQS.map((faq, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleSendMessage(faq.q)}
+                      className="whitespace-nowrap bg-stone-100 hover:bg-emerald-50 text-stone-800 hover:text-emerald-800 border border-stone-200 px-2.5 py-1 rounded-full text-[11px] transition-colors"
+                    >
+                      {faq.q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Input Area */}
+              <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="p-2 bg-white border-t border-stone-200 flex gap-2">
+                <input
+                  type="text"
+                  value={inputMsg}
+                  onChange={(e) => setInputMsg(e.target.value)}
+                  placeholder="Ask AI about sizing, delivery..."
+                  className="flex-1 border border-stone-300 rounded-full px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500"
+                />
+                <button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-full transition-colors">
+                  <Send size={14} />
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Human Assistant Mode */}
+          {activeTab === "human" && (
+            <div className="flex-1 p-5 flex flex-col justify-between bg-stone-50 text-center">
+              <div className="space-y-4 my-auto">
+                <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                  <MessageSquare size={28} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-stone-900 text-sm">Direct WhatsApp Support</h4>
+                  <p className="text-stone-500 text-xs mt-1">Connect directly with our human boutique specialist for custom orders, measurement help, or payment queries.</p>
+                </div>
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 font-medium">
+                  Official Support: <span className="font-bold text-emerald-800">+91 8489943146</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => openWhatsAppDirect()}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-full text-xs shadow-md transition-all flex items-center justify-center gap-2"
+              >
+                <MessageSquare size={16} /> Open Chat on WhatsApp (+91 8489943146)
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Floating Trigger Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-2xl transition-all transform hover:scale-105 flex items-center justify-center gap-2 group border-2 border-white"
+        title="WhatsApp AI &amp; Human Support (+91 8489943146)"
+      >
+        <div className="relative">
+          <MessageSquare size={24} className="fill-white text-emerald-600" />
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 border-2 border-emerald-600 rounded-full animate-ping"></span>
+        </div>
+        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap text-xs font-bold pr-1">
+          WhatsApp Support (+91 8489943146)
+        </span>
+      </button>
+    </div>
+  );
+}
+
 /* ------------------------------- Product detail view ------------------------------ */
 
 function ProductDetailView({ product, addToCart, setView, currentUser }) {
@@ -722,6 +991,7 @@ function ProductDetailView({ product, addToCart, setView, currentUser }) {
   const [showNotifyModal, setShowNotifyModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [editingReview, setEditingReview] = useState(null);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
 
   const pct = discountPct(product.price, product.mrp);
   const delivery = calculateEstimatedDelivery();
@@ -797,18 +1067,41 @@ function ProductDetailView({ product, addToCart, setView, currentUser }) {
 
             {product.sizes && product.sizes.length > 0 && (
               <div className="mb-5">
-                <div className="text-xs tracking-widest uppercase text-stone-500 mb-2">Size</div>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs tracking-widest uppercase text-stone-500">Size</div>
+                  <button
+                    onClick={() => setShowSizeGuide(true)}
+                    className="text-amber-800 hover:text-amber-600 text-xs font-semibold underline flex items-center gap-1 transition-colors"
+                  >
+                    <Ruler size={13} /> Size Guide (cm / inches)
+                  </button>
+                </div>
                 <div className="flex gap-2 flex-wrap">
                   {product.sizes.map((s) => (
                     <button
                       key={s}
                       onClick={() => setSize(s)}
-                      className={`px-4 py-2 rounded-md border text-sm ${size === s ? "bg-stone-950 text-amber-300 border-stone-950" : "border-stone-300 text-stone-700 hover:border-amber-500"}`}
+                      className={`px-4 py-2 rounded-md border text-sm ${size === s ? "bg-stone-950 text-amber-300 border-stone-950 font-bold shadow-xs" : "border-stone-300 text-stone-700 hover:border-amber-500 bg-white"}`}
                     >
                       {s}
                     </button>
                   ))}
                 </div>
+
+                {/* CM Measurement Info Box for Selected Size */}
+                {SIZE_GUIDE_CM[size] && (
+                  <div className="mt-3 bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 text-xs text-stone-800 animate-in fade-in duration-150">
+                    <div className="font-bold text-amber-900 flex items-center justify-between mb-1">
+                      <span>📏 Measurements for Size <b>{size}</b> in CM:</span>
+                      <span className="text-[10px] bg-amber-200 text-amber-950 font-bold px-2 py-0.5 rounded">Centimeters</span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 font-mono text-[11px] text-stone-700">
+                      <div><span className="text-stone-500">Bust:</span> {SIZE_GUIDE_CM[size].bust}</div>
+                      <div><span className="text-stone-500">Waist:</span> {SIZE_GUIDE_CM[size].waist}</div>
+                      <div><span className="text-stone-500">Hip:</span> {SIZE_GUIDE_CM[size].hip}</div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -816,9 +1109,9 @@ function ProductDetailView({ product, addToCart, setView, currentUser }) {
               <div className="text-xs tracking-widest uppercase text-stone-500 mb-2">
                 Quantity {product.stock <= 5 && product.stock > 0 ? <span className="text-rose-600 text-xs uppercase font-bold ml-2">Only {product.stock} Left!</span> : null}
               </div>
-              <div className="flex items-center gap-3 border border-stone-300 rounded-md w-fit px-2">
+              <div className="flex items-center gap-3 border border-stone-300 rounded-md w-fit px-2 bg-white">
                 <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="p-2 text-stone-600" disabled={isOutOfStock}><Minus size={14} /></button>
-                <span className="w-6 text-center">{qty}</span>
+                <span className="w-6 text-center text-sm font-medium">{qty}</span>
                 <button onClick={() => setQty((q) => Math.min(product.stock || 99, q + 1))} className="p-2 text-stone-600" disabled={isOutOfStock}><Plus size={14} /></button>
               </div>
             </div>
@@ -836,12 +1129,24 @@ function ProductDetailView({ product, addToCart, setView, currentUser }) {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => addToCart(product, size, qty)}
-                className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-stone-950 font-medium tracking-wide px-8 py-3 rounded-full transition-colors"
-              >
-                Add to Cart
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                <button
+                  onClick={() => addToCart(product, size, qty)}
+                  className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold tracking-wide px-8 py-3 rounded-full transition-colors shadow-sm text-center flex-1"
+                >
+                  Add to Cart
+                </button>
+                <button
+                  onClick={() => {
+                    const msg = encodeURIComponent(`Hi Uma's Fashion, I am inquiring about product: ${product.name} (Price: ₹${product.price}, Size: ${size}). Could you please help me with more details?`);
+                    window.open(`https://wa.me/91${WHATSAPP_NUMBER}?text=${msg}`, "_blank");
+                  }}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-full transition-colors shadow-sm flex items-center justify-center gap-2 text-center text-xs"
+                  title="Inquire on WhatsApp (+91 8489943146)"
+                >
+                  <MessageSquare size={16} /> Inquire on WhatsApp
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -903,8 +1208,6 @@ function ProductDetailView({ product, addToCart, setView, currentUser }) {
     </div>
   );
 }
-
-/* -------------------------- Stock Notification Modal -------------------------- */
 
 function StockNotifyModal({ product, onClose }) {
   const [email, setEmail] = useState("");
@@ -5797,6 +6100,7 @@ export default function App() {
         )}
       </div>
 
+      {view !== "admin" && <WhatsAppSupportWidget />}
       {view !== "admin" && <Footer />}
       {authOpen && <AuthModal onClose={() => { setAuthOpen(false); setAuthError(""); }} onLogin={handleLogin} onSignup={handleSignup} error={authError} />}
       <Toast message={toast} />
