@@ -20,8 +20,6 @@ import autoTable from "jspdf-autotable";
 
 const API_BASE = "/api";
 const IMAGE_BASE = "";
-const UPI_ID = "logeshs01072005@okhdfcbank";
-const UPI_NAME = "Uma Fashion Boutique";
 const WHATSAPP_NUMBER = "8489943146";
 
 const SIZE_GUIDE_CM = {
@@ -835,8 +833,7 @@ function WhatsAppSupportWidget({ products = [], openProduct, setView }) {
   const FAQS = [
     { label: "🥻 Sarees", query: "Show me Sarees" },
     { label: "👗 Lehengas", query: "Show me Lehengas" },
-    { label: "💳 Payment Types", query: "What payment types are accepted?" },
-    { label: "🔍 Verify Bank RRN", query: "How to verify Bank RRN payment?" },
+    { label: "💳 Payment Methods", query: "What payment types are accepted?" },
     { label: "📦 Track Order", query: "Track my order status" },
     { label: "📏 Size Guide (cm)", query: "Size guide measurements in cm" },
     { label: "🚚 Delivery Info", query: "Delivery timeframe" },
@@ -873,11 +870,9 @@ function WhatsAppSupportWidget({ products = [], openProduct, setView }) {
           botResponse = `We have wonderful ${matchTerm} options arriving! You can browse our shop catalog or contact our human consultant below.`;
         }
       } else if (lower.includes("payment") || lower.includes("pay") || lower.includes("upi") || lower.includes("card") || lower.includes("cod") || lower.includes("razorpay")) {
-        botResponse = "💳 Accepted Payment Types:\n• Razorpay (UPI, Credit/Debit Cards, NetBanking)\n• Cash on Delivery (COD)\n• Direct Bank / UPI Transfer (UPI ID: logeshs01072005@okhdfcbank)\n\nYou can verify your direct payment by submitting your Bank RRN no / Payment ID at checkout or under Account → My Orders!";
-      } else if (lower.includes("rrn") || lower.includes("verify") || lower.includes("verification") || lower.includes("utr") || lower.includes("proof")) {
-        botResponse = "🔍 Payment Verification & Bank RRN:\nAfter transferring via UPI or Bank Transfer, enter your Bank RRN no / Payment ID and upload screenshot proof on your order page. Our admin team verifies payments within 30 minutes! You can also WhatsApp your Bank RRN directly to +91 8489943146.";
+        botResponse = "💳 Accepted Payment Methods:\n• Razorpay (UPI - GPay/PhonePe/Paytm, Credit/Debit Cards, NetBanking)\n• Cash on Delivery (COD)";
       } else if (lower.includes("track") || lower.includes("order status") || lower.includes("my order")) {
-        botResponse = "📦 Order Tracking & Verification Status:\nLog in and go to Account → My Orders to track live shipping updates and payment verification status for all your purchases!";
+        botResponse = "📦 Order Tracking & Status:\nLog in and go to Account → My Orders to track live shipping updates for all your purchases!";
       } else if (lower.includes("inquiry") || lower.includes("custom") || lower.includes("customer")) {
         botResponse = "🛍️ Customer Product & Custom Inquiry:\nNeed custom sizing or help with a specific saree/lehenga design? Click 'Human Assistant' tab or message our boutique specialist on WhatsApp at +91 8489943146!";
       } else if (lower.includes("size") || lower.includes("cm") || lower.includes("fit") || lower.includes("measurement")) {
@@ -1948,7 +1943,7 @@ function CheckoutView({ cart, subtotal, currentUser, onOpenAuth, placeOrder, set
               <span className="font-bold text-emerald-600 uppercase">FREE</span>
             </div>
             <div className="flex justify-between font-bold text-stone-900 text-base border-t border-stone-200 pt-3 mb-6">
-              <span>Total Payable</span>
+              <span>Grand Total</span>
               <span className="text-amber-700">{inr(total)}</span>
             </div>
             <button
@@ -1959,229 +1954,6 @@ function CheckoutView({ cart, subtotal, currentUser, onOpenAuth, placeOrder, set
               Place Order
             </button>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------- Confirmation view ------------------------------- */
-
-function UpiView({ order, onConfirmPayment, onBack, onCancel }) {
-  const [paymentReference, setPaymentReference] = useState(order?.paymentReference || "");
-  const [proofFile, setProofFile] = useState(null);
-  const [proofUrl, setProofUrl] = useState(order?.paymentProofUrl || "");
-  const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState(order?.paymentStatus === "verification_requested" ? "Verification requested. Await admin approval." : "");
-
-  const [qrDataUrl, setQrDataUrl] = useState("");
-  const [upiSettings, setUpiSettings] = useState({ phoneNumber: "", qrImageUrl: "", upiId: UPI_ID });
-  const [copiedText, setCopiedText] = useState("");
-
-  useEffect(() => {
-    fetch(`${API_BASE}/settings/payment-methods`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.paymentMethods?.upi) {
-          setUpiSettings(prev => ({ ...prev, ...data.paymentMethods.upi }));
-        }
-      })
-      .catch((e) => console.error("Error fetching UPI settings in UpiView:", e));
-  }, []);
-
-  useEffect(() => {
-    if (!order) return;
-    setProofUrl(order.paymentProofUrl || "");
-    setPaymentReference(order.paymentReference || "");
-    setMessage(order.paymentStatus === "verification_requested" ? "Verification requested. Await admin approval." : "");
-    const amount = Number(order.total || 0).toFixed(2);
-    const targetUpiId = upiSettings.upiId || upiSettings.phoneNumber ? `${upiSettings.phoneNumber}@upi` : UPI_ID;
-    const upiLink = `upi://pay?pa=${encodeURIComponent(targetUpiId)}&pn=${encodeURIComponent(UPI_NAME)}&am=${amount}&cu=INR`;
-    const googleQrUrl = `https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=${encodeURIComponent(upiLink)}&choe=UTF-8`;
-    setQrDataUrl(googleQrUrl);
-  }, [order, upiSettings]);
-
-  if (!order) return null;
-
-  const amountStr = Number(order.total || 0).toFixed(2);
-  const activeUpiId = upiSettings.upiId || UPI_ID;
-  const activePhone = upiSettings.phoneNumber || "";
-  const deeplinkUrl = `upi://pay?pa=${encodeURIComponent(activeUpiId)}&pn=${encodeURIComponent(UPI_NAME)}&am=${amountStr}&cu=INR`;
-
-  const copyToClipboard = (text, label) => {
-    navigator.clipboard.writeText(text);
-    setCopiedText(label);
-    setTimeout(() => setCopiedText(""), 2000);
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setProofFile(file);
-      setProofUrl("");
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (submitting) return;
-    if (!paymentReference || !paymentReference.trim()) {
-      alert("Bank RRN no or Payment ID is must required! Please enter your payment reference ID to proceed.");
-      return;
-    }
-    setSubmitting(true);
-    let uploadedUrl = proofUrl;
-    if (proofFile) {
-      uploadedUrl = await onConfirmPayment({ orderId: order.id, paymentReference: paymentReference.trim(), paymentProofFile: proofFile, paymentProofUrl: proofUrl });
-      setSubmitting(false);
-      return;
-    }
-    await onConfirmPayment({ orderId: order.id, paymentReference: paymentReference.trim(), paymentProofUrl: uploadedUrl });
-    setSubmitting(false);
-  };
-
-  return (
-    <div className="bg-stone-50 min-h-[75vh] py-12 px-4 sm:px-6">
-      <div className="max-w-xl mx-auto bg-white border border-stone-200 rounded-2xl p-6 sm:p-8 text-center shadow-lg">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-100 text-amber-800 mb-3 border border-amber-200">
-          <ShieldCheck size={26} />
-        </div>
-        <h1 className="font-serif text-2xl sm:text-3xl text-stone-900 font-bold mb-1.5">Payment Verification</h1>
-        <p className="text-stone-600 text-xs sm:text-sm mb-4">
-          Order <strong>#{order.orderNumber}</strong> • Payable Total: <strong className="text-amber-800 font-bold">{inr(order.total)}</strong>
-        </p>
-
-        {/* Prominent Admin Verification & Profile E-Bill Notice */}
-        <div className="p-4 bg-amber-50 border border-amber-300 rounded-xl text-left text-xs sm:text-sm space-y-1.5 mb-6 shadow-xs">
-          <div className="font-bold text-amber-950 flex items-center gap-1.5">
-            <Clock size={16} className="text-amber-700" />
-            <span>Important Verification &amp; E-Bill Notice</span>
-          </div>
-          <p className="text-stone-700 leading-relaxed text-xs">
-            Submitting your <strong>Bank RRN no or Payment ID is must required</strong> to verify your order. <strong>After admin verification, your official tax invoice will be issued.</strong> You can see and get your <strong>E-Bill</strong> anytime directly from your <strong>Profile page</strong>.
-          </p>
-        </div>
-
-        {/* Phone-to-Pay & Deep Link Buttons */}
-        <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-xl p-5 mb-6 text-left space-y-3">
-          <div className="text-xs uppercase font-bold tracking-wider text-amber-900 flex items-center gap-1.5">
-            <Phone size={16} className="text-amber-700" /> Instant Phone-to-Pay &amp; App Deep Links
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <a
-              href={deeplinkUrl}
-              className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all"
-            >
-              <CreditCard size={15} /> Pay via Any UPI App
-            </a>
-
-            {activePhone && (
-              <a
-                href={`tel:${activePhone}`}
-                className="flex-1 min-w-[140px] inline-flex items-center justify-center gap-2 bg-stone-900 hover:bg-stone-800 text-amber-300 font-bold text-xs py-2.5 px-4 rounded-xl shadow-sm transition-all"
-              >
-                <Phone size={15} /> Pay via Phone ({activePhone})
-              </a>
-            )}
-          </div>
-        </div>
-
-        {/* QR Code section for direct UPI scan */}
-        <div className="bg-stone-50 border border-stone-200 rounded-xl p-5 mb-6">
-          <p className="text-xs uppercase font-bold tracking-wider text-stone-500 mb-3">Scan QR Code via PhonePe / GPay / Paytm</p>
-          <div className="flex justify-center mb-3">
-            {upiSettings.qrImageUrl ? (
-              <img src={getImageUrl(upiSettings.qrImageUrl)} alt="Admin UPI QR Code" width={220} height={220} className="rounded-xl border-2 border-amber-400 shadow-md bg-white p-2 object-contain" />
-            ) : qrDataUrl ? (
-              <img src={qrDataUrl} alt="UPI QR Code" width={200} height={200} className="rounded-xl border-2 border-stone-200 shadow-sm bg-white p-2" />
-            ) : (
-              <div className="w-48 h-48 flex items-center justify-center bg-stone-100 rounded-xl text-stone-400 text-xs">Loading QR...</div>
-            )}
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-2">
-            <button
-              type="button"
-              onClick={() => copyToClipboard(activeUpiId, "UPI ID")}
-              className="inline-flex items-center gap-1.5 bg-white border border-stone-300 hover:border-amber-500 px-3 py-1.5 rounded-lg text-xs text-stone-700 font-medium transition-colors"
-            >
-              UPI ID: <strong className="text-stone-900 font-mono">{activeUpiId}</strong>
-              <span className="text-[10px] text-amber-600 font-bold">{copiedText === "UPI ID" ? "✓ Copied!" : "📋 Copy"}</span>
-            </button>
-
-            {activePhone && (
-              <button
-                type="button"
-                onClick={() => copyToClipboard(activePhone, "Phone Number")}
-                className="inline-flex items-center gap-1.5 bg-white border border-stone-300 hover:border-amber-500 px-3 py-1.5 rounded-lg text-xs text-stone-700 font-medium transition-colors"
-              >
-                Phone: <strong className="text-stone-900">{activePhone}</strong>
-                <span className="text-[10px] text-amber-600 font-bold">{copiedText === "Phone Number" ? "✓ Copied!" : "📋 Copy"}</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Bank RRN / Payment ID Submission Form */}
-        <div className="space-y-4 text-left mb-6">
-          <div>
-            <label className="block text-xs uppercase tracking-wider text-stone-800 font-bold mb-1.5">
-              Bank RRN no or Payment ID <span className="text-rose-600 font-extrabold">* (MUST REQUIRED)</span>
-            </label>
-            <input
-              value={paymentReference}
-              onChange={(e) => setPaymentReference(e.target.value)}
-              placeholder="e.g. Bank RRN (e.g. 423456789012) or Payment ID"
-              className="w-full border-2 border-stone-300 focus:border-amber-500 rounded-lg px-4 py-3 text-sm text-stone-900 bg-white shadow-xs focus:outline-none font-mono"
-              required
-            />
-            <p className="text-[11px] text-stone-500 mt-1">Please enter the exact Bank RRN no or Payment ID from your banking or payment app.</p>
-          </div>
-
-          <div>
-            <label className="block text-xs uppercase tracking-wider text-stone-700 font-bold mb-1.5">
-              Payment Screenshot / Receipt <span className="text-stone-400 font-normal">(Optional, recommended)</span>
-            </label>
-            <div className="flex items-center gap-3">
-              <label htmlFor="proof-upload" className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold cursor-pointer border border-stone-300 transition-colors">
-                <Upload size={14} className="mr-1.5" /> Choose Screenshot
-              </label>
-              <span className="text-xs text-stone-500 truncate max-w-xs">{proofFile ? proofFile.name : proofUrl ? "Proof uploaded" : "No file chosen"}</span>
-            </div>
-            <input id="proof-upload" type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-          </div>
-
-          {message && (
-            <div className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-300 rounded-lg p-3 font-medium">
-              {message}
-            </div>
-          )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row justify-center gap-3">
-          <button
-            type="button"
-            onClick={onBack}
-            className="px-5 py-2.5 rounded-full border border-stone-300 hover:bg-stone-100 text-stone-700 text-xs font-semibold transition-colors"
-          >
-            ← Back to checkout
-          </button>
-          <button
-            type="button"
-            onClick={onCancel}
-            className="px-5 py-2.5 rounded-full border border-rose-200 text-rose-700 hover:bg-rose-50 text-xs font-semibold transition-colors"
-          >
-            Cancel payment &amp; keep cart
-          </button>
-          <button
-            type="button"
-            onClick={handleSubmit}
-            disabled={submitting}
-            className="px-6 py-2.5 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {submitting ? "Submitting..." : "Submit Bank RRN / Payment ID"}
-          </button>
         </div>
       </div>
     </div>
