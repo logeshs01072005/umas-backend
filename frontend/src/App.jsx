@@ -2338,8 +2338,38 @@ function EBillLookupSection({ orders = [] }) {
 }
 
 function ConfirmationView({ order, setView, orders = [] }) {
+  const [bankRRNInput, setBankRRNInput] = useState(order?.paymentReference || "");
+  const [submittingRef, setSubmittingRef] = useState(false);
+  const [refMessage, setRefMessage] = useState("");
+
   if (!order) return null;
   const paid = isOrderPaid(order);
+
+  const handleBankRRNSubmit = async (e) => {
+    e.preventDefault();
+    if (!bankRRNInput.trim()) return alert("Please enter your Bank RRN no or Transaction ID.");
+    setSubmittingRef(true);
+    try {
+      const token = localStorage.getItem("umas:token");
+      const res = await fetch(`${API_BASE}/orders/${order.id}/payment-reference`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ paymentReference: bankRRNInput.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        order.paymentReference = bankRRNInput.trim();
+        order.paymentStatus = "verification_requested";
+        setRefMessage("Bank RRN / Transaction ID submitted successfully! Admin will verify and activate your E-Bill.");
+      } else {
+        alert(data.error || "Failed to submit transaction reference.");
+      }
+    } catch (e) {
+      alert("Error submitting Bank RRN / Transaction ID.");
+    } finally {
+      setSubmittingRef(false);
+    }
+  };
 
   return (
     <div className="bg-stone-50 min-h-[70vh] py-16 px-6 text-center">
@@ -2355,7 +2385,7 @@ function ConfirmationView({ order, setView, orders = [] }) {
             <span>Important Note on Admin Verification &amp; E-Bill Invoice:</span>
           </div>
           <p className="text-stone-700 text-sm leading-relaxed mb-3">
-            Your payment details have been submitted. <strong>After admin verification, your official invoice will be issued.</strong> You can see and get your <strong>E-Bill</strong> anytime from your <strong>Profile page</strong>.
+            Submit your Bank RRN no / Transaction ID below for verification. <strong>After admin verification, your official tax invoice will be issued.</strong> You can see and get your <strong>E-Bill</strong> anytime from your <strong>Profile page</strong>.
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <button
@@ -2379,14 +2409,49 @@ function ConfirmationView({ order, setView, orders = [] }) {
             </div>
           </>
         ) : (
-          <div className="my-6 p-4 bg-stone-50 border border-stone-200 rounded-xl text-left text-xs text-stone-600 space-y-1">
+          <div className="my-6 p-5 bg-stone-50 border border-stone-200 rounded-xl text-left text-xs text-stone-600 space-y-3">
             <div className="font-bold text-stone-900 text-sm flex items-center gap-2">
               <Clock size={16} className="text-amber-600" />
               <span>Payment Status: {order.paymentStatus === "verification_requested" ? "Verification In Progress" : order.paymentStatus?.toUpperCase()}</span>
             </div>
-            {order.paymentReference && (
-              <div>Submitted Bank RRN / Payment ID: <strong className="text-stone-900 font-mono">{order.paymentReference}</strong></div>
+
+            {/* Interactive Bank RRN / Transaction ID Submission Input */}
+            <form onSubmit={handleBankRRNSubmit} className="pt-2 space-y-2 border-t border-stone-200">
+              <label className="block text-xs font-bold text-stone-800 uppercase tracking-wider">
+                Submit Bank RRN no / Transaction ID:
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={bankRRNInput}
+                  onChange={(e) => setBankRRNInput(e.target.value)}
+                  placeholder="Enter Bank RRN (e.g. 423456789012) or Transaction ID..."
+                  className="flex-1 bg-white border border-stone-300 rounded-lg px-3.5 py-2 text-xs font-mono text-stone-900 focus:outline-none focus:border-amber-500 shadow-xs"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={submittingRef}
+                  className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs px-4 py-2 rounded-lg whitespace-nowrap transition-colors shadow-xs"
+                >
+                  {submittingRef ? "Submitting..." : "Submit to Admin"}
+                </button>
+              </div>
+            </form>
+
+            {refMessage && (
+              <div className="text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 p-2.5 rounded-lg font-medium flex items-center gap-2">
+                <CheckCircle size={15} className="text-emerald-600 shrink-0" />
+                <span>{refMessage}</span>
+              </div>
             )}
+
+            {order.paymentReference && !refMessage && (
+              <div className="text-stone-700 bg-amber-50 border border-amber-200 p-2.5 rounded-lg font-medium">
+                Submitted Bank RRN / Transaction ID: <strong className="text-stone-900 font-mono">{order.paymentReference}</strong> (Admin review in progress)
+              </div>
+            )}
+
             <p className="text-stone-500 text-[11px] pt-1">
               Admin will review your transaction reference shortly. Upon verification, status will update to &quot;Paid&quot; and your E-bill will be activated.
             </p>
@@ -2504,14 +2569,14 @@ function CustomerProfileView({ currentUser, orders = [], setView, onProfileUpdat
   const sortedOrders = useMemo(() => {
     return [...(orders || [])]
       .filter((ord) => {
-        if (!customerOrderSearch.trim()) return isOrderPaid(ord);
+        if (!customerOrderSearch.trim()) return true;
         const q = customerOrderSearch.trim().toLowerCase();
         return (
-          isOrderPaid(ord) &&
-          (String(ord.orderNumber || "").toLowerCase().includes(q) ||
-            String(ord.id || "").toLowerCase().includes(q) ||
-            (ord.items && ord.items.some((it) => it.name && it.name.toLowerCase().includes(q))) ||
-            (ord.status && ord.status.toLowerCase().includes(q)))
+          String(ord.orderNumber || "").toLowerCase().includes(q) ||
+          String(ord.id || "").toLowerCase().includes(q) ||
+          (ord.paymentReference && String(ord.paymentReference).toLowerCase().includes(q)) ||
+          (ord.items && ord.items.some((it) => it.name && it.name.toLowerCase().includes(q))) ||
+          (ord.status && ord.status.toLowerCase().includes(q))
         );
       })
       .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
