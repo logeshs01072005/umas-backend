@@ -803,21 +803,41 @@ function SizeGuideModal({ onClose, activeSize }) {
   );
 }
 
+/* ---------------------- Official WhatsApp Icon ---------------------- */
+
+function WhatsAppIcon({ size = 20, className = "" }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
+    </svg>
+  );
+}
+
 /* ---------------------- WhatsApp AI & Human Support Widget ---------------------- */
 
-function WhatsAppSupportWidget() {
+function WhatsAppSupportWidget({ products = [], openProduct, setView }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("ai"); // 'ai' or 'human'
   const [chatMessages, setChatMessages] = useState([
-    { sender: "bot", text: "Hello! Welcome to Uma's Fashion Boutique. I am your AI assistant. How can I help you today?" }
+    {
+      sender: "bot",
+      text: "Hello! Welcome to Uma's Fashion Boutique. I am your AI assistant. How can I help you today? You can ask about Sarees, Lehengas, Kurtis, Sizing (cm), or Delivery!"
+    }
   ]);
   const [inputMsg, setInputMsg] = useState("");
 
   const FAQS = [
-    { q: "📏 Size Guide & CM Measurements", answer: "Our standard sizes in Centimeters (cm):\n- S: Bust 86-89 cm, Waist 71-74 cm\n- M: Bust 91-94 cm, Waist 76-79 cm\n- L: Bust 97-102 cm, Waist 81-86 cm\n- XL: Bust 104-109 cm, Waist 89-94 cm\nYou can click 'Size Guide (cm)' on any product page for a full breakdown!" },
-    { q: "🚚 Delivery Time & Express Shipping", answer: "All orders receive 100% FREE Express Shipping across India! Standard dispatch takes 1-2 business days, and delivery takes 3-5 business days." },
-    { q: "🔄 Return & Exchange Policy", answer: "We offer hassle-free returns within 7 days of delivery for unworn, tagged boutique items. Simply go to Account → My Orders → Request Return." },
-    { q: "💳 Payment Methods Accepted", answer: "We accept Razorpay (UPI, Credit/Debit Cards, NetBanking), Cash on Delivery (COD), and Bank Transfer." },
+    { label: "🥻 Sarees", query: "Show me Sarees" },
+    { label: "👗 Lehengas", query: "Show me Lehengas" },
+    { label: "👚 Kurtis & Tops", query: "Show me Kurtis and Tops" },
+    { label: "📏 Size Guide (cm)", query: "Size guide measurements" },
+    { label: "🚚 Delivery Info", query: "Delivery timeframe" },
   ];
 
   const handleSendMessage = (textToSend) => {
@@ -830,24 +850,48 @@ function WhatsAppSupportWidget() {
 
     // Simulate AI response logic
     setTimeout(() => {
-      let botResponse = "Thank you for reaching out! You can also chat directly with our human expert on WhatsApp at +91 8489943146 for personalized assistance.";
+      let botResponse = "Thank you for reaching out! You can also chat directly with our human expert on WhatsApp at +91 8489943146 for custom orders & assistance.";
+      let matchedProds = [];
+
       const lower = msg.toLowerCase();
-      if (lower.includes("size") || lower.includes("cm") || lower.includes("fit") || lower.includes("measurement")) {
-        botResponse = "📏 For Size Measurements in CM:\n• S = Bust 86-89cm, Waist 71-74cm\n• M = Bust 91-94cm, Waist 76-79cm\n• L = Bust 97-102cm, Waist 81-86cm\n• XL = Bust 104-109cm, Waist 89-94cm\nClick 'Size Guide (cm)' on any item to view full chart!";
+
+      // Check category searches
+      const searchTerms = ["saree", "lehenga", "kurti", "top", "western", "accessories", "footwear", "dress"];
+      const matchTerm = searchTerms.find((term) => lower.includes(term));
+
+      if (matchTerm) {
+        matchedProds = products.filter((p) =>
+          p.category?.toLowerCase().includes(matchTerm) ||
+          p.name?.toLowerCase().includes(matchTerm)
+        ).slice(0, 4);
+
+        if (matchedProds.length > 0) {
+          botResponse = `✨ Here are popular ${matchTerm.charAt(0).toUpperCase() + matchTerm.slice(1)} items from our collection! Click any item to view full details on our store:`;
+        } else {
+          botResponse = `We have wonderful ${matchTerm} options arriving! You can browse our shop catalog or contact our human consultant below.`;
+        }
+      } else if (lower.includes("size") || lower.includes("cm") || lower.includes("fit") || lower.includes("measurement")) {
+        botResponse = "📏 Standard Measurements in Centimeters (cm):\n• S: Bust 86-89cm, Waist 71-74cm\n• M: Bust 91-94cm, Waist 76-79cm\n• L: Bust 97-102cm, Waist 81-86cm\n• XL: Bust 104-109cm, Waist 89-94cm\nClick 'Size Guide (cm)' on any product page for detailed size charts!";
       } else if (lower.includes("ship") || lower.includes("deliver") || lower.includes("time") || lower.includes("track")) {
-        botResponse = "🚚 Free Express Shipping on all orders! Orders dispatch in 1-2 days and arrive in 3-5 business days. Track your order under My Orders!";
+        botResponse = "🚚 Free Express Shipping across India! Orders dispatch in 1-2 days and arrive in 3-5 business days.";
       } else if (lower.includes("return") || lower.includes("refund") || lower.includes("exchange")) {
-        botResponse = "🔄 Easy 7-day returns! Request a return from your Account order panel within 7 days of delivery.";
+        botResponse = "🔄 7-day hassle-free returns on unworn items. Simply submit a return request from Account → My Orders.";
       } else if (lower.includes("contact") || lower.includes("call") || lower.includes("whatsapp") || lower.includes("human") || lower.includes("agent")) {
-        botResponse = "💬 You can speak directly to our human fashion consultant on WhatsApp at +91 8489943146!";
+        botResponse = "💬 Click 'Human Assistant' tab above or message our fashion consultant on WhatsApp at +91 8489943146!";
+      } else if (lower.includes("recommend") || lower.includes("collection") || lower.includes("popular") || lower.includes("best")) {
+        matchedProds = products.slice(0, 4);
+        botResponse = "🌟 Here are our top featured boutique designs! Click to view full details:";
       }
 
-      setChatMessages((prev) => [...prev, { sender: "bot", text: botResponse }]);
-    }, 600);
+      setChatMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: botResponse, products: matchedProds }
+      ]);
+    }, 500);
   };
 
   const openWhatsAppDirect = (customMsg) => {
-    const text = encodeURIComponent(customMsg || `Hi Uma's Fashion, I would like to inquire about products/customization.`);
+    const text = encodeURIComponent(customMsg || `Hi Uma's Fashion, I am inquiring about boutique products.`);
     window.open(`https://wa.me/91${WHATSAPP_NUMBER}?text=${text}`, "_blank");
   };
 
@@ -855,20 +899,23 @@ function WhatsAppSupportWidget() {
     <div className="fixed bottom-6 right-6 z-50">
       {/* WhatsApp Chat Window */}
       {isOpen && (
-        <div className="mb-4 bg-white border border-stone-200 rounded-2xl shadow-2xl w-80 sm:w-96 overflow-hidden flex flex-col h-[460px] animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="mb-4 bg-white border border-stone-200 rounded-2xl shadow-2xl w-80 sm:w-96 overflow-hidden flex flex-col h-[500px] animate-in fade-in slide-in-from-bottom-4 duration-200">
           {/* Header */}
-          <div className="bg-emerald-600 text-white p-4 flex items-center justify-between shadow-md">
-            <div className="flex items-center gap-3">
+          <div className="bg-emerald-600 text-white p-3.5 flex items-center justify-between shadow-md">
+            <div className="flex items-center gap-2.5">
               <div className="relative">
-                <div className="w-10 h-10 rounded-full bg-white text-emerald-700 font-bold flex items-center justify-center text-sm shadow">
-                  🥻
+                <div className="w-9 h-9 rounded-full bg-white text-emerald-600 flex items-center justify-center shadow">
+                  <WhatsAppIcon size={22} />
                 </div>
-                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 border-2 border-white rounded-full"></span>
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 border-2 border-white rounded-full"></span>
               </div>
               <div>
-                <h4 className="font-bold text-sm leading-tight">Uma's Fashion Boutique</h4>
-                <div className="text-[11px] text-emerald-100 flex items-center gap-1">
-                  <span>Online Support</span> • <span className="font-medium">+91 8489943146</span>
+                <h4 className="font-bold text-xs sm:text-sm leading-tight flex items-center gap-1">
+                  Uma's Fashion Boutique
+                </h4>
+                <div className="text-[10px] text-emerald-100 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+                  <span>WhatsApp AI & Human Support</span>
                 </div>
               </div>
             </div>
@@ -887,7 +934,7 @@ function WhatsAppSupportWidget() {
               onClick={() => setActiveTab("human")}
               className={`flex-1 py-2.5 flex items-center justify-center gap-1.5 transition-colors ${activeTab === "human" ? "bg-white text-emerald-700 border-b-2 border-emerald-600 font-bold" : "text-stone-600 hover:text-stone-900"}`}
             >
-              <Phone size={14} /> Human Assistant
+              <WhatsAppIcon size={14} /> Human Assistant
             </button>
           </div>
 
@@ -895,27 +942,68 @@ function WhatsAppSupportWidget() {
           {activeTab === "ai" && (
             <div className="flex-1 flex flex-col justify-between overflow-hidden bg-stone-50/50">
               {/* Chat Message List */}
-              <div className="p-3 overflow-y-auto space-y-2.5 flex-1 text-xs">
+              <div className="p-3 overflow-y-auto space-y-3 flex-1 text-xs">
                 {chatMessages.map((m, idx) => (
-                  <div key={idx} className={`flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[82%] rounded-2xl px-3.5 py-2 whitespace-pre-line shadow-xs ${m.sender === "user" ? "bg-emerald-600 text-white rounded-br-none" : "bg-white border border-stone-200 text-stone-800 rounded-bl-none"}`}>
+                  <div key={idx} className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}>
+                    <div className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 whitespace-pre-line shadow-xs ${m.sender === "user" ? "bg-emerald-600 text-white rounded-br-none" : "bg-white border border-stone-200 text-stone-800 rounded-bl-none"}`}>
                       {m.text}
                     </div>
+
+                    {/* Interactive Product Recommendation Cards */}
+                    {m.products && m.products.length > 0 && (
+                      <div className="mt-2.5 w-full space-y-2">
+                        {m.products.map((prod) => (
+                          <div key={prod._id || prod.id} className="bg-white border border-stone-200 rounded-xl p-2 flex gap-2.5 shadow-sm hover:border-emerald-300 transition-all">
+                            <img
+                              src={getImageUrl(prod.imageUrl || prod.image_url)}
+                              alt={prod.name}
+                              className="w-14 h-16 object-cover rounded-lg border border-stone-100 flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0 flex flex-col justify-between">
+                              <div>
+                                <h5 className="font-semibold text-stone-900 text-xs truncate">{prod.name}</h5>
+                                <div className="text-[10px] text-amber-700 font-bold mt-0.5">₹{prod.price}</div>
+                              </div>
+                              <div className="flex gap-1.5 mt-1">
+                                {openProduct && (
+                                  <button
+                                    onClick={() => {
+                                      openProduct(prod);
+                                      setIsOpen(false);
+                                    }}
+                                    className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-[10px] px-2.5 py-1 rounded-full transition-colors flex items-center gap-1"
+                                  >
+                                    View Item <ChevronRight size={10} />
+                                  </button>
+                                )}
+                                <button
+                                  onClick={() => openWhatsAppDirect(`Hi Uma's Fashion, I want to inquire about: ${prod.name} (₹${prod.price})`)}
+                                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] px-2 py-1 rounded-full transition-colors flex items-center gap-1"
+                                  title="Inquire on WhatsApp"
+                                >
+                                  <WhatsAppIcon size={10} /> Inquire
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
 
               {/* Quick AI FAQ Buttons */}
               <div className="p-2 border-t border-stone-200 bg-white space-y-1">
-                <div className="text-[10px] text-stone-500 font-semibold px-1 uppercase tracking-wider">Quick AI Inquiries:</div>
+                <div className="text-[10px] text-stone-500 font-semibold px-1 uppercase tracking-wider">Quick Suggestions:</div>
                 <div className="flex gap-1.5 overflow-x-auto pb-1 text-[11px] scrollbar-none">
                   {FAQS.map((faq, i) => (
                     <button
                       key={i}
-                      onClick={() => handleSendMessage(faq.q)}
+                      onClick={() => handleSendMessage(faq.query)}
                       className="whitespace-nowrap bg-stone-100 hover:bg-emerald-50 text-stone-800 hover:text-emerald-800 border border-stone-200 px-2.5 py-1 rounded-full text-[11px] transition-colors"
                     >
-                      {faq.q}
+                      {faq.label}
                     </button>
                   ))}
                 </div>
@@ -927,7 +1015,7 @@ function WhatsAppSupportWidget() {
                   type="text"
                   value={inputMsg}
                   onChange={(e) => setInputMsg(e.target.value)}
-                  placeholder="Ask AI about sizing, delivery..."
+                  placeholder="Ask for Sarees, Lehengas, sizing..."
                   className="flex-1 border border-stone-300 rounded-full px-3 py-1.5 text-xs focus:outline-none focus:border-emerald-500"
                 />
                 <button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-full transition-colors">
@@ -941,15 +1029,16 @@ function WhatsAppSupportWidget() {
           {activeTab === "human" && (
             <div className="flex-1 p-5 flex flex-col justify-between bg-stone-50 text-center">
               <div className="space-y-4 my-auto">
-                <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
-                  <MessageSquare size={28} />
+                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner border border-emerald-200">
+                  <WhatsAppIcon size={32} />
                 </div>
                 <div>
                   <h4 className="font-bold text-stone-900 text-sm">Direct WhatsApp Support</h4>
                   <p className="text-stone-500 text-xs mt-1">Connect directly with our human boutique specialist for custom orders, measurement help, or payment queries.</p>
                 </div>
-                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 font-medium">
-                  Official Support: <span className="font-bold text-emerald-800">+91 8489943146</span>
+                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-900 font-medium flex items-center justify-center gap-2">
+                  <WhatsAppIcon size={16} className="text-emerald-600" />
+                  Official WhatsApp: <span className="font-bold text-emerald-800">+91 8489943146</span>
                 </div>
               </div>
 
@@ -957,7 +1046,7 @@ function WhatsAppSupportWidget() {
                 onClick={() => openWhatsAppDirect()}
                 className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-full text-xs shadow-md transition-all flex items-center justify-center gap-2"
               >
-                <MessageSquare size={16} /> Open Chat on WhatsApp (+91 8489943146)
+                <WhatsAppIcon size={18} /> Open Chat on WhatsApp (+91 8489943146)
               </button>
             </div>
           )}
@@ -968,10 +1057,10 @@ function WhatsAppSupportWidget() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-2xl transition-all transform hover:scale-105 flex items-center justify-center gap-2 group border-2 border-white"
-        title="WhatsApp AI &amp; Human Support (+91 8489943146)"
+        title="WhatsApp AI & Human Support (+91 8489943146)"
       >
-        <div className="relative">
-          <MessageSquare size={24} className="fill-white text-emerald-600" />
+        <div className="relative flex items-center justify-center">
+          <WhatsAppIcon size={24} />
           <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 border-2 border-emerald-600 rounded-full animate-ping"></span>
         </div>
         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap text-xs font-bold pr-1">
@@ -6100,7 +6189,7 @@ export default function App() {
         )}
       </div>
 
-      {view !== "admin" && <WhatsAppSupportWidget />}
+      {view !== "admin" && <WhatsAppSupportWidget products={products} openProduct={openProduct} setView={setView} />}
       {view !== "admin" && <Footer />}
       {authOpen && <AuthModal onClose={() => { setAuthOpen(false); setAuthError(""); }} onLogin={handleLogin} onSignup={handleSignup} error={authError} />}
       <Toast message={toast} />
