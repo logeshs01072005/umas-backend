@@ -835,8 +835,10 @@ function WhatsAppSupportWidget({ products = [], openProduct, setView }) {
   const FAQS = [
     { label: "🥻 Sarees", query: "Show me Sarees" },
     { label: "👗 Lehengas", query: "Show me Lehengas" },
-    { label: "👚 Kurtis & Tops", query: "Show me Kurtis and Tops" },
-    { label: "📏 Size Guide (cm)", query: "Size guide measurements" },
+    { label: "💳 Payment Types", query: "What payment types are accepted?" },
+    { label: "🔍 Verify Bank RRN", query: "How to verify Bank RRN payment?" },
+    { label: "📦 Track Order", query: "Track my order status" },
+    { label: "📏 Size Guide (cm)", query: "Size guide measurements in cm" },
     { label: "🚚 Delivery Info", query: "Delivery timeframe" },
   ];
 
@@ -870,9 +872,17 @@ function WhatsAppSupportWidget({ products = [], openProduct, setView }) {
         } else {
           botResponse = `We have wonderful ${matchTerm} options arriving! You can browse our shop catalog or contact our human consultant below.`;
         }
+      } else if (lower.includes("payment") || lower.includes("pay") || lower.includes("upi") || lower.includes("card") || lower.includes("cod") || lower.includes("razorpay")) {
+        botResponse = "💳 Accepted Payment Types:\n• Razorpay (UPI, Credit/Debit Cards, NetBanking)\n• Cash on Delivery (COD)\n• Direct Bank / UPI Transfer (UPI ID: logeshs01072005@okhdfcbank)\n\nYou can verify your direct payment by submitting your Bank RRN no / Payment ID at checkout or under Account → My Orders!";
+      } else if (lower.includes("rrn") || lower.includes("verify") || lower.includes("verification") || lower.includes("utr") || lower.includes("proof")) {
+        botResponse = "🔍 Payment Verification & Bank RRN:\nAfter transferring via UPI or Bank Transfer, enter your Bank RRN no / Payment ID and upload screenshot proof on your order page. Our admin team verifies payments within 30 minutes! You can also WhatsApp your Bank RRN directly to +91 8489943146.";
+      } else if (lower.includes("track") || lower.includes("order status") || lower.includes("my order")) {
+        botResponse = "📦 Order Tracking & Verification Status:\nLog in and go to Account → My Orders to track live shipping updates and payment verification status for all your purchases!";
+      } else if (lower.includes("inquiry") || lower.includes("custom") || lower.includes("customer")) {
+        botResponse = "🛍️ Customer Product & Custom Inquiry:\nNeed custom sizing or help with a specific saree/lehenga design? Click 'Human Assistant' tab or message our boutique specialist on WhatsApp at +91 8489943146!";
       } else if (lower.includes("size") || lower.includes("cm") || lower.includes("fit") || lower.includes("measurement")) {
         botResponse = "📏 Standard Measurements in Centimeters (cm):\n• S: Bust 86-89cm, Waist 71-74cm\n• M: Bust 91-94cm, Waist 76-79cm\n• L: Bust 97-102cm, Waist 81-86cm\n• XL: Bust 104-109cm, Waist 89-94cm\nClick 'Size Guide (cm)' on any product page for detailed size charts!";
-      } else if (lower.includes("ship") || lower.includes("deliver") || lower.includes("time") || lower.includes("track")) {
+      } else if (lower.includes("ship") || lower.includes("deliver") || lower.includes("time")) {
         botResponse = "🚚 Free Express Shipping across India! Orders dispatch in 1-2 days and arrive in 3-5 business days.";
       } else if (lower.includes("return") || lower.includes("refund") || lower.includes("exchange")) {
         botResponse = "🔄 7-day hassle-free returns on unworn items. Simply submit a return request from Account → My Orders.";
