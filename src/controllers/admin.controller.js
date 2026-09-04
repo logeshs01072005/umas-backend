@@ -8,7 +8,19 @@ const ActivityLog = require("../models/ActivityLog");
 
 async function getAllCustomers(req, res, next) {
   try {
-    const customers = await User.find({ is_admin: false }).sort({ created_at: -1 });
+    // Only fetch customers who have at least one verified paid order
+    const paidUserIds = await Order.distinct("user_id", {
+      $or: [
+        { payment_status: { $in: ["paid", "captured", "completed"] } },
+        { status: { $in: ["Processing", "Packed", "Shipped", "Dispatched", "Out for Delivery", "Delivered"] } },
+      ],
+    });
+
+    const customers = await User.find({
+      _id: { $in: paidUserIds },
+      is_admin: false,
+    }).sort({ created_at: -1 });
+
     const formatted = customers.map((u) => ({
       id: u._id,
       name: u.name,
@@ -18,6 +30,7 @@ async function getAllCustomers(req, res, next) {
       city: u.city || "",
       pincode: u.pincode || "",
       status: u.status || "Active",
+      isVerifiedPaid: true,
       registrationDate: u.created_at,
     }));
     res.json({ customers: formatted });

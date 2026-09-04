@@ -4208,7 +4208,10 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
         {/* 2. Customers Tab */}
         {adminTab === "customers" && (
           <div className="space-y-6">
-            <h2 className="font-serif text-xl text-stone-900 font-bold">Customer Management</h2>
+            <div>
+              <h2 className="font-serif text-xl text-stone-900 font-bold">Verified Customer Database</h2>
+              <p className="text-xs text-stone-500 mt-0.5">Only customers who have completed and verified a payment are stored &amp; displayed here.</p>
+            </div>
             {/* Scrollable table on mobile */}
             <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
               <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: "touch" }}>
@@ -4219,7 +4222,7 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                       <th className="p-3">Email Address</th>
                       <th className="p-3">Phone Number</th>
                       <th className="p-3">Registration Date</th>
-                      <th className="p-3">Account Status</th>
+                      <th className="p-3">Verification Status</th>
                       <th className="p-3">Actions</th>
                     </tr>
                   </thead>
@@ -4231,8 +4234,8 @@ function AdminDashboard({ products, orders, stats, saveProduct, deleteProduct, u
                         <td className="p-3 text-stone-600">{c.phone}</td>
                         <td className="p-3 text-stone-500">{formatDateTime(c.registrationDate)}</td>
                         <td className="p-3">
-                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold ${c.status === "Active" ? "bg-emerald-50 text-emerald-800 border border-emerald-300" : "bg-rose-50 text-rose-800 border border-rose-300"}`}>
-                            {c.status}
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] uppercase font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
+                            ✓ Verified Paid Customer
                           </span>
                         </td>
                         <td className="p-3 flex gap-2">
